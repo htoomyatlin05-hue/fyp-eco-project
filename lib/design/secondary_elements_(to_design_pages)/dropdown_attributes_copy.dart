@@ -47,41 +47,38 @@ class _DynamicDropdownMaterialAcquisitionState
     fetchColumnData();
   }
 
-  Future<void> fetchColumnData() async {
-    for (int i = 0; i < widget.apiEndpoints.length; i++) {
-      final endpoint = widget.apiEndpoints[i];
-      if (endpoint.isEmpty) continue;
+Future<void> fetchColumnData() async {
+  for (int i = 0; i < widget.apiEndpoints.length; i++) {
+    final endpoint = widget.apiEndpoints[i];
+    if (endpoint.isEmpty) continue;
 
-      try {
-        final response = await http.get(Uri.parse(endpoint));
-        if (response.statusCode == 200) {
-          final List<dynamic> data = json.decode(response.body);
+    try {
+      final response = await http.get(Uri.parse(endpoint));
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> data = jsonDecode(response.body);
+        final List<String> machines = List<String>.from(data['machines'] ?? []);
 
-          //--Example logic per column--
+        setState(() {
           if (i == 0) {
-            // Materials
-            setState(() {
-              materialFactors = {
-                for (var item in data) item['name']: item['factor'].toDouble()
-              };
-              materialNames = materialFactors.keys.toList();
-              selections[i][0] = materialNames.isNotEmpty ? materialNames.first : '';
-            });
+           
+            
+            materialNames = machines;
+            selections[i][0] = machines.isNotEmpty ? machines.first : '';
           } else if (i == 1) {
-            // Transport
-            setState(() {
-              transportTypes = data.map((e) => e.toString()).toList();
-              selections[i][0] = transportTypes.isNotEmpty ? transportTypes.first : '';
-            });
+            
+           
+            transportTypes = machines;
+            selections[i][0] = machines.isNotEmpty ? machines.first : '';
           }
-        } else {
-          debugPrint('Failed to load data from $endpoint');
-        }
-      } catch (e) {
-        debugPrint('Error fetching $endpoint: $e');
+        });
+      } else {
+        debugPrint('Failed to load data from $endpoint');
       }
+    } catch (e) {
+      debugPrint('Error fetching $endpoint: $e');
     }
   }
+}
 
   void _addRow() {
     setState(() {

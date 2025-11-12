@@ -1,0 +1,71 @@
+import 'package:flutter/material.dart';
+import 'package:test_app/design/secondary_elements_(to_design_pages)/loginfield.dart';
+import 'package:test_app/design/apptheme/textlayout.dart';
+import 'package:test_app/design/apptheme/colors.dart';
+import 'package:test_app/design/secondary_elements_(to_design_pages)/welcomelogo.dart';
+import 'package:test_app/sub_navigator.dart';
+
+class Welcomepage extends StatefulWidget {
+  const Welcomepage({super.key});
+
+  @override
+  State<Welcomepage> createState() => _WelcomepageState();
+}
+
+class _WelcomepageState extends State<Welcomepage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Apptheme.drawerbackground,
+      body: LayoutBuilder( builder: (BuildContext context, BoxConstraints constraints) {
+        double parentheight = constraints.maxHeight;
+
+        return 
+        Column(
+          children: [
+            Flexible(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: Welcomepagelogo(
+                  whathappens: null,
+                  choosecolor: Apptheme.transparentcheat,
+                  pad: 0,
+                ),
+              ),
+            ),
+        
+            Flexible(
+              flex: 1,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: Bigfocusedtext(),
+              ),
+            ),
+        
+            SizedBox(
+              height: parentheight/2.5,
+            
+              child: AspectRatio(
+                aspectRatio: 16/9,
+                child: Loginfield())),
+            
+            SizedBox(
+              height: parentheight/4,
+              width: double.infinity,
+              child: Center(
+                child: IconButton(
+                  onPressed: () {RootScaffold.of(context)?.goToHomePage();
+                  },
+                  icon: const Icon(Icons.alarm),
+                  color: Apptheme.iconslight,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      ),
+    );
+  }
+}

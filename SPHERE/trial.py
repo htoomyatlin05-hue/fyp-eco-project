@@ -266,21 +266,6 @@ GWP_for_GHG     = extract_selection_list(GWP_for_GHG_cells)
 # --------- 3. GEODATA CACHE (used by transport + sourcing) ------------------#
 ###############################################################################
 
-def build_country_coords_cache(country_list_input):
-    geolocator = Nominatim(user_agent="emission_app_backend")  # similar to SPHERE usage :contentReference[oaicite:5]{index=5}
-    cache = {}
-    for country in country_list_input:
-        try:
-            loc = geolocator.geocode(country, timeout=5)
-            if loc:
-                cache[country] = (loc.latitude, loc.longitude)
-            else:
-                cache[country] = None
-        except Exception:
-            cache[country] = None
-    return cache
-
-country_coords_cache = build_country_coords_cache(country_list)
 
 ###############################################################################
 # --------- 4. PURE CALC HELPERS (ported/adapted from SPHERE.py) -------------#
@@ -360,7 +345,6 @@ def calc_transport_emission(
         "distance_km": distance_km,
         "transport_emission": transport_emission
     }
-
 
 # ---------- Machine Process Emissions ----------
 
@@ -469,97 +453,6 @@ def calc_recycling_emission(
     if factor == "N/A":
         return 0.0
     return float(factor) * total_weight_after_kg
-
-
-# ---------- Business Travel Emissions ----------
-
-def calc_business_travel_row(row: dict):
-    """
-    SPHERE's Business Travel UI collects:
-      transport (e.g. Van),
-      variation (specific van type),
-      fuel ('Diesel', 'Petrol', 'Battery'),
-      origin, destination, mode ('driving', 'plane', 'ship', etc.)
-      and shows 'Total Emission: X CO2eKg' per row. :contentReference[oaicite:14]{index=14}
-
-    The workbook sheet3 ('Transport WTT') has lists like:
-    - van_list and van_diesel_list / van_petrol_list / van_battery_list
-    which look like emission factors for van variants. :contentReference[oaicite:15]{index=15}
-
-    We'll reconstruct a reasonable rule:
-      1. If transport is "Van":
-         - pick variation index from van_list
-         - pick fuel list (diesel/petrol/battery)
-         - get factor_per_km from the matching list
-      2. Compute distance between origin/destination using geodesic.
-      3. emission = factor_per_km * distance_km
-
-    NOTE: If we can't geocode origin/destination, we return 0 for that row.
-    """
-
-    transport_type = (row.get("transport") or "").strip()
-    variation     = (row.get("variation") or "").strip()
-    fuel          = (row.get("fuel") or "").strip()
-    origin        = (row.get("origin") or "").strip()
-    destination   = (row.get("destination") or "").strip()
-
-    # 1. figure out factor_per_km
-    factor_per_km = 0.0
-
-    if transport_type.lower() == "van":
-        # Find which van variant index this is
-        if variation in van_list:
-            i = van_list.index(variation)
-
-            if fuel.lower() == "diesel" and i < len(van_diesel_list):
-                factor_per_km = safe_float(van_diesel_list[i])
-            elif fuel.lower() == "petrol" and i < len(van_petrol_list):
-                factor_per_km = safe_float(van_petrol_list[i])
-            elif fuel.lower() == "battery" and i < len(van_battery_list):
-                factor_per_km = safe_float(van_battery_list[i])
-        # else: could expand to HGV, flights, etc., in future, based on
-        # HGV_*_list, flight_list, etc. from sheet3.
-
-    # 2. distance
-    distance_km = geocode_distance_km(origin, destination)
-
-    # 3. total emission
-    row_emission = factor_per_km * distance_km
-
-    return {
-        "distance_km": distance_km,
-        "emission": row_emission,
-        "factor_per_km": factor_per_km,
-    }
-
-
-def geocode_distance_km(origin: str, destination: str) -> float:
-    """
-    Helper to geocode 2 text locations and return geodesic distance in km.
-    Similar to how SPHERE geocodes countries for transport. :contentReference[oaicite:16]{index=16}
-    """
-    if not origin or not destination:
-        return 0.0
-
-    geolocator = Nominatim(user_agent="emission_app_business_travel")
-    try:
-        loc_o = geolocator.geocode(origin, timeout=5)
-        loc_d = geolocator.geocode(destination, timeout=5)
-    except Exception:
-        return 0.0
-
-    if not loc_o or not loc_d:
-        return 0.0
-
-    return geodesic((loc_o.latitude, loc_o.longitude),
-                    (loc_d.latitude, loc_d.longitude)).km
-
-
-def safe_float(x):
-    try:
-        return float(x)
-    except Exception:
-        return 0.0
 
 
 # ---------- Machine Optimization ("Pareto suggestion") ----------
@@ -685,7 +578,7 @@ def get_best_material_and_country(
                 except Exception:
                     continue
 
-            # skip if can't geocode either end
+            #skip if can't geocode either end
             if (
                 user_country not in country_coords_cache
                 or src_country not in country_coords_cache
@@ -727,13 +620,6 @@ class MachineRow(BaseModel):
     machine_type: str
     machining_time: float  # minutes
 
-class BusinessTravelRow(BaseModel):
-    transport: str
-    variation: str
-    fuel: str
-    origin: str
-    destination: str
-
 class EmissionRequest(BaseModel):
     # material + weight before machining
     material: str
@@ -755,9 +641,6 @@ class EmissionRequest(BaseModel):
 
     # machine process rows
     machine_rows: List[MachineRow] = []
-
-    # business travel rows
-    business_travel_rows: List[BusinessTravelRow] = []
 
 class ProfileSaveRequest(BaseModel):
     profile_name: str
@@ -782,7 +665,7 @@ class SourcingOptimizeRequest(BaseModel):
 # --------- 6. FASTAPI APP + ENDPOINTS ---------------------------------------#
 
 
-app = FastAPI(title="SPHERE Backend API (no Tkinter)")
+app = FastAPI(title="SPHERE Backend API (Flutter)")
 
 @app.get("/meta/machines")
 def get_machinedata():
@@ -801,6 +684,7 @@ def get_materialdata():
     return {
         "material types":material_list
     }
+
 @app.get("/meta/Grid_intensity_of_all_countries")
 def Grid_intensity_of_all_countries():
     """
@@ -808,8 +692,9 @@ def Grid_intensity_of_all_countries():
     """
     return {
         "countries": country_list,
-        "materials": electricity_cells,
+        "materials": electricity_list,
     }
+
 @app.get("/meta/transport(cargotype)")
 def get_transport_types():
     """
@@ -818,6 +703,19 @@ def get_transport_types():
     return {
         "transport_types": transport_list
     }
+
+@app.get("/meta/GWP of GHG_gases")
+def getGWPvalues():
+    """
+    Values of the Indicator, GHG, and GWP values
+    """
+    return{
+        "Indicator": Indicator_GHG,
+        "GHG": GHG_values,
+        "GWP": GWP_for_GHG
+        
+    } 
+
 
 @app.get("/meta/options")
 def get_options():
@@ -828,7 +726,6 @@ def get_options():
       - machine types
       - packaging types
       - recycling types
-      - business travel (van variants)
     """
     return {
         "countries": country_list,
@@ -836,8 +733,6 @@ def get_options():
         "machines": machine_value_list,
         "packaging_types": packaging_types_list,
         "recycling_types": metal_recycling_types_list,
-        "van_variants": van_list,
-        "van_fuels": ["Diesel", "Petrol", "Battery"],
     }
 
 
@@ -850,7 +745,6 @@ def calculate_emissions(req: EmissionRequest):
     - machining
     - packaging
     - recycling
-    - business travel
     - total
     """
 
@@ -898,37 +792,6 @@ def calculate_emissions(req: EmissionRequest):
             req.weight_after_kg * req.weight_after_qty
         )
 
-    # 6. business travel rows
-    bt_results = []
-    bt_total = 0.0
-    for bt in req.business_travel_rows:
-        r = calc_business_travel_row(bt.dict())
-        bt_results.append(r)
-        bt_total += r["emission"]
-
-    total = (
-        raw_emission
-        + transport_emission
-        + machine_total
-        + packaging_emission
-        + recycling_emission
-        + bt_total
-    )
-
-    return {
-        "raw_material_emission": raw_emission,
-        "transport_emission": transport_emission,
-        "machine_emission": machine_total,
-        "machine_details": machine_details,
-        "packaging_emission": packaging_emission,
-        "recycling_emission": recycling_emission,
-        "business_travel_emission": bt_total,
-        "business_travel_details": bt_results,
-        "total_emission": total,
-        "transport_distance_km": distance_km,
-    }
-
-
 @app.post("/emissions/recycling")
 def recycling_only(recycling_type: str, total_weight_after_kg: float):
     """
@@ -938,24 +801,6 @@ def recycling_only(recycling_type: str, total_weight_after_kg: float):
     return {
         "recycling_emission": val
     }
-
-
-@app.post("/emissions/business_travel")
-def business_travel_only(rows: List[BusinessTravelRow]):
-    """
-    Convenience endpoint to compute business travel total and per-row details.
-    """
-    bt_results = []
-    bt_total = 0.0
-    for bt in rows:
-        r = calc_business_travel_row(bt.dict())
-        bt_results.append(r)
-        bt_total += r["emission"]
-    return {
-        "business_travel_emission": bt_total,
-        "details": bt_results
-    }
-
 
 @app.post("/optimize/machine")
 def optimize_machine(req: MachineOptimizeRequest):

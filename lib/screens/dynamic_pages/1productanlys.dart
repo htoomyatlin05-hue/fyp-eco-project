@@ -48,50 +48,66 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
 
       if (selectedBoundary == 'Grave') ...[
       //--ROW 3--
-      Labels(title: 'Attribute: Distribution and Storage',),
-      Widgets1(aspectratio: 16/9, maxheight: 400,
+      Labels(title: 'Attribute: Distribution',),
+      Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
-      DynamicDropdownGroup(
-        columnTitles: ['Capital Consumption', 'Power', 'Time',], 
-        dropdownItems: [
-          ['Aluminium', 'Copper', 'Brass'],
-          ['Aluminium', 'Copper', 'Brass']
-        ], 
-        isTextFieldColumn: [false, false, true,], 
-        addButtonLabel: 'Add Process',
-        padding: 5,
-        ),
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Transportation', 'Distance',], 
+        isTextFieldColumn: [false, true], 
+        addButtonLabel: 'Add transport cycle', 
+        padding: 5, 
+        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])
+      ),
+
+      //--ROW 3.A--
+      Labels(title: 'Attribute: Storage',),
+      Widgets1(aspectratio: 16/9, maxheight: 200,
+      child:
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Activity', 'Fugitive', 'Time'], 
+        isTextFieldColumn: [false, false, true], 
+        addButtonLabel: 'Add storage profile', 
+        padding: 5, 
+        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])
       ),
       
 
       //--ROW 4--
-      Labels(title: 'Activity: Usage',),
-      Widgets1(aspectratio: 16/9, maxheight: 400,
+      Labels(title: 'Attribute: Usage Cycle',),
+      Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
-      DynamicDropdownGroup(
-        columnTitles: ['Capital Consumption', 'Power', 'Time',], 
-        dropdownItems: [
-          ['Aluminium', 'Copper', 'Brass'],
-          ['Aluminium', 'Copper', 'Brass']
-        ], 
-        isTextFieldColumn: [false, false, true,], 
-        addButtonLabel: 'Add Process',
-        padding: 5,
-        ),
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Activity', 'Time', 'Expected life'], 
+        isTextFieldColumn: [false, false, true], 
+        addButtonLabel: 'Add use cycle', 
+        padding: 5, 
+        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])
       ),
 
       //--ROW 5--
-      Labels(title: 'Activity: End of Life',),
+      Labels(title: 'Attribute: End of Life',),
+      Widgets1(aspectratio: 16/9, maxheight: 200,
+      child:
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Treatment', 'Mass', 'Avoided'], 
+        isTextFieldColumn: [false, false, true], 
+        addButtonLabel: 'Add use cycle', 
+        padding: 5, 
+        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])
+      ),
+
+      //--ROW 6--
+      Labels(title: 'Example',),
       Widgets1(aspectratio: 16/9, maxheight: 400,
       child:
       DynamicDropdownGroup(
-        columnTitles: ['Capital Consumption', 'Power', 'Time',], 
+        columnTitles: ['Example', 'Example', 'Example',], 
         dropdownItems: [
           ['Aluminium', 'Copper', 'Brass'],
           ['Aluminium', 'Copper', 'Brass']
         ], 
         isTextFieldColumn: [false, false, true,], 
-        addButtonLabel: 'Add Process',
+        addButtonLabel: 'Add Example',
         padding: 5,
         ),
       ),

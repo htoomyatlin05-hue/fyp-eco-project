@@ -56,7 +56,7 @@ Future<void> fetchColumnData() async {
       final response = await http.get(Uri.parse(endpoint));
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
-        final List<String> machines = List<String>.from(data['machines'] ?? []);
+        final List<String> machines = List<String>.from(data['material types'] ?? []);
 
         setState(() {
           if (i == 0) {

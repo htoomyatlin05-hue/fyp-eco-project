@@ -28,10 +28,10 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
       child: 
         DynamicDropdownMaterialAcquisition(
         columnTitles: ['Materials', 'Transport', 'Distance'], 
-        isTextFieldColumn: [false, false, true], 
+        isTextFieldColumn: [false, false, true, ], 
         addButtonLabel: 'Add material', 
         padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])
+        apiEndpoints: ['http://127.0.0.1:8000/meta/material type', 'http://127.0.0.1:8000/meta/material type'])
       ),
      
       //--ROW 2--
@@ -56,7 +56,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         isTextFieldColumn: [false, true], 
         addButtonLabel: 'Add transport cycle', 
         padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])
+        apiEndpoints: ['http://127.0.0.1:8000/meta/material type', 'http://127.0.0.1:8000/meta/material type'])
       ),
 
       //--ROW 3.A--
@@ -68,7 +68,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         isTextFieldColumn: [false, false, true], 
         addButtonLabel: 'Add storage profile', 
         padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])
+        apiEndpoints: ['http://127.0.0.1:8000/meta/material type', 'http://127.0.0.1:8000/meta/material type'])
       ),
       
 
@@ -81,7 +81,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         isTextFieldColumn: [false, false, true], 
         addButtonLabel: 'Add use cycle', 
         padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])
+        apiEndpoints: ['http://127.0.0.1:8000/meta/material type', 'http://127.0.0.1:8000/meta/material type'])
       ),
 
       //--ROW 5--
@@ -90,7 +90,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
       child:
       DynamicDropdownMaterialAcquisition(
         columnTitles: ['Treatment', 'Mass', 'Avoided'], 
-        isTextFieldColumn: [false, false, true], 
+        isTextFieldColumn: [false, true, true], 
         addButtonLabel: 'Add use cycle', 
         padding: 5, 
         apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])

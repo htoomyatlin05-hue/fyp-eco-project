@@ -7,19 +7,21 @@ import 'package:test_app/design/apptheme/colors.dart';
 class DynamicDropdownMaterialAcquisition extends StatefulWidget {
   final List<String> columnTitles;
   final List<bool> isTextFieldColumn;
-  final List<String> apiEndpoints;
-  final List<String?> jsonKeys;
   final String addButtonLabel;
   final double padding;
+
+  // ['https://api.com/materials', 'https://api.com/transports', '']
+  final List<String> apiEndpoints;
+  final List<String?> jSONkeys;
 
   const DynamicDropdownMaterialAcquisition({
     super.key,
     required this.columnTitles,
     required this.isTextFieldColumn,
-    required this.apiEndpoints,
-    required this.jsonKeys,
     required this.addButtonLabel,
     required this.padding,
+    required this.apiEndpoints,
+    required this.jSONkeys,
   });
 
   @override
@@ -30,57 +32,77 @@ class DynamicDropdownMaterialAcquisition extends StatefulWidget {
 class _DynamicDropdownMaterialAcquisitionState
     extends State<DynamicDropdownMaterialAcquisition> {
   late List<List<String?>> selections;
-  Map<int, List<String>> dropdownData = {};
+  Map<int, List<String>> dropdownData ={};
+
+  Map<String, double> materialFactors = {};
+  List<String> materialNames = [];
+  List<String> transportTypes = [];
 
   @override
   void initState() {
     super.initState();
     selections = List.generate(
       widget.columnTitles.length,
-      (col) => [''],
+      (col) => [widget.isTextFieldColumn[col] ? '' : ''],
     );
-    fetchAllColumnData();
+
+    fetchColumnData();
   }
 
-  Future<void> fetchAllColumnData() async {
-    dropdownData.clear();
+Future<void> fetchColumnData() async {
+  dropdownData.clear();
 
-    for (int i = 0; i < widget.apiEndpoints.length; i++) {
-      String endpoint = widget.apiEndpoints[i];
-      String? jsonKey = widget.jsonKeys[i];
+  for (int i = 0; i < widget.apiEndpoints.length; i++) {
+    String endpoint = widget.apiEndpoints[i];
+    String? jsonKey = widget.jSONkeys[i];
 
-      if (endpoint.isEmpty || jsonKey == null) continue;
+    if (endpoint.isEmpty || jsonKey == null) continue;
 
-      try {
-        final response = await http.get(Uri.parse(endpoint));
+    try {
+      final response = await http.get(Uri.parse(endpoint));
 
-        if (response.statusCode == 200) {
-          final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (jsonKey.isEmpty) continue;
 
-          List<String> items = [];
-          if (data[jsonKey] != null && data[jsonKey] is List) {
-            items = List<String>.from(data[jsonKey]);
-          }
+        List<String> items = [];
+        if (data[jsonKey] != null && data[jsonKey] is List) {
+          items = List<String>.from(data[jsonKey] ?? []);
+        }
 
-          setState(() {
+        setState(() {
+          if (i == 0) {
+           
+            
             dropdownData[i] = items;
             selections[i][0] = items.isNotEmpty ? items.first : '';
-          });
-        }
-      } catch (e) {
-        debugPrint("Failed load col $i : $e");
+          } else if (i == 1) {
+            
+           
+            transportTypes = items;
+            selections[i][0] = items.isNotEmpty ? items.first : '';
+          }
+        });
+      } else {
+        debugPrint('Failed to load data from $endpoint');
       }
+    } catch (e) {
+      debugPrint('Error fetching $endpoint: $e');
     }
   }
+}
 
   void _addRow() {
     setState(() {
-      for (int col = 0; col < selections.length; col++) {
-        if (widget.isTextFieldColumn[col]) {
-          selections[col].add('');
+      for (int i = 0; i < selections.length; i++) {
+        if (widget.isTextFieldColumn[i]) {
+          selections[i].add('');
+        } else if (i == 0) {
+          selections[i].add(materialNames.isNotEmpty ? materialNames.first : '');
+        } else if (i == 1) {
+          selections[i].add(transportTypes.isNotEmpty ? transportTypes.first : '');
         } else {
-          final items = dropdownData[col] ?? [];
-          selections[col].add(items.isNotEmpty ? items.first : '');
+          selections[i].add('');
         }
       }
     });
@@ -88,17 +110,29 @@ class _DynamicDropdownMaterialAcquisitionState
 
   void _removeRow(int index) {
     setState(() {
-      for (final col in selections) {
-        if (index < col.length) col.removeAt(index);
+      for (final column in selections) {
+        if (index < column.length) column.removeAt(index);
       }
     });
   }
+
+
+  double calculateResult(int rowIndex) {
+    if (selections.isEmpty) return 0.0;
+    String? material = selections[0][rowIndex];
+    String valueStr = selections[2][rowIndex] ?? '';
+    double factor = materialFactors[material] ?? 0.0;
+    double input = double.tryParse(valueStr) ?? 0.0;
+    return factor * input;
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final numRows = selections.isNotEmpty ? selections[0].length : 0;
 
-    return LayoutBuilder(
+    return 
+    LayoutBuilder(
       builder: (context, constraints) {
         const double columnwidthmin = 180;
         final double parentwidth = constraints.maxWidth;
@@ -112,11 +146,11 @@ class _DynamicDropdownMaterialAcquisitionState
         ? columnwidthmin
         : calculatedwidth;
 
-
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: 
-          Row(
+        return
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: 
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 for (int col = 0; col < widget.columnTitles.length; col++)
@@ -156,10 +190,10 @@ class _DynamicDropdownMaterialAcquisitionState
                                   color: Apptheme.widgetsecondaryclr,
                                   borderRadius: BorderRadius.circular(6)
                                 ),
-                              child: Row(
-                                children: [
+                                child: Row(
+                                  children: [
 
-                                  Padding(
+                                    Padding(
                                       padding: const EdgeInsets.only(right: 4),
                                       child: Container(
                                           height: 20,
@@ -181,10 +215,10 @@ class _DynamicDropdownMaterialAcquisitionState
                                           ),
                                         ),
                                     ),
-                                  
-                                  Expanded(
-                                    child: widget.isTextFieldColumn[col]
-                                        ? TextField(
+
+                                    Expanded(
+                                      child: widget.isTextFieldColumn[col]
+                                          ? TextField(
                                             cursorColor: Apptheme.textclrlight,
                                             cursorHeight: 15,
                                               keyboardType: TextInputType.number,
@@ -206,9 +240,9 @@ class _DynamicDropdownMaterialAcquisitionState
                                                 });
                                               },
                                             )
-                                        : DropdownButtonHideUnderline(
-                                            child: DropdownButton<String>(
-                                              dropdownColor: Apptheme.widgetsecondaryclr,
+                                          : DropdownButtonHideUnderline(
+                                              child: DropdownButton<String>(
+                                                dropdownColor: Apptheme.widgetsecondaryclr,
                                                 icon:
                                                  Icon(Icons.arrow_drop_down,
                                                    color: Apptheme.iconslight,
@@ -223,23 +257,33 @@ class _DynamicDropdownMaterialAcquisitionState
                                                 ),
                                                 value: selections[col][row],
                                                 isExpanded: true,
-                                              items: (dropdownData[col] ?? [])
-                                                  .map((item) =>
-                                                      DropdownMenuItem(
-                                                        value: item,
-                                                        child: Text(item),
-                                                      ))
-                                                  .toList(),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  selections[col][row] = value;
-                                                });
-                                              },
+                                                items: col == 0
+                                                    ? materialNames
+                                                        .map(
+                                                          (item) => DropdownMenuItem(
+                                                            value: item,
+                                                            child: Text(item,),
+                                                          ),
+                                                        )
+                                                        .toList()
+                                                    : transportTypes
+                                                        .map(
+                                                          (item) => DropdownMenuItem(
+                                                            value: item,
+                                                            child: Text(item),
+                                                          ),
+                                                        )
+                                                        .toList(),
+                                                onChanged: (value) {
+                                                  setState(() {
+                                                    selections[col][row] = value!;
+                                                  });
+                                                },
+                                              ),
                                             ),
-                                          ),
-                                  ),
-                                  if (col == 0)
-                                    Container(
+                                    ),
+                                    if (col == 0)
+                                      Container(
                                         height: 20,
                                         width: 20,
                                         decoration: BoxDecoration(
@@ -253,36 +297,35 @@ class _DynamicDropdownMaterialAcquisitionState
                                           onPressed: () => _removeRow(row),
                                         ),
                                       ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        if (col == 0)
-                          Center(
-                            child: 
-                            SizedBox(
-                              width: 200,
-                              height: 20,
-                              child: ElevatedButton.icon(
-                                onPressed: _addRow,
-                                icon: const Icon(Icons.add, size: 16),
-                                label: Text(widget.addButtonLabel),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Apptheme.auxilary,
-                                  foregroundColor: Colors.white,
-                                  padding: EdgeInsets.zero,
+                                  ],
                                 ),
                               ),
                             ),
-                          )
-                      ],
+                          if (col == 0)
+                            Center(
+                              child: SizedBox(
+                                width: 200,
+                                height: 20,
+                                child: ElevatedButton.icon(
+                                  onPressed: _addRow,
+                                  icon: const Icon(Icons.add, size: 16),
+                                  label: Text(widget.addButtonLabel),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Apptheme.auxilary,
+                                    foregroundColor: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            )
+                        ],
+                      ),
                     ),
                   ),
-                ),
-            ],
-          ),
-        );
-      },
+              ],
+            ),
+          );     
+      }
     );
+  
   }
 }

@@ -31,69 +31,41 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         isTextFieldColumn: [false, false, true, ], 
         addButtonLabel: 'Add material', 
         padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/material type', 'http://127.0.0.1:8000/meta/material type'])
+        apiEndpoints: ['http://127.0.0.1:8000/meta/material type', 'http://127.0.0.1:8000/meta/transport(cargotype)'],
+        jsonKeys: ['material types', 'transport_types'],
+        ),
       ),
      
       //--ROW 2--
       Labels(title: 'Attribute: Production',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
-      child:
-      DynamicDropdownMaterialAcquisition(
-        columnTitles: ['Process', 'Equipment', 'Time'], 
-        isTextFieldColumn: [false, false, true], 
-        addButtonLabel: 'Add material', 
-        padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])
+      child:null
       ),
 
       if (selectedBoundary == 'Grave') ...[
       //--ROW 3--
       Labels(title: 'Attribute: Distribution',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
-      child:
-      DynamicDropdownMaterialAcquisition(
-        columnTitles: ['Transportation', 'Distance',], 
-        isTextFieldColumn: [false, true], 
-        addButtonLabel: 'Add transport cycle', 
-        padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/material type', 'http://127.0.0.1:8000/meta/material type'])
+      child:null
       ),
 
       //--ROW 3.A--
       Labels(title: 'Attribute: Storage',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
-      child:
-      DynamicDropdownMaterialAcquisition(
-        columnTitles: ['Activity', 'Fugitive', 'Time'], 
-        isTextFieldColumn: [false, false, true], 
-        addButtonLabel: 'Add storage profile', 
-        padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/material type', 'http://127.0.0.1:8000/meta/material type'])
+      child:null
       ),
       
 
       //--ROW 4--
       Labels(title: 'Attribute: Usage Cycle',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
-      child:
-      DynamicDropdownMaterialAcquisition(
-        columnTitles: ['Activity', 'Time', 'Expected life'], 
-        isTextFieldColumn: [false, false, true], 
-        addButtonLabel: 'Add use cycle', 
-        padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/material type', 'http://127.0.0.1:8000/meta/material type'])
+      child:null
       ),
 
       //--ROW 5--
       Labels(title: 'Attribute: End of Life',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
-      child:
-      DynamicDropdownMaterialAcquisition(
-        columnTitles: ['Treatment', 'Mass', 'Avoided'], 
-        isTextFieldColumn: [false, true, true], 
-        addButtonLabel: 'Add use cycle', 
-        padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'])
+      child:null
       ),
 
       //--ROW 6--

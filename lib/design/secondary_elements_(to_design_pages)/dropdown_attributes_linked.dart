@@ -150,7 +150,7 @@ class _DynamicDropdownMaterialAcquisitionState
                               padding: const EdgeInsets.symmetric(vertical: 3),
                               child: 
                               Container(
-                                height: 25,
+                                height: 30,
                                 padding: EdgeInsets.all(3),
                                 decoration: BoxDecoration(
                                   color: Apptheme.widgetsecondaryclr,
@@ -185,6 +185,7 @@ class _DynamicDropdownMaterialAcquisitionState
                                   Expanded(
                                     child: widget.isTextFieldColumn[col]
                                         ? TextField(
+                                          enabled: true,
                                             cursorColor: Apptheme.textclrlight,
                                             cursorHeight: 15,
                                               keyboardType: TextInputType.number,
@@ -196,7 +197,37 @@ class _DynamicDropdownMaterialAcquisitionState
                                                   color: Apptheme.textclrlight),
                                               decoration: const InputDecoration(
                                                 isDense: true,
-                                                border: OutlineInputBorder(),
+                                                                                                
+                                                enabledBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Apptheme.unselected,
+                                                  )
+                                                ),
+
+                                                focusedBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Apptheme.widgetborderlight
+                                                  )
+                                                ),
+
+                                                errorBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Apptheme.error,
+                                                  )
+                                                ),
+
+                                                focusedErrorBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Apptheme.error,
+                                                  )
+                                                ),
+
+                                                disabledBorder: OutlineInputBorder(
+                                                  borderSide: BorderSide(
+                                                    color: Apptheme.widgetsecondaryclr,
+                                                  )
+                                                ),
+
                                                 contentPadding: EdgeInsets.symmetric(
                                                     horizontal: 4, vertical: 0),
                                               ),
@@ -207,13 +238,13 @@ class _DynamicDropdownMaterialAcquisitionState
                                               },
                                             )
                                         : DropdownButtonHideUnderline(
-                                            child: DropdownButton<String>(
+                                            child: 
+                                            DropdownButton<String>(
                                               dropdownColor: Apptheme.widgetsecondaryclr,
                                                 icon:
                                                  Icon(Icons.arrow_drop_down,
                                                    color: Apptheme.iconslight,
                                                    size: 20,
-                                                   
                                                  ),
                                                 padding: EdgeInsets.zero,
                                                 style: TextStyle(
@@ -227,7 +258,12 @@ class _DynamicDropdownMaterialAcquisitionState
                                                   .map((item) =>
                                                       DropdownMenuItem(
                                                         value: item,
-                                                        child: Text(item),
+                                                        child: 
+                                                        Text(item,
+                                                        overflow: TextOverflow.fade,
+                                                        maxLines: 1,
+                                                        softWrap: false,
+                                                        ),
                                                       ))
                                                   .toList(),
                                               onChanged: (value) {
@@ -238,6 +274,7 @@ class _DynamicDropdownMaterialAcquisitionState
                                             ),
                                           ),
                                   ),
+
                                   if (col == 0)
                                     Container(
                                         height: 20,

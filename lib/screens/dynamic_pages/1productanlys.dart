@@ -22,6 +22,14 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
   Widget build(BuildContext context) {
 
     final List<Widget> widgetofthispage=[
+
+      //--Buffer--
+
+      SizedBox(
+        width: double.infinity,
+        height: 180,
+      ),
+
       //--ROW 1--
       Labels(title: 'Attribute: Materials',),
       Widgets1(aspectratio: 16/9, maxheight: 300,
@@ -143,174 +151,9 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
 
     return SizedBox(
         child: 
-          Column(
+          Stack(
           children: [
 
-            //--Custom Header for Home--
-            Container(
-          height: 200,
-          width: double.infinity,
-          decoration: 
-          BoxDecoration(
-            color: Apptheme.header,
-              boxShadow: [
-                BoxShadow(
-                  color: Apptheme.header,
-                  spreadRadius: 4,
-                  blurRadius: 4,
-                  offset: const Offset(0, 4)
-                )
-              ]
-          ),
-          child:
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-
-                    //--"Title"--
-                    Expanded(
-                      child: 
-                        Center(
-                          child: Padding (padding: EdgeInsetsGeometry.only(left:20, right: 20, top: 15),
-                              child:
-                              ListView(
-                                children: [
-
-                                  //--TITLE--
-                                  Text('Attributes',
-                                  style: TextStyle(
-                                    color: Apptheme.textclrlight,
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                  textAlign: TextAlign.left,
-                                  overflow: TextOverflow.fade,
-                                  softWrap: false,
-                                  ),
-
-                                  //--Summary--
-                                  Padding(
-                                    padding: const EdgeInsets.all(14),
-                                    child: Subtitlesummary(
-                                      words: 'Define product parameters. All excluded categories must be declared in the declaration section', 
-                                      color: Apptheme.widgetsecondaryclr,),
-                                  ),
-                                
-                                  //--Boundary Definer--
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 10),
-                                    child: 
-                                    SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: [
-                                      
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  selectedBoundary = 'Cradle';
-                                                });
-                                              },
-                                              child: Container(
-                                                height: 50,
-                                                width: 140,
-                                                decoration: BoxDecoration(
-                                                  color: Apptheme.widgetsecondaryclr,
-                                                  borderRadius: BorderRadius.circular(15)
-                                                ),
-                                                child: Tabtext(words: 'Cradle', specifysize: 20),
-                                              ),
-                                            ),
-                                          ),
-                                      
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  selectedBoundary = 'Gate';
-                                                });
-                                              },
-                                              child: Container(
-                                                height: 50,
-                                                width: 140,
-                                                decoration: BoxDecoration(
-                                                  color: selectedBoundary == 'Gate'
-                                                  ? Apptheme.widgetsecondaryclr
-                                                  : Apptheme.unselected,
-                                                  borderRadius: BorderRadius.circular(15)
-                                                ),
-                                                child: Tabtext(words: 'Gate', specifysize: 20),
-                                              ),
-                                            ),
-                                          ),
-                                      
-                                          Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: InkWell(
-                                              onTap: () {
-                                                setState(() {
-                                                  if (selectedBoundary == 'Cradle') {
-                                                          selectedBoundary = null;
-                                                        } else {
-                                                          selectedBoundary = 'Grave';
-                                                        }
-                                                });
-                                              },
-                                              child: Container(
-                                                height: 50,
-                                                width: 140,
-                                                decoration: BoxDecoration(
-                                                  color: selectedBoundary == 'Grave'
-                                                  ? Apptheme.widgetsecondaryclr
-                                                  : Apptheme.unselected,
-                                                  borderRadius: BorderRadius.circular(15)
-                                                ),
-                                                child: Tabtext(words: 'Grave', specifysize: 20),
-                                              ),
-                                            ),
-                                          ),
-                                      
-                                        ],
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              ),
-                        ),
-                      ),
-                    
-                    //--Settings (Trailing)--
-                    Align(
-                      alignment: AlignmentGeometry.center,
-                      child:
-                        Padding (padding: EdgeInsetsGeometry.only(right:35, left: 0, top: 5),
-                          child: 
-                            SizedBox(
-                              height: double.infinity,
-                              width: 40,
-                              child:
-                                IconButton(
-                                onPressed: widget.settingstogglee,
-                                icon: 
-                                  Icon(Icons.settings,
-                                  size: 25,
-                                  color: Apptheme.iconslight,
-                                  ),
-                                  alignment: AlignmentDirectional.center,
-                                  padding: EdgeInsets.zero,
-                                ),                          
-                            ),        
-                          ), 
-                    ),
-                    
-                  ],
-                ) ,
-            ),
-            
             //--Main Page--
             Expanded(
               child: 
@@ -332,7 +175,173 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
                   )
                 ),
               ),
-            )
+            ),
+
+            //--Custom Header for Home--
+            Container(
+            height: 200,
+            width: double.infinity,
+            decoration: 
+            BoxDecoration(
+              color: Apptheme.header,
+                boxShadow: [
+                  BoxShadow(
+                    color: Apptheme.header,
+                    spreadRadius: 4,
+                    blurRadius: 4,
+                    offset: const Offset(0, 4)
+                  )
+                ]
+            ),
+            child:
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+
+                      //--"Title"--
+                      Expanded(
+                        child: 
+                          Center(
+                            child: Padding (padding: EdgeInsetsGeometry.only(left:20, right: 20, top: 15),
+                                child:
+                                ListView(
+                                  children: [
+
+                                    //--TITLE--
+                                    Text('Attributes',
+                                    style: TextStyle(
+                                      color: Apptheme.textclrlight,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.left,
+                                    overflow: TextOverflow.fade,
+                                    softWrap: false,
+                                    ),
+
+                                    //--Summary--
+                                    Padding(
+                                      padding: const EdgeInsets.all(14),
+                                      child: Subtitlesummary(
+                                        words: 'Define product parameters. All excluded categories must be declared in the declaration section', 
+                                        color: Apptheme.widgetsecondaryclr,),
+                                    ),
+                                  
+                                    //--Boundary Definer--
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                                      child: 
+                                      SingleChildScrollView(
+                                        scrollDirection: Axis.horizontal,
+                                        child: Row(
+                                          children: [
+                                        
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedBoundary = 'Cradle';
+                                                  });
+                                                },
+                                                child: Container(
+                                                  height: 50,
+                                                  width: 140,
+                                                  decoration: BoxDecoration(
+                                                    color: Apptheme.widgetsecondaryclr,
+                                                    borderRadius: BorderRadius.circular(15)
+                                                  ),
+                                                  child: Tabtext(words: 'Cradle', specifysize: 20),
+                                                ),
+                                              ),
+                                            ),
+                                        
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    selectedBoundary = 'Gate';
+                                                  });
+                                                },
+                                                child: Container(
+                                                  height: 50,
+                                                  width: 140,
+                                                  decoration: BoxDecoration(
+                                                    color: selectedBoundary == 'Gate'
+                                                    ? Apptheme.widgetsecondaryclr
+                                                    : Apptheme.unselected,
+                                                    borderRadius: BorderRadius.circular(15)
+                                                  ),
+                                                  child: Tabtext(words: 'Gate', specifysize: 20),
+                                                ),
+                                              ),
+                                            ),
+                                        
+                                            Padding(
+                                              padding: const EdgeInsets.all(8.0),
+                                              child: InkWell(
+                                                onTap: () {
+                                                  setState(() {
+                                                    if (selectedBoundary == 'Cradle') {
+                                                            selectedBoundary = null;
+                                                          } else {
+                                                            selectedBoundary = 'Grave';
+                                                          }
+                                                  });
+                                                },
+                                                child: Container(
+                                                  height: 50,
+                                                  width: 140,
+                                                  decoration: BoxDecoration(
+                                                    color: selectedBoundary == 'Grave'
+                                                    ? Apptheme.widgetsecondaryclr
+                                                    : Apptheme.unselected,
+                                                    borderRadius: BorderRadius.circular(15)
+                                                  ),
+                                                  child: Tabtext(words: 'Grave', specifysize: 20),
+                                                ),
+                                              ),
+                                            ),
+                                        
+                                          ],
+                                        ),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                ),
+                          ),
+                        ),
+                      
+                      //--Settings (Trailing)--
+                      Align(
+                        alignment: AlignmentGeometry.center,
+                        child:
+                          Padding (padding: EdgeInsetsGeometry.only(right:35, left: 0, top: 5),
+                            child: 
+                              SizedBox(
+                                height: double.infinity,
+                                width: 40,
+                                child:
+                                  IconButton(
+                                  onPressed: widget.settingstogglee,
+                                  icon: 
+                                    Icon(Icons.settings,
+                                    size: 25,
+                                    color: Apptheme.iconslight,
+                                    ),
+                                    alignment: AlignmentDirectional.center,
+                                    padding: EdgeInsets.zero,
+                                  ),                          
+                              ),        
+                            ), 
+                      ),
+                      
+                    ],
+                  ) ,
+            ),
+            
           ],
           ),
       );

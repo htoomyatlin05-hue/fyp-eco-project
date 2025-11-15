@@ -3,16 +3,16 @@ import 'package:test_app/design/apptheme/colors.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/app_design.dart';
 
 
-class Dynamicscopesofemissions extends StatefulWidget {
+class Dynamicextra extends StatefulWidget {
   final VoidCallback settingstogglee;
-  const Dynamicscopesofemissions({super.key, 
+  const Dynamicextra({super.key, 
   required this.settingstogglee});
 
   @override
-  State<Dynamicscopesofemissions> createState() => _DynamicscopesofemissionsState();
+  State<Dynamicextra> createState() => _DynamicextraState();
 }
 
-class _DynamicscopesofemissionsState extends State<Dynamicscopesofemissions> {
+class _DynamicextraState extends State<Dynamicextra> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(

@@ -5,8 +5,8 @@ import 'package:test_app/titlepages/background_drawer.dart';
 import 'package:test_app/screens/dynamic_pages/haboutus.dart';
 import 'package:test_app/screens/dynamic_pages/fallocation.dart';
 import 'package:test_app/screens/dynamic_pages/bdynamichome.dart';
-import 'package:test_app/screens/dynamic_pages/cproductanlys.dart';
-import 'package:test_app/screens/dynamic_pages/eboundary.dart';
+import 'package:test_app/screens/dynamic_pages/bproductanlys.dart';
+import 'package:test_app/screens/dynamic_pages/e_extra.dart';
 import 'package:test_app/screens/dynamic_pages/gsustainabilitynews.dart';
 
 
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
       Dynamichome(settingstogglee: settingstoggle),
       Dynamicprdanalysis(settingstogglee: settingstoggle),
       Dynamicboundary(settingstogglee: settingstoggle),
-      Dynamicscopesofemissions(settingstogglee: settingstoggle),
+      Dynamicextra(settingstogglee: settingstoggle),
       DynamicAllocation(settingstogglee: settingstoggle),
       DynamicSustainabilityNews(settingstogglee: settingstoggle),
       DynamicCredits(settingstogglee: settingstoggle),

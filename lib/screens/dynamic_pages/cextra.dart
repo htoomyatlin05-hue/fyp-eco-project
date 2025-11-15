@@ -6,15 +6,15 @@ import 'package:test_app/design/secondary_elements_(to_design_pages)/dropdown_at
 import 'package:test_app/design/secondary_elements_(to_design_pages)/widgets1.dart';
 
 
-class Dynamicprdanalysis extends StatefulWidget {
+class Dynamicextra1 extends StatefulWidget {
   final VoidCallback settingstogglee;
-  const Dynamicprdanalysis({super.key, required this.settingstogglee});
+  const Dynamicextra1({super.key, required this.settingstogglee});
 
   @override
-  State<Dynamicprdanalysis> createState() => _DynamicprdanalysisState();
+  State<Dynamicextra1> createState() => _Dynamicextra1State();
 }
 
-class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
+class _Dynamicextra1State extends State<Dynamicextra1> {
   String? selectedBoundary = 'Cradle';
 
   @override

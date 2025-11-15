@@ -12,6 +12,7 @@ class DynamicDropdownMaterialAcquisition extends StatefulWidget {
   final String addButtonLabel;
   final double padding;
 
+
   const DynamicDropdownMaterialAcquisition({
     super.key,
     required this.columnTitles,
@@ -40,6 +41,21 @@ class _DynamicDropdownMaterialAcquisitionState
       (col) => [''],
     );
     fetchAllColumnData();
+  }
+
+    List<Map<String, String?>> formattedRows() {
+    final rows = <Map<String, String?>>[];
+    final rowCount = selections[0].length;
+
+    for (int row = 0; row < rowCount; row++) {
+      final rowData = <String, String?>{};
+      for (int col = 0; col < widget.columnTitles.length; col++) {
+        rowData[widget.columnTitles[col]] = selections[col][row];
+      }
+      rows.add(rowData);
+    }
+
+    return rows;
   }
 
   Future<void> fetchAllColumnData() async {
@@ -93,6 +109,23 @@ class _DynamicDropdownMaterialAcquisitionState
       }
     });
   }
+
+  void postSelections() {
+  final body = formattedRows();
+
+  final url = Uri.parse("http://127.0.0.1:8000/meta/options");
+
+  http.post(
+    url,
+    headers: {"Content-Type": "application/json"},
+    body: jsonEncode(body),
+  ).then((response) {
+    print("POST status: ${response.statusCode}");
+    print("Response: ${response.body}");
+  }).catchError((error) {
+    print("Error posting: $error");
+  });
+}
 
   @override
   Widget build(BuildContext context) {
@@ -311,7 +344,28 @@ class _DynamicDropdownMaterialAcquisitionState
                                 ),
                               ),
                             ),
-                          )
+                          ),
+
+
+                          if (widget.isTextFieldColumn[col])
+                            Center(
+                              child: SizedBox(
+                                width: 200,
+                                height: 20,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    postSelections();
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Apptheme.widgetsecondaryclr,
+                                    foregroundColor: Colors.white,
+                                    padding: EdgeInsets.zero,
+                                  ),
+                                  child: const Text("Save"),
+                                ),
+                              ),
+                            )
+                       
                       ],
                     ),
                   ),

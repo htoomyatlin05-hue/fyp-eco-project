@@ -31,44 +31,98 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         isTextFieldColumn: [false, false, true, ], 
         addButtonLabel: 'Add material', 
         padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/material type', 'http://127.0.0.1:8000/meta/transport(cargotype)'],
-        jsonKeys: ['material types', 'transport_types'],
+        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'],
+        jsonKeys: ['materials', 'transport_types'],
         ),
       ),
      
       //--ROW 2--
       Labels(title: 'Attribute: Production',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
-      child:null
+      child:
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Select GHG', 'Total Charge', 'Remaining Charge'], 
+        isTextFieldColumn: [false, true, true,], 
+        addButtonLabel: 'Add GHG', 
+        padding: 5, 
+        apiEndpoints: [ 'http://127.0.0.1:8000/meta/options'],
+        jsonKeys: [ 'GHG'],
+        ),
       ),
 
       if (selectedBoundary == 'Grave') ...[
       //--ROW 3--
       Labels(title: 'Attribute: Distribution',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
-      child:null
+      child:
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Transportation', 'Distance'], 
+        isTextFieldColumn: [false, true], 
+        addButtonLabel: 'Add transport cycle', 
+        padding: 5, 
+        apiEndpoints: ['http://127.0.0.1:8000/meta/options'],
+        jsonKeys: ['transport_types'],
+        ),
       ),
 
       //--ROW 3.A--
       Labels(title: 'Attribute: Storage',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
-      child:null
+      child:
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Facilities', 'Stored duration', 'Area', 'Select GHG'], 
+        isTextFieldColumn: [false, true, true, false,], 
+        addButtonLabel: 'Add facility', 
+        padding: 5, 
+        apiEndpoints: [ '', '', '', 'http://127.0.0.1:8000/meta/options' ],
+        jsonKeys: [ '', '', '', 'GHG'],
+        ),
       ),
       
 
       //--ROW 4--
       Labels(title: 'Attribute: Usage Cycle',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
-      child:null
+      child:
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Use activity', 'Expected use cycle', 'Unit'], 
+        isTextFieldColumn: [false, true, true,], 
+        addButtonLabel: 'Add use cycle', 
+        padding: 5, 
+        apiEndpoints: [ 'http://127.0.0.1:8000/meta/options'],
+        jsonKeys: [ ''],
+        ),
       ),
 
       //--ROW 5--
-      Labels(title: 'Attribute: End of Life',),
+      Labels(title: 'Attribute: Disassembly',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
-      child:null
+      child:
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Product Type', 'Mass', 'Energy required',], 
+        isTextFieldColumn: [false, true, true,], 
+        addButtonLabel: 'Add disassembly cycle', 
+        padding: 5, 
+        apiEndpoints: [ 'http://127.0.0.1:8000/meta/options'],
+        jsonKeys: [ ''],
+        ),
       ),
 
       //--ROW 6--
+      Labels(title: 'Attribute: End of Life',),
+      Widgets1(aspectratio: 16/9, maxheight: 200,
+      child:
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Process', 'Material', 'Amount',], 
+        isTextFieldColumn: [false, false, true,], 
+        addButtonLabel: 'Add process', 
+        padding: 5, 
+        apiEndpoints: [ '', '', 'http://127.0.0.1:8000/meta/options'],
+        jsonKeys: [ '', '', ''],
+        ),
+      ),
+
+      //--ROW Example--
       Labels(title: 'Example',),
       Widgets1(aspectratio: 16/9, maxheight: 400,
       child:

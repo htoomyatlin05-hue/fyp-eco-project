@@ -74,8 +74,8 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         isTextFieldColumn: [false, true, true, false,], 
         addButtonLabel: 'Add facility', 
         padding: 5, 
-        apiEndpoints: [ '', '', '', 'http://127.0.0.1:8000/meta/options' ],
-        jsonKeys: [ '', '', '', 'GHG'],
+        apiEndpoints: [ 'http://127.0.0.1:8000/meta/options', '', '', 'http://127.0.0.1:8000/meta/options' ],
+        jsonKeys: [ 'Facilities', '', '', 'GHG'],
         ),
       ),
       
@@ -90,7 +90,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         addButtonLabel: 'Add use cycle', 
         padding: 5, 
         apiEndpoints: [ 'http://127.0.0.1:8000/meta/options'],
-        jsonKeys: [ ''],
+        jsonKeys: [ 'Usage types'],
         ),
       ),
 
@@ -104,7 +104,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         addButtonLabel: 'Add disassembly cycle', 
         padding: 5, 
         apiEndpoints: [ 'http://127.0.0.1:8000/meta/options'],
-        jsonKeys: [ ''],
+        jsonKeys: [ 'Disassembly by industry'],
         ),
       ),
 
@@ -117,8 +117,8 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         isTextFieldColumn: [false, false, true,], 
         addButtonLabel: 'Add process', 
         padding: 5, 
-        apiEndpoints: [ '', '', 'http://127.0.0.1:8000/meta/options'],
-        jsonKeys: [ '', '', ''],
+        apiEndpoints: [ 'http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'],
+        jsonKeys: [ 'Process', 'materials', ''],
         ),
       ),
 

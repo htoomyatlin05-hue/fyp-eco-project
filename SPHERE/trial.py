@@ -77,7 +77,10 @@ sheet5 = book['Recycling']
 sheet6 = book['Packaging']
 sheet7 = book["Materials"]
 sheet8 = book["GWP of GHG_gases"]
-
+sheet9 = book["Disassembly by Industry"]
+sheet10 = book["Usage Types"]
+sheet11 = book["Facilities"]
+sheet12 = book["Process"]
 # Helper functions to read values from Excel columns
 def extract_selection_list(cells):
     """Stops reading when it finds an empty cell."""
@@ -197,6 +200,11 @@ Indicator_GHG_cells    = sheet8["A2":"A999"]
 GHG_values_cells       = sheet8["B2":"B999"]
 GWP_for_GHG_cells      = sheet8["C2":"C999"]
 
+Process_cells   = sheet12["A2":"A999"]
+Facilities_cells    = sheet11["A2":"A999"]
+Usage_type_cells     = sheet10["A2":"A999"]
+Disassembly_by_Industry_cells     =sheet9["A2":"A999"]
+
 # turn into lists
 country_list      = extract_selection_list(country_cells)
 distance_list     = extract_list(distance_cells)
@@ -266,6 +274,12 @@ packaging_box_frame_list      = extract_emission_list(packaging_box_frame_cells)
 Indicator_GHG   = extract_selection_list(Indicator_GHG_cells)
 GHG_values      = extract_selection_list(GHG_values_cells)
 GWP_for_GHG     = extract_selection_list(GWP_for_GHG_cells)
+
+Disassembly_by_Industry = extract_selection_list(Disassembly_by_Industry_cells)
+Usage_type = extract_selection_list(Usage_type_cells)
+Facilities = extract_selection_list(Facilities_cells)
+Process = extract_selection_list(Process_cells)
+
 ###############################################################################
 # --------- 3. GEODATA CACHE (used by transport + sourcing) ------------------#
 ###############################################################################
@@ -733,6 +747,10 @@ def get_options():
       - Grid intensity
       - different transport types
       - Values of the Indicator, GHG, and GWP values
+      - Process
+      - Facilities
+      - Usage Types
+      - Disassembly by Industry
     """
     return {
         "countries": country_list,
@@ -744,7 +762,11 @@ def get_options():
         "transport_types": transport_list,
         "Indicator": Indicator_GHG,
         "GHG": GHG_values,
-        "GWP": GWP_for_GHG
+        "GWP": GWP_for_GHG,
+        "Process": Process,
+        "Facilities": Facilities,
+        "Usage Types": Usage_type,
+        "Disassembly_by_Industry": Disassembly_by_Industry
     }
 
 

@@ -3,48 +3,48 @@ import 'package:test_app/design/apptheme/colors.dart';
 
 //--THESE ARE THE TABS, IMPORT THIS IN INTENDED PAGE--
 class ManualTabpagesdoublepage extends StatefulWidget {
-  final String Tab1;
-  final double Tab1fontsize;
-  final String Tab2;
-  final double Tab2fontsize;
+  final String tab1;
+  final double tab1fontsize;
+  final String tab2;
+  final double tab2fontsize;
 
-  final Widget Firstchildof1;
-  final Widget Firstchildof2;
-  final Widget Secondchildof1;
-  final Widget Secondchildof2;
+  final Widget firstchildof1;
+  final Widget firstchildof2;
+  final Widget secondchildof1;
+  final Widget secondchildof2;
 
-  final int Pg1flexValue1;
-  final int Pg1flexValue2;
-  final int Pg2flexValue1;
-  final int Pg2flexValue2;
+  final int pg1flexValue1;
+  final int pg1flexValue2;
+  final int pg2flexValue1;
+  final int pg2flexValue2;
 
   final Color backgroundcolor;
 
 
-  const ManualTabpagesdoublepage({Key? key, 
-  required this.Tab1,
-  required this.Tab1fontsize,
-  required this.Tab2,
-  required this.Tab2fontsize,
+  const ManualTabpagesdoublepage({super.key, 
+  required this.tab1,
+  required this.tab1fontsize,
+  required this.tab2,
+  required this.tab2fontsize,
 
 
-  required this. Pg1flexValue1,
-  required this. Pg1flexValue2,
-  required this. Pg2flexValue1,
-  required this. Pg2flexValue2,
+  required this. pg1flexValue1,
+  required this. pg1flexValue2,
+  required this. pg2flexValue1,
+  required this. pg2flexValue2,
 
 
-  required this.Firstchildof1,
-  required this.Firstchildof2,
-  required this.Secondchildof1,
-  required this.Secondchildof2,
+  required this.firstchildof1,
+  required this.firstchildof2,
+  required this.secondchildof1,
+  required this.secondchildof2,
 
   this.backgroundcolor = Apptheme.backgroundlight,
 
 
   required
   
-  }) : super(key: key);
+  });
 
   @override
   State<ManualTabpagesdoublepage> createState() => _ManualTabpagesdoublepage();
@@ -97,11 +97,11 @@ class _ManualTabpagesdoublepage extends State<ManualTabpagesdoublepage> with Sin
                   tabs: [
                     _getTab(0, Padding(
                       padding: const EdgeInsets.only(left: 3, right: 3),
-                      child: Center(child: Text(widget.Tab1, style: TextStyle(fontSize: widget.Tab1fontsize, fontWeight: FontWeight.w600),textAlign: TextAlign.center, overflow: TextOverflow.fade, maxLines: 1,softWrap: false,)),
+                      child: Center(child: Text(widget.tab1, style: TextStyle(fontSize: widget.tab1fontsize, fontWeight: FontWeight.w600),textAlign: TextAlign.center, overflow: TextOverflow.fade, maxLines: 1,softWrap: false,)),
                     )),
                     _getTab(1, Padding(
                       padding: const EdgeInsets.only(left: 3, right: 3),
-                      child: Center(child: Text(widget.Tab2, style: TextStyle(fontSize: widget.Tab2fontsize, fontWeight: FontWeight.w600),textAlign: TextAlign.center, overflow: TextOverflow.fade, maxLines: 1,softWrap: false,)),
+                      child: Center(child: Text(widget.tab2, style: TextStyle(fontSize: widget.tab2fontsize, fontWeight: FontWeight.w600),textAlign: TextAlign.center, overflow: TextOverflow.fade, maxLines: 1,softWrap: false,)),
                     )),
                   ],
                 ),
@@ -113,8 +113,8 @@ class _ManualTabpagesdoublepage extends State<ManualTabpagesdoublepage> with Sin
                   physics: NeverScrollableScrollPhysics(),
                   controller: _tabController,
                   children: [
-                    ManualColumn(childof1: widget.Firstchildof1, childof2: widget.Secondchildof1, flexValue1: widget.Pg1flexValue1, flexValue2: widget.Pg1flexValue2),
-                    ManualColumn(childof1: widget.Firstchildof2, childof2: widget.Secondchildof2, flexValue1: widget.Pg2flexValue1, flexValue2: widget.Pg2flexValue2),
+                    ManualColumn(childof1: widget.firstchildof1, childof2: widget.secondchildof1, flexValue1: widget.pg1flexValue1, flexValue2: widget.pg1flexValue2),
+                    ManualColumn(childof1: widget.firstchildof2, childof2: widget.secondchildof2, flexValue1: widget.pg2flexValue1, flexValue2: widget.pg2flexValue2),
                   ],
                 ),
               ),
@@ -152,13 +152,13 @@ class ManualColumn extends StatefulWidget {
   final int flexValue2;
 
   const ManualColumn({
-    Key? key,
+    super.key,
     required this.childof1,
     required this.childof2,
     required this.flexValue1,
     required this.flexValue2,
   
-  }) : super(key: key);
+  });
 
   @override
   State<ManualColumn> createState() => _ManualColumnState();
@@ -190,13 +190,13 @@ class FlexboxManual2pg extends StatelessWidget {
   final int flexValue2;
 
   const FlexboxManual2pg({
-    Key? key,
+    super.key,
     required this.childof1,
     required this.childof2,
     required this.flexValue1,
     required this.flexValue2,
 
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

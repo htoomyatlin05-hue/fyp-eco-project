@@ -9,14 +9,13 @@ class TabWidgettest extends StatefulWidget {
   final int flex1;
   final int flex2;
 
-  const TabWidgettest({
-    Key? key,
+  const TabWidgettest({super.key,
     required this.height1,
     required this.height2,
     required this.flex1,
     required this.flex2,
   
-  }) : super(key: key);
+  });
 
   @override
   State<TabWidgettest> createState() => _TabWidgettestState();

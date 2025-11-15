@@ -9,7 +9,7 @@ class PageHeaderOne extends StatelessWidget {
   final String title;
   final Widget? leading;
 
-  const PageHeaderOne({Key? key, required this.title, this.leading,}) : super(key: key);
+  const PageHeaderOne({super.key, required this.title, this.leading,});
 
   @override
   Widget build(BuildContext context) {
@@ -99,11 +99,12 @@ class PageHeaderTwo extends StatelessWidget {
   final String title;
   final VoidCallback? whathappens;
 
-  PageHeaderTwo({Key? key, 
+  const PageHeaderTwo({super.key, 
+
   required this.title, 
 
   this.whathappens,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -139,7 +140,7 @@ class PageHeaderTwo extends StatelessWidget {
                             child:
                               Padding (padding: EdgeInsetsGeometry.only(right:0, left: 20, top: 0),
                                 child: 
-                                  Container(
+                                  SizedBox(
                                     height: double.infinity,
                                     width: 60,
                                     child:
@@ -211,7 +212,7 @@ class PageHeaderTwo extends StatelessWidget {
 class PageHeaderThree extends StatelessWidget {
   final String title;
 
-  const PageHeaderThree({Key? key, required this.title,}) : super(key: key);
+  const PageHeaderThree({super.key, required this.title,});
 
   @override
   Widget build(BuildContext context) {
@@ -296,12 +297,12 @@ class PageHeaderFour extends StatelessWidget {
   final Color color;
   final VoidCallback? whathappens;
 
-  PageHeaderFour({Key? key, 
+  const PageHeaderFour({super.key, 
   required this.title, 
   required this.summary, 
   required this. color,
   this.whathappens,
-  }) : super(key: key);
+  });
 
 
 

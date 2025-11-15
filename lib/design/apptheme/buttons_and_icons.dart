@@ -4,7 +4,7 @@ import 'package:test_app/design/apptheme/colors.dart';
 //--Icon that returns to previous page--
 class BackIcon extends StatelessWidget {
 
-  const BackIcon ({Key? key}) : super(key: key, );
+  const BackIcon ({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class BackIcon extends StatelessWidget {
 //--Icon that returns to home page--
 class ToHome extends StatelessWidget {
 
-  const ToHome ({Key? key}) : super(key: key, );
+  const ToHome ({super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -7,7 +7,7 @@ const double barheight= 20;
 class Spherebar extends StatelessWidget implements PreferredSizeWidget {
 
 
-  Spherebar({Key? key}) : super(key: key, );
+  const Spherebar({super.key});
 
 
   @override

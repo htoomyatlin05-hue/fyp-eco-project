@@ -27,13 +27,13 @@ class BackgroundDrawerfast extends StatelessWidget {
     final List<Widget> bookmarks = [
       Leftdrawerlisttilelight(title: 'Sustainability News', whathappens: () => onSelectPage(4)),
       Leftdrawerlisttilelight(title: 'About Us', whathappens: () => onSelectPage(5)),
-      Leftdrawerlisttilelight(title: 'Example1', whathappens: () => null),
-      Leftdrawerlisttilelight(title: 'Example2', whathappens: () => null),
-      Leftdrawerlisttilelight(title: 'Example3', whathappens: () => null),
-      Leftdrawerlisttilelight(title: 'Example4', whathappens: () => null),
-      Leftdrawerlisttilelight(title: 'Example5', whathappens: () => null),
-      Leftdrawerlisttilelight(title: 'Example6', whathappens: () => null),
-      Leftdrawerlisttilelight(title: 'Example7', whathappens: () => null),
+      Leftdrawerlisttilelight(title: 'Example1',),
+      Leftdrawerlisttilelight(title: 'Example2',),
+      Leftdrawerlisttilelight(title: 'Example3',),
+      Leftdrawerlisttilelight(title: 'Example4',),
+      Leftdrawerlisttilelight(title: 'Example5',),
+      Leftdrawerlisttilelight(title: 'Example6',),
+      Leftdrawerlisttilelight(title: 'Example7',),
     ];
 
     return Row(
@@ -148,7 +148,7 @@ class BackgroundDrawerfast extends StatelessWidget {
                         height: 60,
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         decoration: BoxDecoration(
-                          color: Apptheme.drawer.withOpacity(0.5),
+                          color: Apptheme.drawer,
                           borderRadius: BorderRadius.circular(12),
                         ),
                       ),

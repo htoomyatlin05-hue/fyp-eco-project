@@ -7,11 +7,13 @@ class Leftdrawerlisttile extends StatelessWidget {
   final VoidCallback? whathappens;
 
   const Leftdrawerlisttile({
-    Key? key,
+    super.key,
     required this.title,
-    required this.whathappens,
-  }) : super(key: key);
+    this.whathappens = empty,
+  });
 
+  static void empty() {}
+  
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -54,10 +56,12 @@ class Leftdrawerlisttilelight extends StatelessWidget {
   final VoidCallback? whathappens;
 
   const Leftdrawerlisttilelight({
-    Key? key,
+    super.key,
     required this.title,
-    required this.whathappens,
-  }) : super(key: key);
+    this.whathappens = empty,
+  });
+
+  static void empty() {}
 
   @override
   Widget build(BuildContext context) {

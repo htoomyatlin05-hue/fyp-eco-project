@@ -50,7 +50,7 @@ class Apptheme{
   static const Color windowcontrols = lightpallete1;
   static const Color dividers = lightpallete1;
   
-  static const Color EXTRA1 = Color.fromARGB(255, 123, 89, 91) ;
-  static const Color EXTRA2 = Color(0xFF5F1D20);
-  static const Color EXTRA3 = Color(0xFF733438);
+  static const Color eXTRA1 = Color.fromARGB(255, 123, 89, 91) ;
+  static const Color eXTRA2 = Color(0xFF5F1D20);
+  static const Color eXTRA3 = Color(0xFF733438);
 }

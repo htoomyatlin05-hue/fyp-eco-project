@@ -6,7 +6,7 @@ import 'package:test_app/design/apptheme/colors.dart';
 class Tabtext extends StatefulWidget {
   final String words;
   final double specifysize;
-  const Tabtext({Key? key, required this.words, required this.specifysize}) : super(key: key);
+  const Tabtext({super.key, required this.words, required this.specifysize});
 
 
   @override
@@ -37,9 +37,9 @@ class Stgdrawertext extends StatelessWidget {
   final String title;
 
   const Stgdrawertext({
-    Key? key,
+    super.key,
     required this.title
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,7 +64,7 @@ class Stgdrawertext extends StatelessWidget {
 //--Textfield for sensitive info--
 class Typeheresensitive extends StatefulWidget {
   final String title;
-  const Typeheresensitive({Key? key, required this.title}) : super(key: key);
+  const Typeheresensitive({super.key, required this.title});
 
   @override
   State<Typeheresensitive> createState() => _TypeheresensitiveState();
@@ -110,7 +110,7 @@ class _TypeheresensitiveState extends State<Typeheresensitive> {
 //--Textfield for general info--
 class Typehere extends StatefulWidget {
  final String title;
-  const Typehere({Key? key, required this.title}) : super(key: key);
+  const Typehere({super.key, required this.title});
 
   @override
   State<Typehere> createState() => _TypehereState();

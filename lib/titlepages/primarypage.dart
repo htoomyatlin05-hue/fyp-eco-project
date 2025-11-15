@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/design/apptheme/colors.dart';
-import 'package:test_app/screens/dynamic_pages/2boundary.dart';
+import 'package:test_app/screens/dynamic_pages/dboundary.dart';
 import 'package:test_app/titlepages/background_drawer.dart';
-import 'package:test_app/screens/dynamic_pages/6aboutus.dart';
-import 'package:test_app/screens/dynamic_pages/4allocation.dart';
-import 'package:test_app/screens/dynamic_pages/0dynamichome.dart';
-import 'package:test_app/screens/dynamic_pages/1productanlys.dart';
-import 'package:test_app/screens/dynamic_pages/3boundary.dart';
-import 'package:test_app/screens/dynamic_pages/5sustainabilitynews.dart';
+import 'package:test_app/screens/dynamic_pages/haboutus.dart';
+import 'package:test_app/screens/dynamic_pages/fallocation.dart';
+import 'package:test_app/screens/dynamic_pages/bdynamichome.dart';
+import 'package:test_app/screens/dynamic_pages/cproductanlys.dart';
+import 'package:test_app/screens/dynamic_pages/eboundary.dart';
+import 'package:test_app/screens/dynamic_pages/gsustainabilitynews.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -35,7 +35,6 @@ class _HomeScreenState extends State<HomeScreen> {
   void settingstoggle() {
     setState(() {
       _showSettings = !_showSettings;
-      print('Toggled');
   });
   }
 

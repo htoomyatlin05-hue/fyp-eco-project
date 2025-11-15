@@ -33,19 +33,19 @@ class _DynamichomeState extends State<Dynamichome> {
               Padding(padding: EdgeInsetsGeometry.only(top: 30, bottom: 20, left: 20, right: 20),
               child: 
               ManualTabpagesdoublepage(
-                Tab1: "Your Products", 
-                Tab1fontsize: 20, 
-                Tab2: "Your Profiles", 
-                Tab2fontsize: 20, 
+                tab1: "Your Products", 
+                tab1fontsize: 20, 
+                tab2: "Your Profiles", 
+                tab2fontsize: 20, 
 
-                Pg1flexValue1: 1, 
-                Pg1flexValue2: 2, 
-                Pg2flexValue1: 1, 
-                Pg2flexValue2: 1, 
+                pg1flexValue1: 1, 
+                pg1flexValue2: 2, 
+                pg2flexValue1: 1, 
+                pg2flexValue2: 1, 
 
-                Firstchildof1:SizedBox(height: double.infinity,child:  Center(child: Text('Widget', style: TextStyle(color: Apptheme.textclrdark, fontSize: 20),))),
+                firstchildof1:SizedBox(height: double.infinity,child:  Center(child: Text('Widget', style: TextStyle(color: Apptheme.textclrdark, fontSize: 20),))),
 
-                Secondchildof1: SizedBox(
+                secondchildof1: SizedBox(
                   height: double.infinity,
                   child:  
                   Padding(
@@ -93,7 +93,7 @@ class _DynamichomeState extends State<Dynamichome> {
                   )
                 ),
 
-                Firstchildof2: SizedBox(height: double.infinity,
+                firstchildof2: SizedBox(height: double.infinity,
                 child:  
                   Center(
                     child: 
@@ -105,7 +105,7 @@ class _DynamichomeState extends State<Dynamichome> {
                   )
                 ),
 
-                Secondchildof2: SizedBox(height: double.infinity,
+                secondchildof2: SizedBox(height: double.infinity,
                 child:  
                   Center(
                     child: 

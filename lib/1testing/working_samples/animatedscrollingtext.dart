@@ -4,11 +4,10 @@ class Leftdrawerlisttilelightanimated extends StatefulWidget {
   final String title;
   final VoidCallback? whathappens;
 
-  const Leftdrawerlisttilelightanimated({
-    Key? key,
+  const Leftdrawerlisttilelightanimated({super.key,
     required this.title,
     required this.whathappens,
-  }) : super(key: key);
+  });
 
   @override
   State<Leftdrawerlisttilelightanimated> createState() => _LeftdrawerlisttilelightanimatedState();

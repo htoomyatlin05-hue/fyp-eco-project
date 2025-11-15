@@ -5,11 +5,11 @@ class Welcomepagelogo extends StatefulWidget {
   final Color choosecolor;
   final double pad;
   const Welcomepagelogo({
-    Key? key,
+    super.key,
     required this.whathappens,
     required this.choosecolor,
     this.pad = 8.0,
-  }) : super(key: key);
+  });
 
   @override
   State<Welcomepagelogo> createState() => _WelcomepagelogoState();

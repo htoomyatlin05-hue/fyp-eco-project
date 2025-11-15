@@ -8,12 +8,12 @@ class AutoColumn extends StatefulWidget {
   final Widget childof1;
 
   
-  const AutoColumn({Key? key, 
+  const AutoColumn({super.key,
   required this.containernum,
   required this.flexvalues,
   required this.childof1,
   
-  }) : super(key: key);
+  });
 
   @override
   State<AutoColumn> createState() => _AutoColumnState();
@@ -50,13 +50,12 @@ class Flexbox extends StatelessWidget {
   final List<int> flexValues;
   final Widget childofthis;
 
-  const Flexbox({
-    Key? key,
+  const Flexbox({super.key,
     required this.numberOfContainers,
     this.direction = Axis.vertical,
     required this.flexValues,
     required this.childofthis,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

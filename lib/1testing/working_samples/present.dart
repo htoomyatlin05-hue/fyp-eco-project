@@ -1,39 +1,27 @@
-  void postSelections() {
-  final body = formattedRows();
-
-  final url = Uri.parse("http://127.0.0.1:8000/meta/options");
-
-  http.post(
-    url,
-    headers: {"Content-Type": "application/json"},
-    body: jsonEncode(body),
-  ).then((response) {
-    print("POST status: ${response.statusCode}");
-    print("Response: ${response.body}");
-  }).catchError((error) {
-    print("Error posting: $error");
-  });
-}
-
-
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:test_app/design/apptheme/colors.dart';
+import 'package:flutter/material.dart';
+import 'package:test_app/design/apptheme/colors.dart';
+import 'package:test_app/design/apptheme/textlayout.dart';
+import 'package:test_app/design/secondary_elements_(to_design_pages)/dropdown_attributes.dart';
+import 'package:test_app/design/secondary_elements_(to_design_pages)/dropdown_attributes_linked.dart';
+import 'package:test_app/design/secondary_elements_(to_design_pages)/widgets1.dart';
 
-
-class Saved extends StatefulWidget {
+class DynamicDropdownMaterialAcquisitionpresent extends StatefulWidget {
   final List<String> columnTitles;
   final List<bool> isTextFieldColumn;
   final List<String> apiEndpoints;
   final List<String?> jsonKeys;
   final String addButtonLabel;
   final double padding;
+  final Function(List<List<String?>> data)? onDataChanged;
 
 
-  const Saved({
+
+  const DynamicDropdownMaterialAcquisitionpresent({
     super.key,
     required this.columnTitles,
     required this.isTextFieldColumn,
@@ -41,15 +29,16 @@ class Saved extends StatefulWidget {
     required this.jsonKeys,
     required this.addButtonLabel,
     required this.padding,
+    this.onDataChanged,
   });
 
   @override
-  State<Saved> createState() =>
-      SavedState();
+  State<DynamicDropdownMaterialAcquisitionpresent> createState() =>
+      _DynamicDropdownMaterialAcquisitionpresentState();
 }
 
-class SavedState
-    extends State<Saved> {
+class _DynamicDropdownMaterialAcquisitionpresentState
+    extends State<DynamicDropdownMaterialAcquisitionpresent> {
   late List<List<String?>> selections;
   Map<int, List<String>> dropdownData = {};
 
@@ -63,20 +52,80 @@ class SavedState
     fetchAllColumnData();
   }
 
-    List<Map<String, String?>> formattedRows() {
-    final rows = <Map<String, String?>>[];
-    final rowCount = selections[0].length;
+  List<Map<String, String?>> formattedRows() {
+  final rows = <Map<String, String?>>[];
+  final rowCount = selections[0].length;
 
-    for (int row = 0; row < rowCount; row++) {
-      final rowData = <String, String?>{};
-      for (int col = 0; col < widget.columnTitles.length; col++) {
-        rowData[widget.columnTitles[col]] = selections[col][row];
-      }
-      rows.add(rowData);
+  for (int row = 0; row < rowCount; row++) {
+    final rowData = <String, String?>{};
+    for (int col = 0; col < widget.columnTitles.length; col++) {
+      rowData[widget.columnTitles[col]] = selections[col][row];
     }
-
-    return rows;
+    rows.add(rowData);
   }
+  return rows;
+}
+
+String? getCell(int col, int row) => selections[col][row];
+
+double getCellAsDouble(int col, int row) =>
+    double.tryParse(selections[col][row] ?? '') ?? 0.0;
+
+List<String?> getColumn(int col) => selections[col];
+
+List<double> getColumnAsDouble(int col) => selections[col]
+    .map((v) => double.tryParse(v ?? '0') ?? 0.0)
+    .toList();
+
+void _notifyParent() {
+  if (widget.onDataChanged != null) {
+    widget.onDataChanged!(selections);
+  }
+}
+
+// assign a numeric value to each dropdown item
+final Map<String, double> dropdownValues = {
+  "Steel": 2.0,
+  "Aluminium": 1.5,
+  "Van": 2.0,
+  "Truck": 4.0,
+  "": 0,
+  "(E)-HFC-1225ye": 1,
+"(Z)-1,1,1,4,4,4-Hexafluoro-2-butene": 1.6,
+"1,1,1,3,3,3-Hexafluoro-2-propanol" : 1.8,
+"1,1,1,3,3,3-Hexafluoropropan-2-yl formate": 1.5,
+"1,1,1-Trichloroethane": 1.3,
+"1,1,2,2-Tetrafluoro-1-methoxyethane": 1.2,
+"1,1,2,2-Tetrafluoro-3-methoxy-propane": 125,
+
+  //--ADD MORE HERE--
+};
+
+double computeRowFormula(int row) {
+  double result = 1.0;
+
+  for (int col = 0; col < selections.length; col++) {
+    if (widget.isTextFieldColumn[col]) {
+      // TextField → numeric input
+      result *= getCellAsDouble(col, row);
+    } else {
+      // Dropdown → lookup numeric value
+      final selected = getCell(col, row);
+      result *= dropdownValues[selected] ?? 1.0;
+    }
+  }
+
+  return result;
+}
+
+
+
+  void loopExample() {
+    for (int row = 0; row < selections[0].length; row++) {
+      print("Row $row first column = ${getCell(0, row)}");
+    }
+  }
+
 
   Future<void> fetchAllColumnData() async {
     dropdownData.clear();
@@ -120,6 +169,7 @@ class SavedState
         }
       }
     });
+    _notifyParent();
   }
 
   void _removeRow(int index) {
@@ -128,6 +178,7 @@ class SavedState
         if (index < col.length) col.removeAt(index);
       }
     });
+    _notifyParent();
   }
 
   void postSelections() {
@@ -276,6 +327,7 @@ class SavedState
                                                 setState(() {
                                                   selections[col][row] = val;
                                                 });
+                                                _notifyParent();
                                               },
                                             )
                                         : DropdownButtonHideUnderline(
@@ -311,6 +363,7 @@ class SavedState
                                                 setState(() {
                                                   selections[col][row] = value;
                                                 });
+                                                _notifyParent();
                                               },
                                             ),
                                           ),
@@ -363,6 +416,8 @@ class SavedState
                                 child: ElevatedButton(
                                   onPressed: () {
                                     postSelections();
+                                    double result = computeRowFormula(0);
+                                    print("Emissions from material acquisition: $result");
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: Apptheme.widgetsecondaryclr,
@@ -387,24 +442,15 @@ class SavedState
 }
 
 
-
-import 'package:flutter/material.dart';
-import 'package:test_app/design/apptheme/colors.dart';
-import 'package:test_app/design/apptheme/textlayout.dart';
-import 'package:test_app/design/secondary_elements_(to_design_pages)/dropdown_attributes.dart';
-import 'package:test_app/design/secondary_elements_(to_design_pages)/dropdown_attributes_linked.dart';
-import 'package:test_app/design/secondary_elements_(to_design_pages)/widgets1.dart';
-
-
-class Dynamicp extends StatefulWidget {
+class Dynamicprdanalysispresent extends StatefulWidget {
   final VoidCallback settingstogglee;
-  const Dynamicp({super.key, required this.settingstogglee});
+  const Dynamicprdanalysispresent({super.key, required this.settingstogglee});
 
   @override
-  State<Dynamicp> createState() => _DynamicpState();
+  State<Dynamicprdanalysispresent> createState() => _DynamicprdanalysispresentState();
 }
 
-class _DynamicpState extends State<Dynamicp> {
+class _DynamicprdanalysispresentState extends State<Dynamicprdanalysispresent> {
   String? selectedBoundary = 'Cradle';
 
   @override
@@ -423,7 +469,7 @@ class _DynamicpState extends State<Dynamicp> {
       Labels(title: 'Attribute: Materials',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
-      DynamicDropdownMaterialAcquisition(
+      DynamicDropdownMaterialAcquisitionpresent(
         columnTitles: ['Material', 'Mass', 'Distance', 'Transport Mode'], 
         isTextFieldColumn: [false, true, true, false,], 
         addButtonLabel: 'Add material', 
@@ -437,13 +483,16 @@ class _DynamicpState extends State<Dynamicp> {
       Labels(title: 'Attribute: Production',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
-      DynamicDropdownMaterialAcquisition(
+      DynamicDropdownMaterialAcquisitionpresent(
         columnTitles: ['Select GHG', 'Total Charge', 'Remaining Charge'], 
         isTextFieldColumn: [false, true, true,], 
         addButtonLabel: 'Add GHG', 
         padding: 5, 
         apiEndpoints: [ 'http://127.0.0.1:8000/meta/options'],
         jsonKeys: [ 'GHG'],
+        onDataChanged: (data) {
+          print("Updated: $data");
+        },
         ),
       ),
 
@@ -452,13 +501,16 @@ class _DynamicpState extends State<Dynamicp> {
       Labels(title: 'Attribute: Distribution',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
-      DynamicDropdownMaterialAcquisition(
+      DynamicDropdownMaterialAcquisitionpresent(
         columnTitles: ['Transportation', 'Distance'], 
         isTextFieldColumn: [false, true], 
         addButtonLabel: 'Add transport cycle', 
         padding: 5, 
         apiEndpoints: ['http://127.0.0.1:8000/meta/options'],
         jsonKeys: ['transport_types'],
+        onDataChanged: (data) {
+          print("Updated: $data");
+        },
         ),
       ),
 
@@ -466,13 +518,16 @@ class _DynamicpState extends State<Dynamicp> {
       Labels(title: 'Attribute: Storage',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
-      DynamicDropdownMaterialAcquisition(
+      DynamicDropdownMaterialAcquisitionpresent(
         columnTitles: ['Facilities', 'Stored duration', 'Area', 'Select GHG'], 
         isTextFieldColumn: [false, true, true, false,], 
         addButtonLabel: 'Add facility', 
         padding: 5, 
         apiEndpoints: [ 'http://127.0.0.1:8000/meta/options', '', '', 'http://127.0.0.1:8000/meta/options' ],
         jsonKeys: [ 'facilities', '', '', 'GHG'],
+        onDataChanged: (data) {
+          print("Updated: $data");
+        },
         ),
       ),
       
@@ -481,13 +536,16 @@ class _DynamicpState extends State<Dynamicp> {
       Labels(title: 'Attribute: Usage Cycle',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
-      DynamicDropdownMaterialAcquisition(
+      DynamicDropdownMaterialAcquisitionpresent(
         columnTitles: ['Use activity', 'Expected use cycle', 'Unit'], 
         isTextFieldColumn: [false, true, true,], 
         addButtonLabel: 'Add use cycle', 
         padding: 5, 
         apiEndpoints: [ 'http://127.0.0.1:8000/meta/options'],
         jsonKeys: [ 'usage_types'],
+        onDataChanged: (data) {
+          print("Updated: $data");
+        },
         ),
       ),
 
@@ -495,13 +553,16 @@ class _DynamicpState extends State<Dynamicp> {
       Labels(title: 'Attribute: Disassembly',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
-      DynamicDropdownMaterialAcquisition(
+      DynamicDropdownMaterialAcquisitionpresent(
         columnTitles: ['Product Type', 'Mass', 'Energy required',], 
         isTextFieldColumn: [false, true, true,], 
         addButtonLabel: 'Add disassembly cycle', 
         padding: 5, 
         apiEndpoints: [ 'http://127.0.0.1:8000/meta/options'],
         jsonKeys: [ 'disassembly_by_industry'],
+        onDataChanged: (data) {
+          print("Updated: $data");
+        },
         ),
       ),
 
@@ -509,13 +570,16 @@ class _DynamicpState extends State<Dynamicp> {
       Labels(title: 'Attribute: End of Life',),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
-      DynamicDropdownMaterialAcquisition(
+      DynamicDropdownMaterialAcquisitionpresent(
         columnTitles: ['Process', 'Material', 'Amount',], 
         isTextFieldColumn: [false, false, true,], 
         addButtonLabel: 'Add process', 
         padding: 5, 
         apiEndpoints: [ 'http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'],
         jsonKeys: [ 'process', 'materials', ''],
+        onDataChanged: (data) {
+          print("Updated: $data");
+        },
         ),
       ),
 

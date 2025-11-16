@@ -112,19 +112,7 @@ class _DynamicDropdownMaterialAcquisitionState
 
   void postSelections() {
   final body = formattedRows();
-
-  final url = Uri.parse("http://127.0.0.1:8000/meta/options");
-
-  http.post(
-    url,
-    headers: {"Content-Type": "application/json"},
-    body: jsonEncode(body),
-  ).then((response) {
-    print("POST status: ${response.statusCode}");
-    print("Response: ${response.body}");
-  }).catchError((error) {
-    print("Error posting: $error");
-  });
+  print(body);
 }
 
   @override

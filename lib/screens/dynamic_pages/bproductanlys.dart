@@ -31,15 +31,15 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
 
       //--ROW 1--
       Labels(title: 'Attribute: Materials',),
-      Widgets1(aspectratio: 16/9, maxheight: 300,
-      child: 
-        DynamicDropdownMaterialAcquisition(
-        columnTitles: ['Materials', 'Transport', 'Distance'], 
-        isTextFieldColumn: [false, false, true, ], 
+      Widgets1(aspectratio: 16/9, maxheight: 200,
+      child:
+      DynamicDropdownMaterialAcquisition(
+        columnTitles: ['Material', 'Mass', 'Distance', 'Transport Mode'], 
+        isTextFieldColumn: [false, true, true, false,], 
         addButtonLabel: 'Add material', 
         padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'],
-        jsonKeys: ['materials', 'transport_types'],
+        apiEndpoints: [ 'http://127.0.0.1:8000/meta/options', '', '', 'http://127.0.0.1:8000/meta/options' ],
+        jsonKeys: [ 'materials', '', '', 'transport_types'],
         ),
       ),
      
@@ -154,25 +154,22 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
           children: [
 
             //--Main Page--
-            Expanded(
+            ClipRRect(
+              borderRadius: BorderRadiusGeometry.circular(10),
+              child: Padding(padding: EdgeInsetsGeometry.all(15),
               child: 
-              ClipRRect(
-                borderRadius: BorderRadiusGeometry.circular(10),
-                child: Padding(padding: EdgeInsetsGeometry.all(15),
-                child: 
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: AlwaysScrollableScrollPhysics(),
-                  itemCount: widgetofthispage.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      elevation: 0,
-                      color: Apptheme.transparentcheat,
-                      child: widgetofthispage[index],
-                    );
-                  },
-                  )
-                ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: AlwaysScrollableScrollPhysics(),
+                itemCount: widgetofthispage.length,
+                itemBuilder: (context, index) {
+                  return Card(
+                    elevation: 0,
+                    color: Apptheme.transparentcheat,
+                    child: widgetofthispage[index],
+                  );
+                },
+                )
               ),
             ),
 

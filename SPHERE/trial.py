@@ -710,7 +710,7 @@ def Grid_intensity_of_all_countries():
     """
     return {
         "countries": country_list,
-        "Grid intensity": electricity_list,
+        "grid_intensity": electricity_list,
     }
 
 @app.get("/meta/transport(cargotype)")
@@ -728,7 +728,7 @@ def getGWPvalues():
     Values of the Indicator, GHG, and GWP values
     """
     return{
-        "Indicator": Indicator_GHG,
+        "indicator": Indicator_GHG,
         "GHG": GHG_values,
         "GWP": GWP_for_GHG
         

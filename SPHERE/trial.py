@@ -12,7 +12,6 @@ import re
 
 #Function to locate where user data is stored on their system
 def get_user_data_path(filename):
-    # Same pattern used in SPHERE.py to put profiles & factors in a user data dir :contentReference[oaicite:1]{index=1}
     if os.name == "nt":  # Windows
         base = os.path.join(os.environ.get("LOCALAPPDATA", os.path.expanduser("~")), "SPHERE")
     else:  # macOS/Linux
@@ -64,7 +63,6 @@ custom_emission_factors = load_custom_emission_factors()
 # 2. LOAD EXCEL DATA
 
 # Open the Excel workbook
-# Assumption: "Emission Data.xlsx" sits next to backend.py
 EXCEL_PATH = os.path.join(os.path.dirname(__file__), "Emission Data.xlsx")
 book = openpyxl.load_workbook(EXCEL_PATH, data_only=True)
 
@@ -194,9 +192,18 @@ roro_value_cells       = sheet3['E83':'E85']
 machine_value_cells                 = sheet4['A2':'A999']
 specific_machine_energy_use_cells   = sheet4['B2':'B999']
 machine_types_cells                 = sheet13['A2':'A999']
+
 YCM_machine_model_cells             = sheet14['A2':'A999']
+YCM_main_spindle_cells              = sheet14['B2':'B999']
+YCM_sub_spindle_cells               = sheet14['C2':'C999']
+
 Amada_machine_model_cells           = sheet15['A2':'A999']
+Amada_main_spindle_cells            = sheet15['B2':'B999']
+Amada_sub_spindle_cells             = sheet15['C2':'C999']
+
 Mazak_machine_model_cells           = sheet16['A2':'A999']
+Mazak_main_spindle_cells            = sheet16['B2':'B999']
+Mazak_sub_spindle_cells             = sheet16['C2':'C999']
 
 metal_recycling_types_cells    = sheet5['A2':'A999']
 metal_recycling_emission_cells = sheet5['B2':'B999']
@@ -273,9 +280,18 @@ roro_value_list      = extract_list(roro_value_cells)
 machine_value_list               = extract_selection_list(machine_value_cells)
 specific_machine_energy_use_list = extract_list(specific_machine_energy_use_cells)
 machine_types                    = extract_selection_list(machine_types_cells)
+
 YCM_machine_model                = extract_selection_list(YCM_machine_model_cells)
+YCM_main_spindle                 = extract_selection_list(YCM_main_spindle_cells)
+YCM_sub_spindle                  = extract_selection_list(YCM_sub_spindle_cells)
+
 Amada_machine_model              = extract_selection_list(Amada_machine_model_cells)
+Amada_main_spindle               = extract_selection_list(Amada_main_spindle_cells)
+Amada_sub_spindle                = extract_selection_list(Amada_sub_spindle_cells)
+
 Mazak_machine_model              = extract_selection_list(Mazak_machine_model_cells)
+Mazak_main_spindle               = extract_selection_list(Mazak_main_spindle_cells)
+Mazak_sub_spindle                = extract_selection_list(Mazak_sub_spindle_cells)
 
 
 metal_recycling_types_list    = extract_selection_list(metal_recycling_types_cells)
@@ -791,16 +807,48 @@ def get_options():
 def get_machinetypes():
     '''
     -machine info like milling etc.
-    -YCM_types
-    -Amada_types
-    -Mazak_types
     '''
     return {
         "machine_type": machine_types,
     }
 @app.get("/meta/YCM_model")
 def get_machinetypes_YCM():
-    
+    '''
+    -YCM machine models
+    -main spindle(kW)
+    -Sub Spindle(kW)
+    '''
+    return{
+        "Machine Model": YCM_machine_model,
+        "main_spindle": YCM_main_spindle,
+        "Sub Spindle": YCM_sub_spindle
+    }
+
+@app.get("/meta/Amada_model")
+def get_machinetypes_YCM():
+    '''
+    -Amada machine models
+    -main spindle(kW)
+    -Sub Spindle(kW)
+    '''
+    return{
+        "Machine Model": Amada_machine_model,
+        "main_spindle": Amada_main_spindle,
+        "Sub Spindle": Amada_sub_spindle
+    }
+
+@app.get("/meta/Mazak_model")
+def get_machinetypes_YCM():
+    '''
+    -Mazak machine models
+    -main spindle(kW)
+    -Sub Spindle(kW)
+    '''
+    return{
+        "Machine Model":Mazak_machine_model,
+        "main_spindle":Mazak_main_spindle,
+        "Sub Spindle":Mazak_sub_spindle
+    }
 
 @app.post("/emissions/calculate")
 def calculate_emissions(req: EmissionRequest):

@@ -659,3 +659,5 @@ def get_machinetypes_YCM():
         "Sub Spindle":Mazak_sub_spindle
     }
 
+@app.post("/emissions/calculate")
+def calculate_emissions():

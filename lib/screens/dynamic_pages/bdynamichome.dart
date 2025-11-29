@@ -78,7 +78,7 @@ class _DynamichomeState extends State<Dynamichome> {
                           )
                         ),
 //-------------------------------------------------------------------------------------------------------
-                        Labels(title: 'Your Products',),
+                        Labels(title: 'Your Products', color: Apptheme.textclrlight,),
 
                         SizedBox(
                           width: double.infinity,

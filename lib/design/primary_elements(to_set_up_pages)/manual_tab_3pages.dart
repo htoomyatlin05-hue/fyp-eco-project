@@ -226,7 +226,7 @@ class FlexboxManual3pg extends StatelessWidget {
             Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(24),
-              color: Apptheme.widgetclrlight,
+              color: Apptheme.widgetsecondaryclr,
             ),
             child: childof1,
             ),

@@ -211,9 +211,15 @@ class _SubtitlesummaryState extends State<Subtitlesummary> {
 }
 
 
+//--Labels for containers--
 class Labels extends StatelessWidget {
   final String title;
-  const Labels({super.key, required this.title});
+  final Color color;
+
+  const Labels({super.key, 
+  required this.title,
+  required this.color
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +230,7 @@ class Labels extends StatelessWidget {
         padding: EdgeInsets.only(left: 5, top: 10, bottom: 0),
         child: 
         Text(title, style: TextStyle(
-          color: Apptheme.textclrdark,
+          color: color,
           fontWeight: FontWeight.w700,
           fontSize: 20,
         ),)

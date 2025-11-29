@@ -17,15 +17,15 @@ class _DynamicAllocationState extends State<DynamicAllocation> {
   String? result;
   List<dynamic> tableData = [];
 
-  static const String apiBaseUrl = "http://127.0.0.1:8000/meta/options";
+  static const String apiBaseUrl = "http://127.0.0.1:8000/calculate/material_emission";
 
   Future<void> calculateAndSend() async {
-    final url = Uri.parse("$apiBaseUrl/calculate");
+    final url = Uri.parse("$apiBaseUrl");
 
     final data = {
-      "power_kW": double.parse(powerController.text),
-      "time_hr": double.parse(timeController.text),
-      "emission_factor": double.parse(efController.text),
+      "country": "Belgium",
+      "material": "Steel",
+      "mass_kg":20,
     };
 
     final response = await http.post(
@@ -36,13 +36,12 @@ class _DynamicAllocationState extends State<DynamicAllocation> {
 
     if (response.statusCode == 200) {
       final json = jsonDecode(response.body);
-      setState(() => result = json["emissions"].toString());
-      fetchTableData();
+      setState(() => result = json["calculated_emission"].toString());
     }
   }
 
   Future<void> fetchTableData() async {
-    final url = Uri.parse("$apiBaseUrl/data");
+    final url = Uri.parse("$apiBaseUrl");
 
     final response = await http.get(url);
     if (response.statusCode == 200) {
@@ -53,7 +52,6 @@ class _DynamicAllocationState extends State<DynamicAllocation> {
   @override
   void initState() {
     super.initState();
-    fetchTableData();
   }
 
   @override

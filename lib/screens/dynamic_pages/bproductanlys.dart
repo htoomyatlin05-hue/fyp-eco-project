@@ -23,7 +23,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
     final List<Widget> widgetofpage1=[
 
       //--ROW 1--
-      Labels(title: 'Attribute: Materials',),
+      Labels(title: 'Attribute: Materials', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -37,7 +37,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
       ),
 
       //--ROW 2--
-      Labels(title: 'Attribute: Transport',),
+      Labels(title: 'Attribute: Transport', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -54,7 +54,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
     final List<Widget> widgetofpage2=[
 
       //--ROW 1--
-      Labels(title: 'Attribute: Machining',),
+      Labels(title: 'Attribute: Machining', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -68,7 +68,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
       ),
      
       //--ROW 2--
-      Labels(title: 'Attribute: Fugitive',),
+      Labels(title: 'Attribute: Fugitive', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -84,7 +84,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
 
     final List<Widget> widgetofpage3=[
       //--ROW 3--
-      Labels(title: 'Attribute: Distribution',),
+      Labels(title: 'Attribute: Distribution', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -98,7 +98,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
       ),
 
       //--ROW 3.A--
-      Labels(title: 'Attribute: Storage',),
+      Labels(title: 'Attribute: Storage', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -113,7 +113,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
       
 
       //--ROW 4--
-      Labels(title: 'Attribute: Usage Cycle',),
+      Labels(title: 'Attribute: Usage Cycle', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -127,7 +127,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
       ),
 
       //--ROW 5--
-      Labels(title: 'Attribute: Disassembly',),
+      Labels(title: 'Attribute: Disassembly', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -141,7 +141,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
       ),
 
       //--ROW 6--
-      Labels(title: 'Attribute: End of Life',),
+      Labels(title: 'Attribute: End of Life', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(

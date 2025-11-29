@@ -23,7 +23,7 @@ class _DynamicboundaryState extends State<Dynamicboundary> {
     final List<Widget> widgetofthispage=[
 
       //--ROW 1--
-      Labels(title: 'Attribute: Materials',),
+      Labels(title: 'Attribute: Materials', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -37,7 +37,7 @@ class _DynamicboundaryState extends State<Dynamicboundary> {
       ),
      
       //--ROW 2--
-      Labels(title: 'Attribute: Production',),
+      Labels(title: 'Attribute: Production', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -52,7 +52,7 @@ class _DynamicboundaryState extends State<Dynamicboundary> {
 
       if (selectedBoundary == 'Grave') ...[
       //--ROW 3--
-      Labels(title: 'Attribute: Distribution',),
+      Labels(title: 'Attribute: Distribution', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -66,7 +66,7 @@ class _DynamicboundaryState extends State<Dynamicboundary> {
       ),
 
       //--ROW 3.A--
-      Labels(title: 'Attribute: Storage',),
+      Labels(title: 'Attribute: Storage', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -81,7 +81,7 @@ class _DynamicboundaryState extends State<Dynamicboundary> {
       
 
       //--ROW 4--
-      Labels(title: 'Attribute: Usage Cycle',),
+      Labels(title: 'Attribute: Usage Cycle', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -95,7 +95,7 @@ class _DynamicboundaryState extends State<Dynamicboundary> {
       ),
 
       //--ROW 5--
-      Labels(title: 'Attribute: Disassembly',),
+      Labels(title: 'Attribute: Disassembly', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -109,7 +109,7 @@ class _DynamicboundaryState extends State<Dynamicboundary> {
       ),
 
       //--ROW 6--
-      Labels(title: 'Attribute: End of Life',),
+      Labels(title: 'Attribute: End of Life', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 200,
       child:
       DynamicDropdownMaterialAcquisition(
@@ -123,7 +123,7 @@ class _DynamicboundaryState extends State<Dynamicboundary> {
       ),
 
       //--ROW Example--
-      Labels(title: 'Example',),
+      Labels(title: 'Example', color: Apptheme.textclrlight,),
       Widgets1(aspectratio: 16/9, maxheight: 400,
       child:
       DynamicDropdownGroup(

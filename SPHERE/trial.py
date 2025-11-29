@@ -57,9 +57,6 @@ def save_custom_emission_factors(data):
 
 custom_emission_factors = load_custom_emission_factors()
 
-# ------------- User ID and password set-up-----------------------#
-
-
 # 2. LOAD EXCEL DATA
 
 # Open the Excel workbook
@@ -544,8 +541,6 @@ class MaterialEmissionReq(BaseModel):
     material: str  #e.g.Steel,Aluminum,etc.
     country: str   #e.g.Singapore,Malaysia,China,etc.
     mass_kg: float #mass from flutter ui
-class MaterialTransportationReq(BaseModel):
-    from pydantic import BaseModel
 
 class TransportCalcRequest(BaseModel):
     mode: str            # "van", "hgv", "flight", "rail", "sea_cargo", ...
@@ -559,6 +554,11 @@ class FugitiveEmissionFromExcelRequest(BaseModel):
     gas_indicator: str          # must match an entry in Indicator_GHG (e.g. "R134a")
     total_charged_amount_kg: float
     current_charge_amount_kg: float
+
+class ProfileSaveRequest(BaseModel):
+    profile_name: str
+    description: Optional[str] = ""
+    data: dict  # arbitrary blob from Flutter (full form state)
 
 
 # --------- 6. FASTAPI APP + ENDPOINTS ---------------------------------------#
@@ -809,3 +809,4 @@ def calculate_fugitive_emissions(req: FugitiveEmissionFromExcelRequest):
         "gwp": gwp,
         "emissions_kgco2e": emissions_kgco2e
     }
+

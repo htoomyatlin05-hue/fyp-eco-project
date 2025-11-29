@@ -548,7 +548,7 @@ class TransportCalcRequest(BaseModel):
     variant: str         # fuel/load/distance-band: e.g. "diesel", "0% laden", "international"
     distance_km: float   # distance
     # mass_tonnes is optional – only needed if your EF is in kgCO2e per ton-km
-    mass_tonnes: float | None = None
+    mass_tonnes: Optional[float] = None
 
 class FugitiveEmissionFromExcelRequest(BaseModel):
     gas_indicator: str          # must match an entry in Indicator_GHG (e.g. "R134a")

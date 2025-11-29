@@ -309,6 +309,74 @@ Usage_type = extract_selection_list(Usage_type_cells)
 Facilities = extract_selection_list(Facilities_cells)
 Process = extract_selection_list(Process_cells)
 
+# ---- Transport configuration for all modes ----
+
+TRANSPORT_CONFIG = {
+    # ROAD – VANS
+    "van": {
+        "classes": van_list,  # B2:B5
+        "variants": {
+            "diesel": van_diesel_list,   # D2:D5
+            "petrol": van_petrol_list,   # E2:E5
+            "battery": van_battery_list  # F2:F5
+        }
+    },
+
+    # ROAD – HGV (articulated or main HGV group)
+    "hgv": {
+        "classes": HGV_diesel_list,  # B8:B15
+        "variants": {
+            "0% laden":  HGV_0_diesel_list,   # D8:D15
+            "50% laden": HGV_50_diesel_list,  # E8:E15
+            "100% laden": HGV_100_diesel_list # F8:F15
+        }
+    },
+
+    # ROAD – HGV (rigid) – if you want a separate mode
+    "hgv_rigid": {
+        "classes": HGV_R_diesel_list,  # B17:B24
+        "variants": {
+            "0% laden":  HGV_R_0_diesel_list,
+            "50% laden": HGV_R_50_diesel_list,
+            "100% laden": HGV_R_100_diesel_list,
+        }
+    },
+
+    # AIR
+    "flight": {
+        "classes": flight_list,  # B27:B29
+        "variants": {
+            "international": Int_flight_list,   # D27 (long-haul int.)
+            "less_1500km":  L_1500_flight_list, # E27:E29
+            "more_1500km":  M_1500_flight_list  # F27:F29
+        }
+    },
+
+    # RAIL
+    "rail": {
+        "classes": rail_list,  # B31
+        "variants": {
+            "freight": freight_train_rail_list  # D31
+        }
+    },
+
+    # SEA / CARGO SHIPS EXAMPLE – you can extend these patterns
+    # One example using cargo ships with different cargo types
+    "sea_cargo": {
+        "classes": cargo_list,  # G60:G64
+        "variants": {
+            "bulk":      bulk_value_list,
+            "general":   general_value_list,
+            "container": container_value_list,
+            "vehicle":   vehicle_value_list,
+            "roro":      roro_value_list,
+        }
+    },
+
+    # You can add more modes here, e.g. "sea_crude_tanker", "sea_products_tanker"
+    # mapping crude_tanker_list -> crude_value_list, etc.
+}
+
 
 
 # ---------- Machine Optimization ("Pareto suggestion") ----------
@@ -476,6 +544,18 @@ class MaterialEmissionReq(BaseModel):
     material: str  #e.g.Steel,Aluminum,etc.
     country: str   #e.g.Singapore,Malaysia,China,etc.
     mass_kg: float #mass from flutter ui
+class MaterialTransportationReq(BaseModel):
+    from pydantic import BaseModel
+
+class TransportCalcRequest(BaseModel):
+    mode: str            # "van", "hgv", "flight", "rail", "sea_cargo", ...
+    vehicle_class: str   # one entry from the relevant classes list
+    variant: str         # fuel/load/distance-band: e.g. "diesel", "0% laden", "international"
+    distance_km: float   # distance
+    # mass_tonnes is optional – only needed if your EF is in kgCO2e per ton-km
+    mass_tonnes: float | None = None
+
+
 # --------- 6. FASTAPI APP + ENDPOINTS ---------------------------------------#
 
 app = FastAPI(title="SPHERE Backend API (Flutter)")
@@ -645,4 +725,53 @@ def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of 
         "mass_kg":req.mass_kg,
         "material_emission_factor":emisson_factor,
         "calculated_emission":calculated_emission
+    }
+@app.post("/calculate/transport_emissions")
+def calculate_transport_emissions(req: TransportCalcRequest):
+    mode_key = req.mode.lower()
+
+    # 1) Find config for this mode
+    if mode_key not in TRANSPORT_CONFIG:
+        raise HTTPException(status_code=400, detail="Unknown transport mode")
+
+    config = TRANSPORT_CONFIG[mode_key]
+    classes = config["classes"]
+    variants = config["variants"]
+
+    # 2) Find row index from vehicle_class
+    if req.vehicle_class not in classes:
+        raise HTTPException(status_code=400, detail="Vehicle/route class not found for this mode")
+
+    idx = classes.index(req.vehicle_class)
+
+    # 3) Pick the right column list based on variant (fuel / load / band)
+    variant_key = req.variant.lower()
+    if variant_key not in {k.lower(): k for k in variants}.keys():
+        raise HTTPException(status_code=400, detail="Variant not valid for this mode")
+
+    # allow case-insensitive variant matching
+    canonical_variant = [k for k in variants.keys() if k.lower() == variant_key][0]
+    ef_list = variants[canonical_variant]
+
+    try:
+        ef_value = float(ef_list[idx])
+    except Exception:
+        raise HTTPException(status_code=500, detail="Emission factor missing/invalid in Excel")
+
+    # 4) Do the formula
+    # If factors are per km: E = EF * distance
+    # If factors are per ton-km and mass_tonnes is given: E = EF * distance * mass_tonnes
+    if req.mass_tonnes is not None:
+        emissions = ef_value * req.distance_km * req.mass_tonnes
+    else:
+        emissions = ef_value * req.distance_km
+
+    return {
+        "mode": req.mode,
+        "vehicle_class": req.vehicle_class,
+        "variant": canonical_variant,
+        "distance_km": req.distance_km,
+        "mass_tonnes": req.mass_tonnes,
+        "emission_factor": ef_value,
+        "transport_emissions": emissions
     }

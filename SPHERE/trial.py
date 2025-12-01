@@ -551,7 +551,6 @@ class TransportCalcRequest(BaseModel):
     mass_tonnes: Optional[float] = None
 
 class FugitiveEmissionFromExcelRequest(BaseModel):
-    gas_indicator: str          # must match an entry in Indicator_GHG (e.g. "R134a")
     GHG_name: str               #GHG names
     total_charged_amount_kg: float
     current_charge_amount_kg: float
@@ -805,9 +804,6 @@ def calculate_transport_emissions(req: TransportCalcRequest):
 
 @app.post("/calculate/fugitive_emissions")
 def calculate_fugitive_emissions(req: FugitiveEmissionFromExcelRequest):
-    if req.gas_indicator not in Indicator_GHG:
-        raise HTTPException(status_code=400, detail="Gas indicator not found in GWP sheet")
-    gidx = Indicator_GHG.index(req.gas_indicator)
 
     if req.GHG_name not in GHG_values:
         raise HTTPException(status_code=400,detail="GHG value is not found in GWP sheet")
@@ -817,10 +813,6 @@ def calculate_fugitive_emissions(req: FugitiveEmissionFromExcelRequest):
         gwp=float(GWP_for_GHG[ghgidx])
     except Exception:
         raise HTTPException(status_code=500, detail="GHG value is missing.")
-    try:
-        gwp = float(GWP_for_GHG[gidx])
-    except Exception:
-        raise HTTPException(status_code=500, detail="GWP value missing for this gas")
 
     mass_released_kg = req.total_charged_amount_kg - req.current_charge_amount_kg
     if mass_released_kg < 0:
@@ -829,8 +821,7 @@ def calculate_fugitive_emissions(req: FugitiveEmissionFromExcelRequest):
     emissions_kgco2e = gwp * mass_released_kg
 
     return {
-        "gas_indicator": req.gas_indicator,
-        "GHG_values": req.GHG_name,
+        "ghg_name": req.GHG_name,
         "total_charged_amount_kg": req.total_charged_amount_kg,
         "current_charge_amount_kg": req.current_charge_amount_kg,
         "mass_of_ghg_released_kg": mass_released_kg,

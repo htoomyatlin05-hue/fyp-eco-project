@@ -206,236 +206,242 @@ Future<void> calculateAndSendAllRows() async {
         : calculatedwidth;
     
     
-        return SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: 
-          Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (int col = 0; col < widget.columnTitles.length; col++)
-                  Padding(
-                    padding: EdgeInsets.all(widget.padding),
-                    child: 
-                    Container(
-                      width: columnwidth,
-                      padding: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          width: 1, 
-                          color: Apptheme.widgetborderdark
-                        ),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: 
-                      ListView(
-                        children: [
-                          Text(
-                            widget.columnTitles[col],
-                            style: TextStyle(
-                              fontSize: 15,
-                              color: Apptheme.textclrdark,
-                              fontWeight: FontWeight.w600,
+        return 
+        Column(
+          children: [
+
+            Container(
+              height: 200,
+              child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: 
+              Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (int col = 0; col < widget.columnTitles.length; col++)
+                      Padding(
+                        padding: EdgeInsets.all(widget.padding),
+                        child: 
+                        Container(
+                          width: columnwidth,
+                          padding: const EdgeInsets.all(5),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              width: 1, 
+                              color: Apptheme.widgetborderdark
                             ),
+                            borderRadius: BorderRadius.circular(10),
                           ),
-                          const SizedBox(height: 8),
-                          for (int row = 0; row < numRows; row++)
-                            Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 3),
-                              child: 
-                              Container(
-                                height: 30,
-                                padding: EdgeInsets.all(3),
-                                decoration: BoxDecoration(
-                                  color: Apptheme.widgetsecondaryclr,
-                                  borderRadius: BorderRadius.circular(6)
+                          child: 
+                          ListView(
+                            children: [
+                              Text(
+                                widget.columnTitles[col],
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  color: Apptheme.textclrdark,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              child: Row(
-                                children: [
-    
-                                  Padding(
-                                      padding: const EdgeInsets.only(right: 4),
-                                      child: Container(
-                                          height: 20,
-                                          width: 20,
-                                          decoration: BoxDecoration(
-                                            color: Apptheme.widgetclrlight,
-                                            borderRadius: BorderRadius.circular(6)
-                                          ),
-                                          child:
-                                          Center(
-                                          child: 
-                                            Text('${row + 1}',
-                                            style: TextStyle(
-                                              color: Apptheme.textclrdark,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold
-                                            ),
-                                            ),
-                                          ),
-                                        ),
+                              ),
+                              const SizedBox(height: 8),
+                              for (int row = 0; row < numRows; row++)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 3),
+                                  child: 
+                                  Container(
+                                    height: 30,
+                                    padding: EdgeInsets.all(3),
+                                    decoration: BoxDecoration(
+                                      color: Apptheme.widgetsecondaryclr,
+                                      borderRadius: BorderRadius.circular(6)
                                     ),
-                                  
-                                  Expanded(
-                                    child: widget.isTextFieldColumn[col]
-                                        ? TextField(
-                                          enabled: true,
-                                            cursorColor: Apptheme.textclrlight,
-                                            cursorHeight: 15,
-                                              keyboardType: TextInputType.number,
-                                              inputFormatters: [
-                                                FilteringTextInputFormatter.allow(
-                                                    RegExp(r'[0-9.]')),
-                                              ],
-                                              style: TextStyle(
-                                                  color: Apptheme.textclrlight),
-                                              decoration: const InputDecoration(
-                                                isDense: true,
-                                                                                                
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: Apptheme.unselected,
-                                                  )
-                                                ),
-    
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: Apptheme.widgetborderlight
-                                                  )
-                                                ),
-    
-                                                errorBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: Apptheme.error,
-                                                  )
-                                                ),
-    
-                                                focusedErrorBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: Apptheme.error,
-                                                  )
-                                                ),
-    
-                                                disabledBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(
-                                                    color: Apptheme.widgetsecondaryclr,
-                                                  )
-                                                ),
-    
-                                                contentPadding: EdgeInsets.symmetric(
-                                                    horizontal: 4, vertical: 0),
+                                  child: Row(
+                                    children: [
+                
+                                      Padding(
+                                          padding: const EdgeInsets.only(right: 4),
+                                          child: Container(
+                                              height: 20,
+                                              width: 20,
+                                              decoration: BoxDecoration(
+                                                color: Apptheme.widgetclrlight,
+                                                borderRadius: BorderRadius.circular(6)
                                               ),
-                                              onChanged: (val) {
-                                                setState(() {
-                                                  selections[col][row] = val;
-                                                });
-                                              },
-                                            )
-                                        : DropdownButtonHideUnderline(
-                                            child: 
-                                            DropdownButton<String>(
-                                              dropdownColor: Apptheme.widgetsecondaryclr,
-                                                icon:
-                                                 Icon(Icons.arrow_drop_down,
-                                                   color: Apptheme.iconslight,
-                                                   size: 20,
-                                                 ),
-                                                padding: EdgeInsets.zero,
+                                              child:
+                                              Center(
+                                              child: 
+                                                Text('${row + 1}',
                                                 style: TextStyle(
-                                                  fontSize: 15,
-                                                  color: Apptheme.textclrlight,
-                                                  fontWeight: FontWeight.w500
+                                                  color: Apptheme.textclrdark,
+                                                  fontSize: 12,
+                                                  fontWeight: FontWeight.bold
                                                 ),
-                                                value: selections[col][row],
-                                                isExpanded: true,
-                                              items: (dropdownData[col] ?? [])
-                                                  .map((item) =>
-                                                      DropdownMenuItem(
-                                                        value: item,
-                                                        child: 
-                                                        Text(item,
-                                                        overflow: TextOverflow.fade,
-                                                        maxLines: 1,
-                                                        softWrap: false,
-                                                        ),
-                                                      ))
-                                                  .toList(),
-                                              onChanged: (value) {
-                                                setState(() {
-                                                  selections[col][row] = value;
-                                                });
-                                              },
+                                                ),
+                                              ),
+                                            ),
+                                        ),
+                                      
+                                      Expanded(
+                                        child: widget.isTextFieldColumn[col]
+                                            ? TextField(
+                                              enabled: true,
+                                                cursorColor: Apptheme.textclrlight,
+                                                cursorHeight: 15,
+                                                  keyboardType: TextInputType.number,
+                                                  inputFormatters: [
+                                                    FilteringTextInputFormatter.allow(
+                                                        RegExp(r'[0-9.]')),
+                                                  ],
+                                                  style: TextStyle(
+                                                      color: Apptheme.textclrlight),
+                                                  decoration: const InputDecoration(
+                                                    isDense: true,
+                                                                                                    
+                                                    enabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Apptheme.unselected,
+                                                      )
+                                                    ),
+                
+                                                    focusedBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Apptheme.widgetborderlight
+                                                      )
+                                                    ),
+                
+                                                    errorBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Apptheme.error,
+                                                      )
+                                                    ),
+                
+                                                    focusedErrorBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Apptheme.error,
+                                                      )
+                                                    ),
+                
+                                                    disabledBorder: OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Apptheme.widgetsecondaryclr,
+                                                      )
+                                                    ),
+                
+                                                    contentPadding: EdgeInsets.symmetric(
+                                                        horizontal: 4, vertical: 0),
+                                                  ),
+                                                  onChanged: (val) {
+                                                    setState(() {
+                                                      selections[col][row] = val;
+                                                    });
+                                                  },
+                                                )
+                                            : DropdownButtonHideUnderline(
+                                                child: 
+                                                DropdownButton<String>(
+                                                  dropdownColor: Apptheme.widgetsecondaryclr,
+                                                    icon:
+                                                     Icon(Icons.arrow_drop_down,
+                                                       color: Apptheme.iconslight,
+                                                       size: 20,
+                                                     ),
+                                                    padding: EdgeInsets.zero,
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      color: Apptheme.textclrlight,
+                                                      fontWeight: FontWeight.w500
+                                                    ),
+                                                    value: selections[col][row],
+                                                    isExpanded: true,
+                                                  items: (dropdownData[col] ?? [])
+                                                      .map((item) =>
+                                                          DropdownMenuItem(
+                                                            value: item,
+                                                            child: 
+                                                            Text(item,
+                                                            overflow: TextOverflow.fade,
+                                                            maxLines: 1,
+                                                            softWrap: false,
+                                                            ),
+                                                          ))
+                                                      .toList(),
+                                                  onChanged: (value) {
+                                                    setState(() {
+                                                      selections[col][row] = value;
+                                                    });
+                                                  },
+                                                ),
+                                              ),
+                                      ),
+                
+                                      if (col == 0)
+                                        Container(
+                                            height: 20,
+                                            width: 20,
+                                            decoration: BoxDecoration(
+                                              color: Apptheme.widgetclrlight,
+                                              borderRadius: BorderRadius.circular(6)
+                                            ),
+                                            child: IconButton(
+                                              padding: EdgeInsets.zero,
+                                              icon: const Icon(Icons.delete,
+                                                  size: 16, color: Apptheme.iconsprimary),
+                                              onPressed: () => _removeRow(row),
                                             ),
                                           ),
+                                    ],
                                   ),
-    
-                                  if (col == 0)
-                                    Container(
-                                        height: 20,
-                                        width: 20,
-                                        decoration: BoxDecoration(
-                                          color: Apptheme.widgetclrlight,
-                                          borderRadius: BorderRadius.circular(6)
-                                        ),
-                                        child: IconButton(
-                                          padding: EdgeInsets.zero,
-                                          icon: const Icon(Icons.delete,
-                                              size: 16, color: Apptheme.iconsprimary),
-                                          onPressed: () => _removeRow(row),
-                                        ),
+                                ),
+                              ),
+                              if (col == 0)
+                                Center(
+                                  child: 
+                                  SizedBox(
+                                    width: 200,
+                                    height: 20,
+                                    child: ElevatedButton.icon(
+                                      onPressed: _addRow,
+                                      icon: const Icon(Icons.add, size: 16),
+                                      label: Text(widget.addButtonLabel),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Apptheme.auxilary,
+                                        foregroundColor: Colors.white,
+                                        padding: EdgeInsets.zero,
                                       ),
-                                ],
-                              ),
-                            ),
-                          ),
-                          if (col == 0)
-                            Center(
-                              child: 
-                              SizedBox(
-                                width: 200,
-                                height: 20,
-                                child: ElevatedButton.icon(
-                                  onPressed: _addRow,
-                                  icon: const Icon(Icons.add, size: 16),
-                                  label: Text(widget.addButtonLabel),
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Apptheme.auxilary,
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.zero,
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-    
-                          if (widget.isTextFieldColumn[col])
-                            Center(
-                              child: SizedBox(
-                                width: 200,
-                                height: 20,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    calculateAndSendAllRows();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Apptheme.widgetsecondaryclr,
-                                    foregroundColor: Colors.white,
-                                    padding: EdgeInsets.zero,
-                                  ),
-                                  child: const Text("Save"),
-                                ),
-                              ),
-                            ),
                        
-                      ],
+                          ],
+                        ),
+                      ),
                     ),
-                  
-                  
-                  ),
-    
-                  
+                  ],
                 ),
-                
-            ],
-          ),
+              ),
+            ),
+
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: widget.padding),
+              child: Center(
+                child: SizedBox(
+                  width: 200,
+                  height: 35,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      calculateAndSendAllRows();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Apptheme.widgetsecondaryclr,
+                      foregroundColor: Colors.white,
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: const Text("Calculate"),
+                  ),
+                ),
+              ),
+            ),
+        ]
         );
       },
     );

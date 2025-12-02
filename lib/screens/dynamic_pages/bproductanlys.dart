@@ -65,7 +65,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         title: 'Material Emissions: ${materialupstreamEmission.toStringAsFixed(2)} kg CO₂', 
         color: Apptheme.textclrlight,
       ),
-      Widgets1(aspectratio: 16/9, maxheight: 200,
+      Widgets1(aspectratio: 16/9, maxheight: 250,
       child:
       DynamicDropdownMaterialAcquisition(
         columnTitles: ['Country','Material', 'Mass (kg)'], 
@@ -89,7 +89,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         title: 'Transport Emissions: ${materialtransportEmission.toStringAsFixed(2)} kg CO₂', 
         color: Apptheme.textclrlight,
       ),
-      Widgets1(aspectratio: 16/9, maxheight: 200,
+      Widgets1(aspectratio: 16/9, maxheight: 250,
       child:
       DynamicDropdownMaterialAcquisition(
         columnTitles: ['Transport', 'Distance'], 
@@ -116,7 +116,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         title: 'Attribute: Machining', 
         color: Apptheme.textclrlight,
         ),
-      Widgets1(aspectratio: 16/9, maxheight: 200,
+      Widgets1(aspectratio: 16/9, maxheight: 250,
       child:
       DynamicDropdownMaterialAcquisition(
         columnTitles: ['Machine', 'Total time', 'Remaining Charge'], 
@@ -135,7 +135,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         title: 'Fugitive Emissions: ${fugitiveemissions.toStringAsFixed(2)} kg CO₂', 
         color: Apptheme.textclrlight,
         ),
-      Widgets1(aspectratio: 16/9, maxheight: 200,
+      Widgets1(aspectratio: 16/9, maxheight: 250,
       child:
       DynamicDropdownMaterialAcquisition(
         columnTitles: ['GHG', 'Total Charge', 'Remaining Charge'], 
@@ -158,12 +158,12 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
     ];
 
     final List<Widget> widgetofpage3=[
-      //--ROW 3--
+      //--ROW 1--
       Labels(
         title: 'Attribute: Machining', 
         color: Apptheme.textclrlight,
         ),
-      Widgets1(aspectratio: 16/9, maxheight: 200,
+      Widgets1(aspectratio: 16/9, maxheight: 250,
       child:
       DynamicDropdownMaterialAcquisition(
         columnTitles: ['Transportation', 'Distance'], 
@@ -177,12 +177,12 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         ),
       ),
 
-      //--ROW 3.A--
+      //--ROW 2--
       Labels(
         title: 'Attribute: Machining', 
         color: Apptheme.textclrlight,
         ),
-      Widgets1(aspectratio: 16/9, maxheight: 200,
+      Widgets1(aspectratio: 16/9, maxheight: 250,
       child:
       DynamicDropdownMaterialAcquisition(
         columnTitles: ['Facilities', 'Stored duration', 'Area', 'Select GHG'], 
@@ -197,12 +197,17 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
       ),
       
 
-      //--ROW 4--
-      Labels(
-        title: 'Attribute: Machining', 
-        color: Apptheme.textclrlight,
-        ),
-      Widgets1(aspectratio: 16/9, maxheight: 200,
+      //--ROW 3--
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Labels(
+            title: 'Attribute: Machining', 
+            color: Apptheme.textclrlight,
+            ),
+        ],
+      ),
+      Widgets1(aspectratio: 16/9, maxheight: 250,
       child:
       DynamicDropdownMaterialAcquisition(
         columnTitles: ['Use activity', 'Expected use cycle', 'Unit'], 
@@ -216,12 +221,12 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         ),
       ),
 
-      //--ROW 5--
+      //--ROW 4--
       Labels(
         title: 'Attribute: Machining', 
         color: Apptheme.textclrlight,
         ),
-      Widgets1(aspectratio: 16/9, maxheight: 200,
+      Widgets1(aspectratio: 16/9, maxheight: 250,
       child:
       DynamicDropdownMaterialAcquisition(
         columnTitles: ['Product Type', 'Mass', 'Energy required',], 
@@ -235,12 +240,12 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         ),
       ),
 
-      //--ROW 6--
+      //--ROW 5--
       Labels(
         title: 'Attribute: Machining', 
         color: Apptheme.textclrlight,
         ),
-      Widgets1(aspectratio: 16/9, maxheight: 200,
+      Widgets1(aspectratio: 16/9, maxheight: 250,
       child:
       DynamicDropdownMaterialAcquisition(
         columnTitles: ['Process', 'Material', 'Amount',], 

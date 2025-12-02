@@ -655,23 +655,26 @@ def get_options():
     }
 
 @app.get("/meta/transport/options/{mode}")
-def get_transport_options(mode:str):
-    """Return classes and variants for a given transport mode.
-    mode must be a ket in TRANPORT_CONFIG(e.g. 'van',' hgv', 'flight', 'rail', 'sea_cargo')
+def get_transport_options(mode: str):
     """
-    mode_key=mode.lower()
+    Return classes and variants for a given transport mode.
+    mode must be a key in TRANSPORT_CONFIG (e.g. 'van', 'hgv', 'flight', 'rail', 'sea_cargo')
+    """
+    mode_key = mode.lower()
+
     if mode_key not in TRANSPORT_CONFIG:
-        raise HTTPException(status_code=400,detail="Unknown transport mode")
-    
+        raise HTTPException(status_code=400, detail="Unknown transport mode")
+
     config = TRANSPORT_CONFIG[mode_key]
-    classes=config["classes"]
-    variants=list(config["variants"].keys())
+    classes = config["classes"]
+    variants = list(config["variants"].keys())
 
     return {
-        "mode":mode_key,
-        "classes":classes,
-        "variants":variants
+        "mode": mode_key,
+        "classes": classes,
+        "variants": variants,
     }
+
 
 @app.get("/meta/machines_type")
 def get_machinetypes():

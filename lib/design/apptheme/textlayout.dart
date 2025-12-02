@@ -299,7 +299,7 @@ class Titletext extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text('Attributes',
+    return Text(title,
       style: TextStyle(
         color: Apptheme.textclrlight,
         fontSize: 30,

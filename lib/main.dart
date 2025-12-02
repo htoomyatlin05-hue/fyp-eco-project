@@ -13,7 +13,7 @@ void main() async {
     backgroundColor: Apptheme.drawer,
     titleBarStyle: TitleBarStyle.hidden,
     windowButtonVisibility: true,
-    minimumSize: Size(500, 250),
+    minimumSize: Size(508, 250),
   );
 
   await windowManager.waitUntilReadyToShow(windowOptions, () async {

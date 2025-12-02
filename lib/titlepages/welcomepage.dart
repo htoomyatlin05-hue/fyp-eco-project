@@ -23,65 +23,250 @@ class _WelcomepageState extends State<Welcomepage> {
         double parentwidth = constraints.maxWidth;
 
         return 
-        Row(
+        Stack(
           children: [
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Align(
-                    alignment: Alignment.center,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10),
-                      child: Welcomepagelogo(
-                        whathappens: null,
-                        choosecolor: Apptheme.error,
-                        pad: 0,
+
+            Positioned(
+              left: 0,
+              child: ClipRect(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: SizedBox(
+                      width: 800,
+                      child: Image.asset('assets/images/home_page_background.png',
                       ),
                     ),
-                  )
-                ],
+                  ),
+                ),
               ),
             ),
 
-            SizedBox(
-              width: parentwidth/2,
-              child: ListView(
-                children: [
+            Row(
+              children: [
 
-              
-                  SizedBox(
-                    child: 
-                    Align(
-                      alignment: Alignment.center,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 100),
-                        child: Bigfocusedtext(title: 'ECO-pi',),
+                Container(
+                  width: 500,
+                  color: Apptheme.transparentcheat,
+                  child: 
+                  ListView(
+                    children: [
+                                
+                      Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Welcomepagelogo(
+                            whathappens: null,
+                            choosecolor: Apptheme.transparentcheat,
+                            pad: 0,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-              
-                  SizedBox(
-                    height: 330,
-                    width: 150,
-                    child: AspectRatio(
-                      aspectRatio: 16/9,
-                      child: SigninField())),
                   
-                  Container(
-                    color: Apptheme.transparentcheat,
-                    height: 50,
-                    child: Center(
-                      child: IconButton(
-                        onPressed: () {RootScaffold.of(context)?.goToHomePage();
-                        },
-                        icon: const Icon(Icons.alarm),
-                        color: Apptheme.iconslight,
+                      SizedBox(
+                        child: 
+                        Align(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Bigfocusedtext(title: 'ECO-pi',),
+                          ),
+                        ),
+                      ),
+                  
+                      SizedBox(
+                        height: 330,
+                        child: AspectRatio(
+                          aspectRatio: 16/9,
+                          child: SigninField())
+                      ),
+                      
+                      Container(
+                        color: Apptheme.transparentcheat,
+                        height: 50,
+                        child: Center(
+                          child: IconButton(
+                            onPressed: () {RootScaffold.of(context)?.goToHomePage();
+                            },
+                            icon: const Icon(Icons.alarm),
+                            color: Apptheme.iconslight,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              
+                Expanded(
+                  child: 
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20, bottom: 20, right: 20, left: 80),
+                    child: 
+                    Container(
+                      height: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Apptheme.transparentcheat,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: Apptheme.widgetborderdark,
+                          width: 2,
+                        ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 20, top: 20),
+                      child: Column(
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: 
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 50),
+                              child: Titletext(title: 'Your Projects', color: Apptheme.textclrlight),
+                            )),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                width: 600,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Apptheme.drawer,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Labels(
+                                    title: 'Product 1', 
+                                    color: Apptheme.textclrlight
+                                  )
+                                ),
+                              ),
+                            ),
+                          ),
+                          
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                width: 600,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Apptheme.drawer,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Labels(
+                                    title: 'Product 1', 
+                                    color: Apptheme.textclrlight
+                                  )
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                width: 600,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Apptheme.drawer,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Labels(
+                                    title: 'Product 1', 
+                                    color: Apptheme.textclrlight
+                                  )
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                width: 600,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Apptheme.drawer,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Labels(
+                                    title: 'Product 1', 
+                                    color: Apptheme.textclrlight
+                                  )
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                width: 600,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Apptheme.drawer,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Labels(
+                                    title: 'Product 1', 
+                                    color: Apptheme.textclrlight
+                                  )
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Container(
+                                width: 600,
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  color: Apptheme.drawer,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Labels(
+                                    title: 'Product 1', 
+                                    color: Apptheme.textclrlight
+                                  )
+                                ),
+                              ),
+                            ),
+                          ),
+                        
+                        
+                        ],
                       ),
                     ),
                   ),
-                ],
-              ),
+                )
+                ),
+              
+              ],
             ),
           
           ],

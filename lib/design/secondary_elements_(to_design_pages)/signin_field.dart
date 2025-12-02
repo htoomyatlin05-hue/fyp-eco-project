@@ -20,6 +20,7 @@ class _SigninFieldState extends State<SigninField> {
     Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
+        width: 100,
         decoration: BoxDecoration(
           color: Apptheme.backgroundlight,
           borderRadius: BorderRadius.circular(10),

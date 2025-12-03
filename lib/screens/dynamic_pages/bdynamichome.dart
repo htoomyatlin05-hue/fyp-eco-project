@@ -340,7 +340,17 @@ final List<Map<String, double>> toggleTotals = [
                           ),
                         )
                       ),
-                            
+
+                      Labels(title: 'Your Products', color: Apptheme.textclrlight,),
+
+                        SizedBox(
+                          width: double.infinity,
+                          child: AutoaddWidget(
+                            aspectratio: 16/5, 
+                            color: Apptheme.widgetsecondaryclr, 
+                            title: 'title'
+                        ),
+                      )      
                     ],
                   ),
                 ),

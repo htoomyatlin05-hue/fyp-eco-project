@@ -139,8 +139,8 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         isTextFieldColumn: [false, false, true,], 
         addButtonLabel: 'Add machine cycle', 
         padding: 5, 
-        apiEndpoints: [ 'http://127.0.0.1:8000/meta/machining/mazak', 'http://127.0.0.1:8000/meta/machining/countries'],
-        jsonKeys: [ 'Mazak_machine_model', 'countries'],
+        apiEndpoints: [ 'http://127.0.0.1:8000/meta/options', 'http://127.0.0.1:8000/meta/options'],
+        jsonKeys: [ 'Mazak_types', 'countries'],
         apiKeyMap: apiKeymachining,
         endpoint: 'http://127.0.0.1:8000/calculate/machine_power_emission',
         onTotalEmissionCalculated: (total) {

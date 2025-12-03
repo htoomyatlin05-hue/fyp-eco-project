@@ -324,6 +324,11 @@ Usage_type = extract_selection_list(Usage_type_cells)
 Facilities = extract_selection_list(Facilities_cells)
 Process = extract_selection_list(Process_cells)
 
+# --- LOOKUP DICTIONARIES FOR FAST CALCULATION ---
+van_lookup = dict(zip(van_mode_list, van_emission_list))
+hgv_lookup = dict(zip(HGV_mode_list, HGV_emission_list))
+hgv_refrig_lookup = dict(zip(HGV_r_mode_list, HGV_r_emission_list))
+
 # ---- Transport configuration for all modes ----
 
 TRANSPORT_CONFIG = {
@@ -592,6 +597,7 @@ class TransportCalcRequest(BaseModel):
     vehicle_class: str   # one entry from the relevant classes list
     variant: str         # fuel/load/distance-band: e.g. "diesel", "0% laden", "international"
     distance_km: float   # distance
+    transport_type: str
     # mass_tonnes is optional – only needed if your EF is in kgCO2e per ton-km
     mass_tonnes: Optional[float] = None
 
@@ -864,55 +870,46 @@ def calculate_transport_table(req: TransportTableRequest):
         "rows": row_results
     }
 
-@app.post("/calculate/transport_emissions") #for single-row tests
-def calculate_transport_emissions(req: TransportCalcRequest):
-    mode_key = req.mode.lower()
+@app.post("/calculate_transport_emission")
+def calculate_transport_emission(data: TransportCalcRequest):
 
-    # 1) Find config for this mode
-    if mode_key not in TRANSPORT_CONFIG:
-        raise HTTPException(status_code=400, detail="Unknown transport mode")
+    mode = data.transport_type
+    distance = data.distance_km
 
-    config = TRANSPORT_CONFIG[mode_key]
-    classes = config["classes"]
-    variants = config["variants"]
+    # VAN
+    if mode in van_lookup:
+        ef = van_lookup[mode]
+        return {
+            "category": "Van",
+            "mode": mode,
+            "distance_km": distance,
+            "emission_factor": ef,
+            "total_emission": ef * distance    # <-- formula you said
+        }
 
-    # 2) Find row index from vehicle_class
-    if req.vehicle_class not in classes:
-        raise HTTPException(status_code=400, detail="Vehicle/route class not found for this mode")
+    # HGV NORMAL
+    if mode in hgv_lookup:
+        ef = hgv_lookup[mode]
+        return {
+            "category": "HGV",
+            "mode": mode,
+            "distance_km": distance,
+            "emission_factor": ef,
+            "total_emission": ef * distance
+        }
 
-    idx = classes.index(req.vehicle_class)
+    # HGV REFRIGERATED
+    if mode in hgv_refrig_lookup:
+        ef = hgv_refrig_lookup[mode]
+        return {
+            "category": "HGV Refrigerated",
+            "mode": mode,
+            "distance_km": distance,
+            "emission_factor": ef,
+            "total_emission": ef * distance
+        }
 
-    # 3) Pick the right column list based on variant (fuel / load / band)
-    variant_key = req.variant.lower()
-    if variant_key not in {k.lower(): k for k in variants}.keys():
-        raise HTTPException(status_code=400, detail="Variant not valid for this mode")
-
-    # allow case-insensitive variant matching
-    canonical_variant = [k for k in variants.keys() if k.lower() == variant_key][0]
-    ef_list = variants[canonical_variant]
-
-    try:
-        ef_value = float(ef_list[idx])
-    except Exception:
-        raise HTTPException(status_code=500, detail="Emission factor missing/invalid in Excel")
-
-    # 4) Do the formula
-    # If factors are per km: E = EF * distance
-    # If factors are per ton-km and mass_tonnes is given: E = EF * distance * mass_tonnes
-    if req.mass_tonnes is not None:
-        emissions = ef_value * req.distance_km * req.mass_tonnes
-    else:
-        emissions = ef_value * req.distance_km
-
-    return {
-        "mode": req.mode,
-        "vehicle_class": req.vehicle_class,
-        "variant": canonical_variant,
-        "distance_km": req.distance_km,
-        "mass_tonnes": req.mass_tonnes,
-        "emission_factor": ef_value,
-        "transport_emissions": emissions
-    }
+    return {"error": "Invalid transport type."}
 
 @app.post("/calculate/fugitive_emissions")
 def calculate_fugitive_emissions(req: FugitiveEmissionFromExcelRequest):

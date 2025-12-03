@@ -173,17 +173,21 @@ final List<Map<String, double>> toggleTotals = [
             Align(
               alignment: Alignment.centerLeft,
               child: Container(
-                height: double.infinity,
-                width: 30,
+                height: 140,
+                width: 25,
                 
                 decoration: BoxDecoration(
                   color: Apptheme.widgetclrlight,
                   border: Border(
                     right: BorderSide(
-                      color: Apptheme.drawerbackground,
+                      color: Apptheme.widgetsecondaryclr,
                       width: 2
                     )
                   ),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(5),
+                    bottomRight: Radius.circular(5)
+                  )
                 ),
                 child: Center(
                   child: IconButton(
@@ -191,6 +195,7 @@ final List<Map<String, double>> toggleTotals = [
                     icon: Icon(
                       Icons.drag_indicator, 
                       color: Apptheme.iconsdark,
+                      size: 25,
                     ),
                     padding: EdgeInsets.zero,
                   ),
@@ -343,14 +348,14 @@ final List<Map<String, double>> toggleTotals = [
 
                       Labels(title: 'Your Products', color: Apptheme.textclrlight,),
 
-                        SizedBox(
-                          width: double.infinity,
-                          child: AutoaddWidget(
-                            aspectratio: 16/5, 
-                            color: Apptheme.widgetsecondaryclr, 
-                            title: 'title'
+                      SizedBox(
+                        width: double.infinity,
+                        child: AutoaddWidget(
+                          aspectratio: 16/5, 
+                          color: Apptheme.widgetsecondaryclr, 
+                          title: 'title'
                         ),
-                      )      
+                      ) 
                     ],
                   ),
                 ),
@@ -358,7 +363,10 @@ final List<Map<String, double>> toggleTotals = [
             ),
           
             //--Custom Header for Home--
-            PageHeaderTwo(title: "ECO-pi", whathappens:widget.settingstogglee,),
+            PageHeaderTwo(
+              title: "ECO-pi", 
+              whathappens:widget.settingstogglee,
+            ),
             
           ],
           ),

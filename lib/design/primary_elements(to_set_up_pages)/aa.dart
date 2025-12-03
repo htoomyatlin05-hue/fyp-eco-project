@@ -20,10 +20,10 @@ class _ExampleState extends State<Example> {
           children: [
 
             //--Custom Header for Home--
-            PageHeaderFour(title: 'Title', 
-            summary: 'Type here', 
-            color: Apptheme.auxilary,
-            whathappens: widget.settingstogglee,
+            Pageheaders(
+              settingstogglee: null, 
+              title: 'Allocation', 
+              child: null,
             ),
         
             

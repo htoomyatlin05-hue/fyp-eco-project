@@ -21,10 +21,10 @@ class _DynamicProfileState extends State<DynamicAllocation> {
           children: [
 
             //--Custom Header for Home--
-            PageHeaderFour(title: 'Allocation',
-            summary: 'Type here', 
-            whathappens: widget.settingstogglee,
-            color: Apptheme.auxilary,
+            Pageheaders(
+              settingstogglee: null, 
+              title: 'Allocation', 
+              child: null,
             ),
         
             

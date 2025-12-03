@@ -21,10 +21,10 @@ class _DynamicCreditsState extends State<DynamicCredits> {
           children: [
 
             //--Custom Header for Home--
-            PageHeaderFour(title: 'About Us',
-            summary: 'Type here', 
-            whathappens: widget.settingstogglee,
-            color: Apptheme.auxilary,
+            Pageheaders(
+              settingstogglee: null, 
+              title: 'About Us', 
+              child: null,
             ),
         
             

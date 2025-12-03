@@ -595,7 +595,6 @@ class MachineEmissionsReq(BaseModel):
     machine_model: str #Machine types
     country: str
     time_operated_hr: float 
-    power: float
 class TransportCalcRequest(BaseModel):
     mode: str            # "van", "hgv", "flight", "rail", "sea_cargo", ...
     vehicle_class: str   # one entry from the relevant classes list

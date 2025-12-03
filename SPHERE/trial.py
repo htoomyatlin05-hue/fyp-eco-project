@@ -533,6 +533,33 @@ def get_best_material_and_country(
 
     return best_choice
 
+#Transportation calculation helper
+def calculate_transport_single(mode, vehicle_class, variant, distance_km, mass_tonnes=None):
+    if mode not in TRANSPORT_CONFIG:
+        raise HTTPException(status_code=400, detail="Unknown transport mode")
+
+    config = TRANSPORT_CONFIG[mode]
+
+    # Validate class
+    if vehicle_class not in config["classes"]:
+        raise HTTPException(status_code=400, detail=f"Unknown class for mode '{mode}'")
+
+    class_index = config["classes"].index(vehicle_class)
+
+    # Validate variant
+    if variant not in config["variants"]:
+        raise HTTPException(status_code=400, detail=f"Unknown variant for mode '{mode}'")
+
+    ef_list = config["variants"][variant]
+    ef = float(ef_list[class_index])     # EF for that class & variant
+
+    # HGV mass factor
+    if mode.startswith("hgv") and mass_tonnes is not None:
+        ef *= mass_tonnes
+
+    return ef * distance_km
+
+
 
 # --------- 5. API REQUEST / RESPONSE MODELS ---------------------------------#
 
@@ -549,6 +576,16 @@ class TransportCalcRequest(BaseModel):
     distance_km: float   # distance
     # mass_tonnes is optional – only needed if your EF is in kgCO2e per ton-km
     mass_tonnes: Optional[float] = None
+
+class TransportRow(BaseModel):
+    mode: str
+    vehicle_class: str
+    variant: str
+    distance_km: float
+    mass_tonnes: Optional[float] = None
+
+class TransportTableRequest(BaseModel):
+    rows: List[TransportRow]
 
 class FugitiveEmissionFromExcelRequest(BaseModel):
     ghg_name: str               # GHG name from Excel (e.g. "CO2", "R134a")
@@ -654,27 +691,28 @@ def get_options():
         "Mazak_types":Mazak_machine_model
     }
 
-@app.get("/meta/transport/options/{mode}")
-def get_transport_options(mode: str):
+@app.get("/meta/transport/config")
+def get_transport_config():
     """
-    Return classes and variants for a given transport mode.
-    mode must be a key in TRANSPORT_CONFIG (e.g. 'van', 'hgv', 'flight', 'rail', 'sea_cargo')
+    Return all transport modes, and for each mode:
+      - classes
+      - variants (fuel/load/band)
     """
-    mode_key = mode.lower()
-
-    if mode_key not in TRANSPORT_CONFIG:
-        raise HTTPException(status_code=400, detail="Unknown transport mode")
-
-    config = TRANSPORT_CONFIG[mode_key]
-    classes = config["classes"]
-    variants = list(config["variants"].keys())
-
-    return {
-        "mode": mode_key,
-        "classes": classes,
-        "variants": variants,
+    modes = list(TRANSPORT_CONFIG.keys())
+    classes_by_mode = {
+        mode: cfg["classes"]
+        for mode, cfg in TRANSPORT_CONFIG.items()
+    }
+    variants_by_mode = {
+        mode: list(cfg["variants"].keys())
+        for mode, cfg in TRANSPORT_CONFIG.items()
     }
 
+    return {
+        "modes": modes,
+        "classes_by_mode": classes_by_mode,
+        "variants_by_mode": variants_by_mode
+    }
 
 @app.get("/meta/machines_type")
 def get_machinetypes():
@@ -742,7 +780,6 @@ def list_profiles():
     profiles = load_profiles()
     return {"profiles": list(profiles.keys())}
 
-
 @app.post("/calculate/material_emission")
 def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of the input the fastapi endpoint receives.
     if req.country not in country_list:
@@ -774,7 +811,36 @@ def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of 
         "materialacq_emission":calculated_emission
     }
 
-@app.post("/calculate/transport_emissions")
+@app.post("/calculate/transport_table") #for tables
+def calculate_transport_table(req: TransportTableRequest):
+    total = 0.0
+    row_results = []
+
+    for row in req.rows:
+        emission = calculate_transport_single(
+            row.mode,
+            row.vehicle_class,
+            row.variant,
+            row.distance_km,
+            row.mass_tonnes
+        )
+        total += emission
+
+        row_results.append({
+            "mode": row.mode,
+            "vehicle_class": row.vehicle_class,
+            "variant": row.variant,
+            "distance_km": row.distance_km,
+            "mass_tonnes": row.mass_tonnes,
+            "emission_kgco2e": emission
+        })
+
+    return {
+        "total_emissions": total,
+        "rows": row_results
+    }
+
+@app.post("/calculate/transport_emissions") #for single-row tests
 def calculate_transport_emissions(req: TransportCalcRequest):
     mode_key = req.mode.lower()
 
@@ -863,3 +929,4 @@ def save_profile(req: ProfileSaveRequest):
     }
     save_profiles(profiles)
     return {"status": "ok", "saved_profile": req.profile_name}
+    

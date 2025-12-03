@@ -21,12 +21,11 @@ class _DynamicProfileState extends State<DynamicSustainabilityNews> {
           children: [
 
             //--Custom Header for Home--
-            PageHeaderFour(title: 'Sustainability News',
-            summary: 'Type here', 
-            whathappens: widget.settingstogglee,
-            color: Apptheme.auxilary
+            Pageheaders(
+              settingstogglee: null, 
+              title: 'Sustainability News', 
+              child: null,
             ),
-        
             
             //--Main Page--
             Expanded(

@@ -174,13 +174,13 @@ final List<Map<String, double>> toggleTotals = [
               alignment: Alignment.centerLeft,
               child: Container(
                 height: 140,
-                width: 35,
+                width: 25,
                 
                 decoration: BoxDecoration(
                   color: Apptheme.widgetclrlight,
                   border: Border(
                     right: BorderSide(
-                      color: Apptheme.drawerbackground,
+                      color: Apptheme.widgetsecondaryclr,
                       width: 2
                     )
                   ),
@@ -195,7 +195,7 @@ final List<Map<String, double>> toggleTotals = [
                     icon: Icon(
                       Icons.drag_indicator, 
                       color: Apptheme.iconsdark,
-                      size: 30,
+                      size: 25,
                     ),
                     padding: EdgeInsets.zero,
                   ),
@@ -363,7 +363,10 @@ final List<Map<String, double>> toggleTotals = [
             ),
           
             //--Custom Header for Home--
-            PageHeaderTwo(title: "ECO-pi", whathappens:widget.settingstogglee,),
+            PageHeaderTwo(
+              title: "ECO-pi", 
+              whathappens:widget.settingstogglee,
+            ),
             
           ],
           ),

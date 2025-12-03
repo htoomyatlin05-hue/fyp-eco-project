@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/design/apptheme/colors.dart';
 import 'package:test_app/design/apptheme/textlayout.dart';
+import 'package:test_app/design/primary_elements(to_set_up_pages)/app_design.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/auto_tab_3pages.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/auto_tab_2pages.dart';
 import 'package:test_app/design/secondary_elements_(to_design_pages)/dropdown_attributes_linked.dart';
@@ -273,17 +274,21 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
             Align(
               alignment: Alignment.centerLeft,
               child: Container(
-                height: double.infinity,
-                width: 30,
+                height: 140,
+                width: 25,
                 
                 decoration: BoxDecoration(
                   color: Apptheme.widgetclrlight,
                   border: Border(
                     right: BorderSide(
-                      color: Apptheme.drawerbackground,
+                      color: Apptheme.widgetsecondaryclr,
                       width: 2
                     )
                   ),
+                  borderRadius: BorderRadius.only(
+                    topRight: Radius.circular(5),
+                    bottomRight: Radius.circular(5)
+                  )
                 ),
                 child: Center(
                   child: IconButton(
@@ -291,13 +296,13 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
                     icon: Icon(
                       Icons.drag_indicator, 
                       color: Apptheme.iconsdark,
+                      size: 25,
                     ),
                     padding: EdgeInsets.zero,
                   ),
                 ),
               ),
             ),
-                
             //--Main Page--
             Positioned(
               left: 30,
@@ -393,19 +398,17 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
                       pg3flexValue2: 1, 
                       
                       firstchildof1: 
-                      Container(
-                        child: ListView.builder(
-                          shrinkWrap: true,
-                          physics: AlwaysScrollableScrollPhysics(),
-                          itemCount: widgetofpage1.length,
-                          itemBuilder: (context, index) {
-                            return Card(
-                              elevation: 0,
-                              color: Apptheme.transparentcheat,
-                              child: widgetofpage1[index],
-                            );
-                          },
-                        ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemCount: widgetofpage1.length,
+                        itemBuilder: (context, index) {
+                          return Card(
+                            elevation: 0,
+                            color: Apptheme.transparentcheat,
+                            child: widgetofpage1[index],
+                          );
+                        },
                       ), 
               
                       secondchildof1: Container(), 
@@ -449,132 +452,57 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
             ),
 
             //--Custom Header for Home--
-            Container(
-            height: 140,
-            width: double.infinity,
-            decoration: 
-            BoxDecoration(
-              color: Apptheme.header,
-                boxShadow: [
-                  BoxShadow(
-                    color: Apptheme.header,
-                    spreadRadius: 4,
-                    blurRadius: 4,
-                    offset: const Offset(0, 4)
+            Pageheaders(
+              title: 'Attributes',
+              settingstogglee: widget.settingstogglee,
+              child: TextButton(
+              child: 
+              Padding(
+                padding: const EdgeInsets.only(top: 20),
+                child: 
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: 170,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Apptheme.widgetsecondaryclr,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: 
+                    showThreePageTabs 
+
+                  ? Align(
+                      alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Labelsinbuttons(
+                        title: 'Cradle to Grave', 
+                        color: Apptheme.textclrlight, 
+                        fontsize: 20),
+                    ),
                   )
-                ]
+                  
+                  : Align(
+                      alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 10),
+                      child: Labelsinbuttons(
+                        title: 'Cradle to Gate', 
+                        color: Apptheme.textclrlight, 
+                        fontsize: 20),
+                    ),
+                  )
+                  ),
+                ),
+              ),
+                onPressed: () {
+                  setState(() {
+                    showThreePageTabs = !showThreePageTabs;
+                  });
+                },
+              ),
             ),
-            child:
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-
-                      //--"Title"--
-                      Expanded(
-                        child: 
-                          Center(
-                            child: Padding (padding: EdgeInsetsGeometry.only(left:20, right: 20, top: 15),
-                                child:
-                                Column(
-                                  children: [
-
-                                    //--TITLE--
-                                    Align(
-                                      alignment: Alignment.centerLeft,
-                                      child: Titletext(
-                                        title: 'Product Analysis',
-                                        color: Apptheme.textclrlight,
-                                      ),
-                                    ),
-
-
-                                  
-                                    //--Boundary Definer--
-                                   Align(
-                                    alignment: Alignment.centerLeft,
-                                     child: 
-                                     TextButton(
-                                      child: 
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 20),
-                                        child: 
-                                        ConstrainedBox(
-                                          constraints: BoxConstraints(
-                                            maxWidth: 170,
-                                          ),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Apptheme.widgetsecondaryclr,
-                                              borderRadius: BorderRadius.circular(10),
-                                            ),
-                                            child: 
-                                            showThreePageTabs 
-
-                                          ? Align(
-                                              alignment: Alignment.centerLeft,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(left: 10),
-                                              child: Labelsinbuttons(
-                                                title: 'Cradle to Grave', 
-                                                color: Apptheme.textclrlight, 
-                                                fontsize: 20),
-                                            ),
-                                          )
-                                          
-                                          : Align(
-                                              alignment: Alignment.centerLeft,
-                                            child: Padding(
-                                              padding: const EdgeInsets.only(left: 10),
-                                              child: Labelsinbuttons(
-                                                title: 'Cradle to Gate', 
-                                                color: Apptheme.textclrlight, 
-                                                fontsize: 20),
-                                            ),
-                                          )
-                                          ),
-                                        ),
-                                      ),
-                                        onPressed: () {
-                                          setState(() {
-                                            showThreePageTabs = !showThreePageTabs;
-                                          });
-                                        },
-                                      ),
-                                   )
-                                  ],
-                                ),
-                                ),
-                          ),
-                        ),
-                      
-                      //--Settings (Trailing)--
-                      Align(
-                        alignment: AlignmentGeometry.center,
-                        child:
-                          Padding (padding: EdgeInsetsGeometry.only(right:35, left: 0, top: 5),
-                            child: 
-                              SizedBox(
-                                height: double.infinity,
-                                width: 40,
-                                child:
-                                  IconButton(
-                                  onPressed: widget.settingstogglee,
-                                  icon: 
-                                    Icon(Icons.settings,
-                                    size: 25,
-                                    color: Apptheme.iconslight,
-                                    ),
-                                    alignment: AlignmentDirectional.center,
-                                    padding: EdgeInsets.zero,
-                                  ),                          
-                              ),        
-                            ), 
-                      ),
-                      
-                    ],
-                  ) ,
-            ),
-            
           ],
           ),
       );

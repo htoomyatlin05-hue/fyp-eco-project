@@ -80,6 +80,9 @@ sheet13 = book['Machine_Process']
 sheet14 = book['YCM']
 sheet15 = book['Amada']
 sheet16 = book['Mazak']
+sheet17 = book['Van']
+sheet18 = book['HGV']
+
 # Helper functions to read values from Excel columns
 def extract_selection_list(cells):
     """Stops reading when it finds an empty cell."""
@@ -186,6 +189,14 @@ container_value_cells  = sheet3['E73':'E79']
 vehicle_value_cells    = sheet3['E80':'E82']
 roro_value_cells       = sheet3['E83':'E85']
 
+van_mode_cells         = sheet17['A11':'A22']
+van_emission_cells     = sheet17['C11':'C22']
+
+HGV_mode_cells         = sheet18['A21':'A52']
+HGV_emission_cells     = sheet18['C21':'C52']
+HGV_r_mode_cells       = sheet18['E21':'E52']
+HGV_r_emission_cells   = sheet18['G21':'G52']
+
 machine_value_cells                 = sheet4['A2':'A999']
 specific_machine_energy_use_cells   = sheet4['B2':'B999']
 machine_types_cells                 = sheet13['A2':'A999']
@@ -245,6 +256,13 @@ HGV_R_diesel_list     = extract_list(HGV_R_diesel_cells)
 HGV_R_0_diesel_list   = extract_list(HGV_R_0_diesel_cells)
 HGV_R_50_diesel_list  = extract_list(HGV_R_50_diesel_cells)
 HGV_R_100_diesel_list = extract_list(HGV_R_100_diesel_cells)
+
+van_mode_list       = extract_list(van_mode_cells)
+van_emission_list   = extract_list(van_emission_cells)
+HGV_mode_list       = extract_list(HGV_mode_cells)
+HGV_emission_list   = extract_list(HGV_emission_cells)
+HGV_r_mode_list     = extract_list(HGV_r_mode_cells)
+HGV_r_emission_list = extract_list(HGV_r_emission_cells)
 
 flight_list        = extract_list(flight_cells)
 Int_flight_list    = extract_list(Int_flight_cells)
@@ -668,6 +686,7 @@ def get_options():
       - Usage Types
       - Disassembly by Industry
       - Machine Types
+      - Van Types
     """
     return {
         "countries": country_list,
@@ -688,7 +707,13 @@ def get_options():
         "machine_type": machine_types,
         "YCM_types":YCM_machine_model,
         "Amada_types":Amada_machine_model,
-        "Mazak_types":Mazak_machine_model
+        "Mazak_types":Mazak_machine_model,
+        "Van_mode":van_mode_list,
+        "Van_emissions":van_emission_list,
+        "HGV_mode":HGV_mode_list,
+        "HGV_emissions":HGV_mode_list,
+        "HGV_r_mode:":HGV_r_mode_list,
+        "HGV_r_emissions":HGV_r_emission_list
     }
 
 @app.get("/meta/transport/config")

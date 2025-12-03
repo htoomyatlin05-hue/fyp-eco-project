@@ -594,7 +594,7 @@ class MaterialEmissionReq(BaseModel):
 class MachineEmissionsReq(BaseModel):
     machine_model: str #Machine types
     country: str
-    time: float 
+    time_operated_hr: float 
     power: float
 class TransportCalcRequest(BaseModel):
     mode: str            # "van", "hgv", "flight", "rail", "sea_cargo", ...
@@ -857,7 +857,7 @@ def get_countries():
     }
 
 @app.post("/calculate/machine_power_emission")
-def calculate_machine_power_emission(req: MachineEmissionsReq):
+def calculate_machine_power_emission(req:MachineEmissionsReq):
     if req.country not in country_list:
         raise HTTPException(
             status_code=400,

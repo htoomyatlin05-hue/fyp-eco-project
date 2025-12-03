@@ -696,7 +696,6 @@ def get_options():
         "recycling_types": metal_recycling_types_list,
         "grid_intensity": electricity_list,
         "transport_types": transport_list,
-        "van "
         "indicator": Indicator_GHG,
         "GHG": GHG_values,
         "GWP": GWP_for_GHG,

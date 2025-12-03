@@ -844,6 +844,17 @@ def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of 
         "material_emission_factor":emisson_factor,
         "materialacq_emission":calculated_emission
     }
+@app.get("/meta/machining/mazak")
+def get_mazak_list():
+    return {
+        "Mazak_machine_model": Mazak_machine_model
+    }
+
+@app.get("/meta/machining/countries")
+def get_countries():
+    return {
+        "countries": country_list
+    }
 
 @app.post("/calculate/machine_power_emission")
 def calculate_machine_power_emission(req: MachineEmissionsReq):

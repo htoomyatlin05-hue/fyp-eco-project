@@ -47,56 +47,59 @@ class _WelcomepageState extends State<Welcomepage> {
             Row(
               children: [
 
-                Container(
-                  width: 500,
-                  color: Apptheme.transparentcheat,
-                  child: 
-                  ListView(
-                    children: [
-                                
-                      Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 10),
-                          child: Welcomepagelogo(
-                            whathappens: null,
-                            choosecolor: Apptheme.transparentcheat,
-                            pad: 0,
-                          ),
-                        ),
-                      ),
-                  
-                      SizedBox(
-                        child: 
+                Padding(
+                  padding: const EdgeInsets.only(left: 20),
+                  child: Container(
+                    width: 500,
+                    color: Apptheme.transparentcheat,
+                    child: 
+                    ListView(
+                      children: [
+                                  
                         Align(
                           alignment: Alignment.center,
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            child: Bigfocusedtext(title: 'ECO-pi',),
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Welcomepagelogo(
+                              whathappens: null,
+                              choosecolor: Apptheme.transparentcheat,
+                              pad: 0,
+                            ),
                           ),
                         ),
-                      ),
-                  
-                      SizedBox(
-                        height: 330,
-                        child: AspectRatio(
-                          aspectRatio: 16/9,
-                          child: SigninField())
-                      ),
-                      
-                      Container(
-                        color: Apptheme.transparentcheat,
-                        height: 50,
-                        child: Center(
-                          child: IconButton(
-                            onPressed: () {RootScaffold.of(context)?.goToHomePage();
-                            },
-                            icon: const Icon(Icons.alarm),
-                            color: Apptheme.iconslight,
+                    
+                        SizedBox(
+                          child: 
+                          Align(
+                            alignment: Alignment.center,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: Bigfocusedtext(title: 'ECO-pi',),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                    
+                        SizedBox(
+                          height: 330,
+                          child: AspectRatio(
+                            aspectRatio: 16/9,
+                            child: SigninField())
+                        ),
+                        
+                        Container(
+                          color: Apptheme.transparentcheat,
+                          height: 50,
+                          child: Center(
+                            child: IconButton(
+                              onPressed: () {RootScaffold.of(context)?.goToHomePage();
+                              },
+                              icon: const Icon(Icons.alarm),
+                              color: Apptheme.iconslight,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               
@@ -117,7 +120,7 @@ class _WelcomepageState extends State<Welcomepage> {
                     ),
                     child: Padding(
                       padding: const EdgeInsets.only(left: 20, top: 20, right: 20),
-                      child: Column(
+                      child: ListView(
                         children: [
                           Align(
                             alignment: Alignment.centerLeft,

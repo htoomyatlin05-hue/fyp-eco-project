@@ -80,6 +80,9 @@ sheet13 = book['Machine_Process']
 sheet14 = book['YCM']
 sheet15 = book['Amada']
 sheet16 = book['Mazak']
+sheet17 = book['Van']
+sheet18 = book['HGV']
+
 # Helper functions to read values from Excel columns
 def extract_selection_list(cells):
     """Stops reading when it finds an empty cell."""
@@ -186,6 +189,14 @@ container_value_cells  = sheet3['E73':'E79']
 vehicle_value_cells    = sheet3['E80':'E82']
 roro_value_cells       = sheet3['E83':'E85']
 
+van_mode_cells         = sheet17['A11':'A22']
+van_emission_cells     = sheet17['C11':'C22']
+
+HGV_mode_cells         = sheet18['A21':'A52']
+HGV_emission_cells     = sheet18['C21':'C52']
+HGV_r_mode_cells       = sheet18['E21':'E52']
+HGV_r_emission_cells   = sheet18['G21':'G52']
+
 machine_value_cells                 = sheet4['A2':'A999']
 specific_machine_energy_use_cells   = sheet4['B2':'B999']
 machine_types_cells                 = sheet13['A2':'A999']
@@ -215,7 +226,7 @@ GWP_for_GHG_cells      = sheet8["C2":"C999"]
 Process_cells   = sheet12["A2":"A999"]
 Facilities_cells    = sheet11["A2":"A999"]
 Usage_type_cells     = sheet10["A2":"A999"]
-Disassembly_by_Industry_cells     =sheet9["A2":"A999"]
+Disassembly_by_Industry_cells    = sheet9["A2":"A999"]
 
 # turn into lists
 country_list      = extract_selection_list(country_cells)
@@ -245,6 +256,13 @@ HGV_R_diesel_list     = extract_list(HGV_R_diesel_cells)
 HGV_R_0_diesel_list   = extract_list(HGV_R_0_diesel_cells)
 HGV_R_50_diesel_list  = extract_list(HGV_R_50_diesel_cells)
 HGV_R_100_diesel_list = extract_list(HGV_R_100_diesel_cells)
+
+van_mode_list       = extract_list(van_mode_cells)
+van_emission_list   = extract_list(van_emission_cells)
+HGV_mode_list       = extract_list(HGV_mode_cells)
+HGV_emission_list   = extract_list(HGV_emission_cells)
+HGV_r_mode_list     = extract_list(HGV_r_mode_cells)
+HGV_r_emission_list = extract_list(HGV_r_emission_cells)
 
 flight_list        = extract_list(flight_cells)
 Int_flight_list    = extract_list(Int_flight_cells)
@@ -533,6 +551,33 @@ def get_best_material_and_country(
 
     return best_choice
 
+#Transportation calculation helper
+def calculate_transport_single(mode, vehicle_class, variant, distance_km, mass_tonnes=None):
+    if mode not in TRANSPORT_CONFIG:
+        raise HTTPException(status_code=400, detail="Unknown transport mode")
+
+    config = TRANSPORT_CONFIG[mode]
+
+    # Validate class
+    if vehicle_class not in config["classes"]:
+        raise HTTPException(status_code=400, detail=f"Unknown class for mode '{mode}'")
+
+    class_index = config["classes"].index(vehicle_class)
+
+    # Validate variant
+    if variant not in config["variants"]:
+        raise HTTPException(status_code=400, detail=f"Unknown variant for mode '{mode}'")
+
+    ef_list = config["variants"][variant]
+    ef = float(ef_list[class_index])     # EF for that class & variant
+
+    # HGV mass factor
+    if mode.startswith("hgv") and mass_tonnes is not None:
+        ef *= mass_tonnes
+
+    return ef * distance_km
+
+
 
 # --------- 5. API REQUEST / RESPONSE MODELS ---------------------------------#
 
@@ -549,6 +594,16 @@ class TransportCalcRequest(BaseModel):
     distance_km: float   # distance
     # mass_tonnes is optional – only needed if your EF is in kgCO2e per ton-km
     mass_tonnes: Optional[float] = None
+
+class TransportRow(BaseModel):
+    mode: str
+    vehicle_class: str
+    variant: str
+    distance_km: float
+    mass_tonnes: Optional[float] = None
+
+class TransportTableRequest(BaseModel):
+    rows: List[TransportRow]
 
 class FugitiveEmissionFromExcelRequest(BaseModel):
     ghg_name: str               # GHG name from Excel (e.g. "CO2", "R134a")
@@ -631,6 +686,7 @@ def get_options():
       - Usage Types
       - Disassembly by Industry
       - Machine Types
+      - Van Types
     """
     return {
         "countries": country_list,
@@ -651,30 +707,37 @@ def get_options():
         "machine_type": machine_types,
         "YCM_types":YCM_machine_model,
         "Amada_types":Amada_machine_model,
-        "Mazak_types":Mazak_machine_model
+        "Mazak_types":Mazak_machine_model,
+        "Van_mode":van_mode_list,
+        "Van_emissions":van_emission_list,
+        "HGV_mode":HGV_mode_list,
+        "HGV_emissions":HGV_emission_list,
+        "HGV_r_mode:":HGV_r_mode_list,
+        "HGV_r_emissions":HGV_r_emission_list
     }
 
-@app.get("/meta/transport/options/{mode}")
-def get_transport_options(mode: str):
+@app.get("/meta/transport/config")
+def get_transport_config():
     """
-    Return classes and variants for a given transport mode.
-    mode must be a key in TRANSPORT_CONFIG (e.g. 'van', 'hgv', 'flight', 'rail', 'sea_cargo')
+    Return all transport modes, and for each mode:
+      - classes
+      - variants (fuel/load/band)
     """
-    mode_key = mode.lower()
-
-    if mode_key not in TRANSPORT_CONFIG:
-        raise HTTPException(status_code=400, detail="Unknown transport mode")
-
-    config = TRANSPORT_CONFIG[mode_key]
-    classes = config["classes"]
-    variants = list(config["variants"].keys())
+    modes = list(TRANSPORT_CONFIG.keys())
+    classes_by_mode = {
+        mode: cfg["classes"]
+        for mode, cfg in TRANSPORT_CONFIG.items()
+    }
+    variants_by_mode = {
+        mode: list(cfg["variants"].keys())
+        for mode, cfg in TRANSPORT_CONFIG.items()
+    }
 
     return {
-        "mode": mode_key,
-        "classes": classes,
-        "variants": variants,
+        "modes": modes,
+        "classes_by_mode": classes_by_mode,
+        "variants_by_mode": variants_by_mode
     }
-
 
 @app.get("/meta/machines_type")
 def get_machinetypes():
@@ -742,7 +805,6 @@ def list_profiles():
     profiles = load_profiles()
     return {"profiles": list(profiles.keys())}
 
-
 @app.post("/calculate/material_emission")
 def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of the input the fastapi endpoint receives.
     if req.country not in country_list:
@@ -774,7 +836,36 @@ def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of 
         "materialacq_emission":calculated_emission
     }
 
-@app.post("/calculate/transport_emissions")
+@app.post("/calculate/transport_table") #for tables
+def calculate_transport_table(req: TransportTableRequest):
+    total = 0.0
+    row_results = []
+
+    for row in req.rows:
+        emission = calculate_transport_single(
+            row.mode,
+            row.vehicle_class,
+            row.variant,
+            row.distance_km,
+            row.mass_tonnes
+        )
+        total += emission
+
+        row_results.append({
+            "mode": row.mode,
+            "vehicle_class": row.vehicle_class,
+            "variant": row.variant,
+            "distance_km": row.distance_km,
+            "mass_tonnes": row.mass_tonnes,
+            "emission_kgco2e": emission
+        })
+
+    return {
+        "total_emissions": total,
+        "rows": row_results
+    }
+
+@app.post("/calculate/transport_emissions") #for single-row tests
 def calculate_transport_emissions(req: TransportCalcRequest):
     mode_key = req.mode.lower()
 
@@ -863,3 +954,4 @@ def save_profile(req: ProfileSaveRequest):
     }
     save_profiles(profiles)
     return {"status": "ok", "saved_profile": req.profile_name}
+    

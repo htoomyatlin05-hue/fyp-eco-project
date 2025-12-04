@@ -288,10 +288,16 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         child: 
           Stack(
             children: [
+              
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 0),
+                padding: const EdgeInsets.only(top: 30, bottom: 30, right: 5),
                 child: Container(
-                  color: Apptheme.systemUI,
+                  decoration: BoxDecoration(
+                    color: Apptheme.transparentcheat,
+                    borderRadius: BorderRadius.only(topLeft: Radius.circular(0), bottomLeft: Radius.circular(0
+                    )
+                  )
+                  ),
                   height: double.infinity,
                   width: double.infinity,
                   child:
@@ -305,16 +311,17 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
                           width: 25,
                           
                           decoration: BoxDecoration(
-                            color: Apptheme.systemUI,
+                            color: Apptheme.drawer,
+                            
                             border: Border(
                               right: BorderSide(
-                                color: Apptheme.systemUI,
+                                color: Apptheme.drawer,
                                 width: 2
                               )
                             ),
                             borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(5),
-                              bottomRight: Radius.circular(5)
+                              topLeft: Radius.circular(30),
+                              bottomLeft: Radius.circular(30)
                             )
                           ),
                           child: Center(
@@ -340,7 +347,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
               top: 4,
               bottom: 4,
               child: ClipRRect(
-                borderRadius: BorderRadiusGeometry.all(Radius.circular(20)),
+                borderRadius: BorderRadiusGeometry.circular(20),
                 child: Container(
                   color: Apptheme.backgroundlight,
                   child: Stack(
@@ -348,7 +355,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
                   
                     //--Main Page--
                     Positioned(
-                      left: 30,
+                      left: 0,
                       right: 0,
                       top: 0,
                       bottom: 0,
@@ -358,6 +365,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
                         child: 
                         Container(
                           padding: EdgeInsets.only(bottom: 15, top:170),
+                          color: Apptheme.backgroundlight,
                           child: 
                           showThreePageTabs 
                           ?ManualTab3pages(

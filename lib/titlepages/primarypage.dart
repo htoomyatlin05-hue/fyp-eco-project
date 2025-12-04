@@ -110,14 +110,9 @@ class _HomeScreenState extends State<HomeScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 10, bottom: 10),
             child: 
-            ClipRRect(
-              borderRadius: BorderRadiusGeometry.all(Radius.circular(25)),
-              child: 
-              
-              Container(
-                color: Apptheme.backgroundlight,
-                child: pages[_selectedIndex]
-              )
+            Container(
+              color: Apptheme.transparentcheat,
+              child: pages[_selectedIndex]
             ),
           ),
         )

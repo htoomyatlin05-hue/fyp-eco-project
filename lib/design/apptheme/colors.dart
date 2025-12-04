@@ -4,13 +4,16 @@ class Apptheme{
   //--contents color theme--
   static const Color lightpallete1 = Color(0xFFF7F4EB);//--White Backgrounds--
   static const Color lightpallete2 = Color(0xFFEFE8DF); //--For parent widgets--
-  static const Color palleteaccentual1 = Color(0xFF838D75) ; //--Primary inner widgets--
-  static const Color palleteaccentual2 = Color(0xFF595E48); //--Headers and main--
+  static const Color primarycolour1 = Color(0xFF838D75) ; //--Primary inner widgets--
+  static const Color primarycolour2 = Color(0xFF595E48); //--Headers and main--
   static const Color darkpallete5 = Color(0xFF4E5454); //--
   static const Color darkpallete6 = Color(0xFF2B343F);
-  static const Color eXTRA1 = lightpallete2;
+  static const Color accent1 = Color(0xFFCB7A5C);
+  static const Color eXTRA1 = Color(0xFFCB7A5C);
   static const Color eXTRA2 = Color(0xFF5F1D20);
   static const Color eXTRA3 = Color(0xFF733438);
+  static const Color eXTRA4 = Color(0xFFCB7A5C);
+
 
   static const Color texthintclrlight = Color(0x6DF9ECE0);
   static const Color texthintclrdark = Color(0x874E5454);
@@ -21,8 +24,8 @@ class Apptheme{
   static const Color systemUI = Color(0xFF393D3D);
 
   //--general --
-  static const Color header= palleteaccentual2;//--Headers and parent widget borders--
-  static const Color auxilary = palleteaccentual1;//--Lighter version of Aux 2, for text backgrounds--
+  static const Color header= primarycolour2;//--Headers and parent widget borders--
+  static const Color auxilary = primarycolour1;//--Lighter version of Aux 2, for text backgrounds--
   static const Color backgrounddark = darkpallete5;
   static const Color backgroundlight = lightpallete1; //--Eg. background--
   static const Color irregularaccent = lightpallete2;
@@ -41,17 +44,22 @@ class Apptheme{
 
   //--universal widgets--
   static const Color widgetclrlight = lightpallete2;
-  static const Color widgetsecondaryclr = palleteaccentual1;
+  static const Color widgetsecondaryclr = primarycolour1;
   static const Color widgetclrdark = darkpallete6;
   static const Color widgetborderlight = lightpallete1;
   static const Color widgetborderdark = darkpallete6;
-  static const Color tabbedpageclr = palleteaccentual1;
+  static const Color tabbedpageclr = primarycolour1;
   static const Color unselected = darkpallete5; //--Unselected--
 
   //--icons and buttons--
   static const Color iconslight = textclrlight;
   static const Color iconsdark = textclrdark;
-  static const Color iconsprimary = palleteaccentual2;
+  static const Color iconsprimary = primarycolour2;
   static const Color windowcontrols = lightpallete1;
   
+  //--Pie charts and other multi-coloured elements--
+  static const Color piechart1 = eXTRA1;
+  static const Color piechart2 = eXTRA2;
+  static const Color piechart3 = eXTRA3;
+  static const Color piechart4 = eXTRA4;
 }

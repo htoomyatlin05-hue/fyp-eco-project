@@ -115,7 +115,7 @@ class _LoginfieldsampleState extends State<Loginfieldsample> {
                           height: btnHeight,
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Apptheme.palleteaccentual1,
+                              backgroundColor: Apptheme.error,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),

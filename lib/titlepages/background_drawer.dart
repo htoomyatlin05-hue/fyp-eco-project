@@ -41,6 +41,14 @@ class BackgroundDrawer extends StatelessWidget {
       Leftdrawerlisttile(
         title: 'Sustainability News', 
         whathappens: () => onSelectPage(3)),
+
+      Leftdrawerlisttile(
+        title: 'About Us', 
+        whathappens: () => onSelectPage(4)),
+
+      Leftdrawerlisttile(
+        title: 'Debug Page', 
+        whathappens: () => onSelectPage(5)),
                   
     ];
 

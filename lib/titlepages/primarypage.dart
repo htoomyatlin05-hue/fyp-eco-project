@@ -6,6 +6,7 @@ import 'package:test_app/screens/dynamic_pages/fallocation.dart';
 import 'package:test_app/screens/dynamic_pages/bdynamichome.dart';
 import 'package:test_app/screens/dynamic_pages/bproductanlys.dart';
 import 'package:test_app/screens/dynamic_pages/gsustainabilitynews.dart';
+import 'package:test_app/screens/dynamic_pages/zdebug.dart';
 
 
 class HomeScreen extends StatefulWidget {
@@ -78,9 +79,10 @@ class _HomeScreenState extends State<HomeScreen> {
     final List<Widget> pages = [
       Dynamichome(settingstogglee: settingstoggle, menutogglee: menutoggle),
       Dynamicprdanalysis(settingstogglee: settingstoggle, menutogglee: menutoggle),
-      DynamicAllocation(settingstogglee: settingstoggle,),
-      DynamicSustainabilityNews(settingstogglee: settingstoggle),
-      DynamicCredits(settingstogglee: settingstoggle),
+      DynamicAllocation(settingstogglee: settingstoggle, menutoggle: menutoggle,),
+      DynamicSustainabilityNews(settingstogglee: settingstoggle, menutoggle: menutoggle,),
+      DynamicCredits(settingstogglee: settingstoggle, menutoggle: menutoggle,),
+      DebugPage(settingstogglee: settingstoggle, menutoggle: menutoggle,),
     ];
 
     return Scaffold(

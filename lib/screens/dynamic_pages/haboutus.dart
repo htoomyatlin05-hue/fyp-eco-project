@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/design/apptheme/colors.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/app_design.dart';
+import 'package:test_app/design/primary_elements(to_set_up_pages)/pages_layouts.dart';
 
 
 class DynamicCredits extends StatefulWidget {
   final VoidCallback settingstogglee;
+  final VoidCallback menutoggle;
+
   const DynamicCredits({super.key, 
-  required this.settingstogglee});
+  required this.settingstogglee,
+  required this.menutoggle,
+  });
 
   @override
   State<DynamicCredits> createState() => _DynamicCreditsState();
@@ -15,27 +20,14 @@ class DynamicCredits extends StatefulWidget {
 class _DynamicCreditsState extends State<DynamicCredits> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-        child: 
-          Column(
-          children: [
-
-            //--Custom Header for Home--
-            Pageheaders(
-              settingstogglee: null, 
-              title: 'About Us', 
-              child: null,
-            ),
-        
-            
-            //--Main Page--
-            Expanded(
-              child: Padding(padding: EdgeInsetsGeometry.all(20),
-              child: null
-              ),
-            )
-          ],
-          ),
-      );
+    return PrimaryPages(
+      menutogglee: widget.menutoggle, 
+      header: Pageheaders(
+        settingstogglee: widget.settingstogglee, 
+        title: 'About ECO-pi', 
+        child: null,
+      ),
+      childofmainpage: null,
+    );
   }
 }

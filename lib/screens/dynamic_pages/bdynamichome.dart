@@ -32,7 +32,7 @@ final List<List<PieChartSectionData>> pieDataSets = [
   //--Sort by: Scope Categories--
   [
     PieChartSectionData(
-      color: Apptheme.palleteaccentual1,
+      color: Apptheme.piechart1,
       value: 60,
       title: 'Scope 1',
       radius: 170,
@@ -43,7 +43,7 @@ final List<List<PieChartSectionData>> pieDataSets = [
       ),
     ),
     PieChartSectionData(
-      color: Apptheme.palleteaccentual2,
+      color: Apptheme.piechart2,
       value: 40,
       title: 'Scope 2',
       radius: 170,
@@ -54,7 +54,7 @@ final List<List<PieChartSectionData>> pieDataSets = [
       ),
     ),
     PieChartSectionData(
-      color: Apptheme.lightpallete1,
+      color: Apptheme.piechart3,
       value: 30,
       title: 'Scope 3',
       radius: 170,
@@ -68,7 +68,7 @@ final List<List<PieChartSectionData>> pieDataSets = [
   //--Sort by: Attributes--
   [
     PieChartSectionData(
-      color: Apptheme.palleteaccentual1,
+      color: Apptheme.piechart1,
       value: 5,
       title: 'Material Acqusition',
       radius: 170,
@@ -79,7 +79,7 @@ final List<List<PieChartSectionData>> pieDataSets = [
       ),
     ),
     PieChartSectionData(
-      color: Apptheme.palleteaccentual2,
+      color: Apptheme.piechart2,
       value: 2,
       title: 'Upstream Transport',
       radius: 170,
@@ -90,7 +90,7 @@ final List<List<PieChartSectionData>> pieDataSets = [
       ),
     ),
     PieChartSectionData(
-      color: Apptheme.lightpallete1,
+      color: Apptheme.piechart3,
       value: 3,
       title: 'Machining',
       radius: 170,
@@ -102,7 +102,7 @@ final List<List<PieChartSectionData>> pieDataSets = [
     ),
 
    PieChartSectionData(
-      color: Apptheme.palleteaccentual2,
+      color: Apptheme.piechart4,
       value: 2,
       title: 'Fugitive',
       radius: 170,
@@ -116,7 +116,7 @@ final List<List<PieChartSectionData>> pieDataSets = [
   //--Sort by: Boundaries--
   [
     PieChartSectionData(
-      color: Apptheme.palleteaccentual1,
+      color: Apptheme.piechart1,
       value: 155,
       title: 'Upstream',
       radius: 170,
@@ -127,7 +127,7 @@ final List<List<PieChartSectionData>> pieDataSets = [
       ),
     ),
     PieChartSectionData(
-      color: Apptheme.palleteaccentual2,
+      color: Apptheme.piechart2,
       value: 134,
       title: 'Production',
       radius: 170,
@@ -139,7 +139,7 @@ final List<List<PieChartSectionData>> pieDataSets = [
     ),
 
     PieChartSectionData(
-      color: Apptheme.lightpallete1,
+      color: Apptheme.piechart3,
       value: 98,
       title: 'Downstream',
       radius: 170,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:test_app/design/apptheme/colors.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/app_design.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/pages_layouts.dart';
+import 'package:test_app/design/secondary_elements_(to_design_pages)/widgets1.dart';
 
 
 class DynamicCredits extends StatefulWidget {
@@ -27,7 +28,11 @@ class _DynamicCreditsState extends State<DynamicCredits> {
         title: 'About Us', 
         child: null,
       ),
-      childofmainpage: null,
+      childofmainpage: Widgets1(
+        maxheight: 500,
+        backgroundcolor: Apptheme.widgetsecondaryclr,
+        child: null,
+      ),
     );
   }
 }

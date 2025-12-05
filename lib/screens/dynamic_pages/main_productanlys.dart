@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:test_app/design/apptheme/colors.dart';
 import 'package:test_app/design/apptheme/textlayout.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/app_design.dart';
-import 'package:test_app/design/primary_elements(to_set_up_pages)/auto_tab_3pages.dart';
-import 'package:test_app/design/primary_elements(to_set_up_pages)/auto_tab_2pages.dart';
+import 'package:test_app/design/secondary_elements_(to_design_pages)/auto_tabs.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/pages_layouts.dart';
 import 'package:test_app/design/secondary_elements_(to_design_pages)/dropdown_attributes.dart';
 import 'package:test_app/design/secondary_elements_(to_design_pages)/widgets1.dart';
@@ -340,7 +339,7 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
         ),
       ),
       childofmainpage: showThreePageTabs 
-        ?ManualTab3pages(
+        ? ManualTab3pages(
             tab1: 'Upstream', 
             tab1fontsize: 15, 
             tab2: 'Production', 

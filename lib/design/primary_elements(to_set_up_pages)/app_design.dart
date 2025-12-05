@@ -211,12 +211,4 @@ class PageheadersState extends State<Pageheaders> {
   }
 }
 
-//--Primary widgets containing other widgets--
-class PrimaryContainers extends StatelessWidget {
-  const PrimaryContainers({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return const Placeholder();
-  }
-}

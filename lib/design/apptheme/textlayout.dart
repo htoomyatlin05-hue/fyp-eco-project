@@ -180,7 +180,7 @@ class _HeadertextState extends State<Headertext> {
         fontSize: 20
       ),
       overflow: TextOverflow.fade,
-      maxLines: 6,
+      maxLines: 2,
       softWrap: true,
       ),
     );

@@ -8,9 +8,10 @@ from geopy.distance import geodesic #used to calculate the shortest distance btw
 from geopy.geocoders import Nominatim #converting a place name like "Germany" into latitude and longtiude coordinates
 import requests
 import re 
+import hashlib # for hashing passwords
 
-                #1.File Storage Setup#
 
+#1.File Storage Setup
 #Function to locate where user data is stored on their system
 def get_user_data_path(filename):
     if os.name == "nt":  # Windows
@@ -23,7 +24,7 @@ def get_user_data_path(filename):
 # Define file names
 PROFILE_FILE = get_user_data_path("profiles.json")
 EMISSION_FACTORS_FILE = get_user_data_path("custom_emission_factors.json")
-
+USERS_FILE = get_user_data_path("users_data.xlsx")
 # Make sure required files exist    
 def ensure_default_files():
     if not os.path.exists(EMISSION_FACTORS_FILE):
@@ -41,6 +42,50 @@ def load_profiles() -> Dict[str, dict]:
         with open(PROFILE_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     return {}
+def ensure_users_excel():
+    """
+    Make sure the users.xlsx file exists with a 'Users' sheet and headers.
+    """
+    if not os.path.exists(USERS_FILE):
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Users"
+        ws.append(["username", "password_hash"])
+        wb.save(USERS_FILE)
+
+
+def load_users_sheet():
+    """
+    Return workbook + sheet for users.xlsx, ensuring it exists.
+    """
+    ensure_users_excel()
+    wb = openpyxl.load_workbook(USERS_FILE)
+    if "Users" not in wb.sheetnames:
+        ws = wb.create_sheet("Users")
+        ws.append(["username", "password_hash"])
+    else:
+        ws = wb["Users"]
+    return wb, ws
+
+
+def find_user_row(ws, username: str):
+    """
+    Find the row index (1-based) of a given username in the Users sheet.
+    Returns None if not found.
+    """
+    for row in range(2, ws.max_row + 1):
+        cell_value = ws.cell(row=row, column=1).value
+        if cell_value == username:
+            return row
+    return None
+
+
+def hash_password(password: str) -> str:
+    """
+    Simple SHA-256 hash for passwords
+    """
+    return hashlib.sha256(password.encode("utf-8")).hexdigest()
+
 
 def save_profiles(profiles: Dict[str, dict]):
     with open(PROFILE_FILE, "w", encoding="utf-8") as f:
@@ -624,6 +669,7 @@ class ProfileSaveRequest(BaseModel):
     profile_name: str
     description: Optional[str] = ""
     data: dict  # arbitrary blob from Flutter (full form state)
+    username: Optional[str]=None
 
 class ProfileRenameRequest(BaseModel):
     old_name: str
@@ -641,6 +687,15 @@ class NewsArticle(BaseModel):
 class NewsResponse(BaseModel):
     total_results: int
     articles: List[NewsArticle]
+
+class UserSignupRequest(BaseModel):
+    username: str
+    password: str
+
+
+class UserLoginRequest(BaseModel):
+    username: str
+    password: str
 
 
 # --------- 6. FASTAPI APP + ENDPOINTS ---------------------------------------#
@@ -877,12 +932,20 @@ def get_profile(profile_name: str):
     return profiles[profile_name]
 
 @app.get("/profiles")
-def list_profiles():
+def list_profiles(username: Optional[str] = Query(None)):
     """
-    List all available profile names.
+    List profile names.
+    If 'username' query param is provided, only return that user's profiles.
     """
     profiles = load_profiles()
+    if username:
+        filtered = [
+            name for name, info in profiles.items()
+            if isinstance(info, dict) and info.get("owner") == username
+        ]
+        return {"profiles": filtered}
     return {"profiles": list(profiles.keys())}
+
 
 @app.post("/calculate/material_emission")
 def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of the input the fastapi endpoint receives.
@@ -1084,6 +1147,7 @@ def save_profile(req: ProfileSaveRequest):
     profiles[req.profile_name] = {
         "description": req.description,
         "data": req.data,
+        "owner": req.username
     }
     save_profiles(profiles)
     return {"status": "ok", "saved_profile": req.profile_name}
@@ -1127,3 +1191,50 @@ def rename_profile(req: ProfileRenameRequest):
         "old_name": req.old_name,
         "new_name": req.new_name,
     }
+
+@app.post("/auth/signup")
+def signup_user(req: UserSignupRequest):
+    """
+    Create a new user and store username/password in users.xlsx.
+    """
+    wb, ws = load_users_sheet()
+
+    # Check if username already exists
+    existing_row = find_user_row(ws, req.username)
+    if existing_row is not None:
+        raise HTTPException(status_code=400, detail="Username already exists")
+
+    pwd_hash = hash_password(req.password)
+    ws.append([req.username, pwd_hash])
+    wb.save(USERS_FILE)
+
+    return {"status": "ok", "username": req.username}
+
+
+@app.post("/auth/login")
+def login_user(req: UserLoginRequest):
+    """
+    Verify username/password against users.xlsx and return that user's profiles.
+    """
+    wb, ws = load_users_sheet()
+    row = find_user_row(ws, req.username)
+    if row is None:
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    stored_hash = ws.cell(row=row, column=2).value
+    if stored_hash != hash_password(req.password):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+
+    # Load profiles and filter by owner
+    profiles = load_profiles()
+    user_profiles = [
+        name for name, info in profiles.items()
+        if isinstance(info, dict) and info.get("owner") == req.username
+    ]
+
+    return {
+        "status": "ok",
+        "username": req.username,
+        "profiles": user_profiles,
+    }
+

@@ -187,12 +187,12 @@ class _DynamicprdanalysisState extends State<Dynamicprdanalysis> {
       Widgets1(maxheight: 250,
       child:
       DynamicDropdownMaterialAcquisition(
-        columnTitles: ['Transportation', 'gtgt','Distance'], 
-        isTextFieldColumn: [false, false, true], 
+        columnTitles: ['Transportation','Distance'], 
+        isTextFieldColumn: [false,  true], 
         addButtonLabel: 'Add transport cycle', 
         padding: 5, 
-        apiEndpoints: ['http://127.0.0.1:8000/news/sustainability', 'http://127.0.0.1:8000/news/sustainability'],
-        jsonKeys: ['articles', ],
+        apiEndpoints: ['http://127.0.0.1:8000/meta/options', ],
+        jsonKeys: ['transport_types', ],
         apiKeyMap: apiKeymaterials,
         endpoint: 'http://127.0.0.1:8000/calculate/material_emission',
         ),

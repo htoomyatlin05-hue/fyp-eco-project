@@ -625,6 +625,10 @@ class ProfileSaveRequest(BaseModel):
     description: Optional[str] = ""
     data: dict  # arbitrary blob from Flutter (full form state)
 
+class ProfileRenameRequest(BaseModel):
+    old_name: str
+    new_name: str
+
 class NewsArticle(BaseModel):
     title: str
     description: Optional[str]
@@ -910,6 +914,7 @@ def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of 
         "material_emission_factor":emisson_factor,
         "materialacq_emission":calculated_emission
     }
+
 @app.get("/meta/machining/mazak")
 def get_mazak_list():
     return {
@@ -1083,3 +1088,42 @@ def save_profile(req: ProfileSaveRequest):
     save_profiles(profiles)
     return {"status": "ok", "saved_profile": req.profile_name}
     
+@app.delete("/profiles/{profile_name}")
+def delete_profile(profile_name: str):
+    """
+    Delete a saved profile by name.
+    """
+    profiles = load_profiles()
+    if profile_name not in profiles:
+        raise HTTPException(status_code=404, detail="Profile not found")
+
+    # remove and save
+    del profiles[profile_name]
+    save_profiles(profiles)
+
+    return {"status": "deleted", "profile_name": profile_name}
+
+@app.post("/profiles/rename")
+def rename_profile(req: ProfileRenameRequest):
+    """
+    Rename an existing profile.
+    """
+    profiles = load_profiles()
+
+    if req.old_name not in profiles:
+        raise HTTPException(status_code=404, detail="Old profile name not found")
+
+    if req.new_name in profiles:
+        raise HTTPException(status_code=400, detail="New profile name already exists")
+
+    # move data to new key
+    profiles[req.new_name] = profiles[req.old_name]
+    del profiles[req.old_name]
+
+    save_profiles(profiles)
+
+    return {
+        "status": "renamed",
+        "old_name": req.old_name,
+        "new_name": req.new_name,
+    }

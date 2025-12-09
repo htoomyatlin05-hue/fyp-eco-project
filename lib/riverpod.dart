@@ -328,7 +328,7 @@ class EmissionCalculator extends StateNotifier<EmissionResults> {
       'endpoint': 'http://127.0.0.1:8000/calculate/van',
       'apiKeys': {
         "Class": "transport_type",
-        "Distance": "distance_km",
+        "Distance (km)": "distance_km",
       }
     },
     'machining': {
@@ -336,15 +336,15 @@ class EmissionCalculator extends StateNotifier<EmissionResults> {
       'apiKeys': {
         "Machine": "machine_model",
         "Country": "country",
-        "Time of operation": "time_operated_hr",
+        "Time of operation (hr)": "time_operated_hr",
       }
     },
     'fugitive': {
       'endpoint': 'http://127.0.0.1:8000/calculate/fugitive_emissions',
       'apiKeys': {
         "GHG": "ghg_name",
-        "Total Charge": "total_charged_amount_kg",
-        "Remaining Charge": "current_charge_amount_kg",
+        "Total Charge (kg)": "total_charged_amount_kg",
+        "Remaining Charge (kg)": "current_charge_amount_kg",
       }
     },
   };

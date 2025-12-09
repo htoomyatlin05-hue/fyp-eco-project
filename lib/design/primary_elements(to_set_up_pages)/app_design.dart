@@ -111,11 +111,13 @@ class Pageheaders extends StatefulWidget {
   final VoidCallback? settingstogglee;
   final String title;
   final Widget? child;
+  final double height;
 
   const Pageheaders({super.key,
   required this.settingstogglee,
   required this.title,
   required this.child,
+  this.height = 140,
   });
 
   @override
@@ -127,7 +129,7 @@ class PageheadersState extends State<Pageheaders> {
   Widget build(BuildContext context) {
     return 
       Container(
-      height: 140,
+      height: widget.height,
       width: double.infinity,
       decoration: 
       BoxDecoration(

@@ -14,9 +14,11 @@ void main() async {
     backgroundColor: Apptheme.drawer,
     titleBarStyle: TitleBarStyle.hidden,
     windowButtonVisibility: true,
-    minimumSize: Size(548, 250),
+    minimumSize: Size(60, 250),
   );
 
+
+//minimumSize: Size(548, 250),
   await windowManager.waitUntilReadyToShow(windowOptions, () async {
     await windowManager.show();
     

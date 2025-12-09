@@ -124,7 +124,12 @@ class _TypehereState extends State<Typehere> {
 //--Big Focused Text (APP NAME)--
 class Bigfocusedtext extends StatefulWidget {
   final String title;
-  const Bigfocusedtext({super.key, required this.title});
+  final double fontsize;
+
+  const Bigfocusedtext({super.key, 
+  required this.title,
+  this.fontsize = 60,
+  });
 
   @override
   State<Bigfocusedtext> createState() => _BigfocusedtextState();
@@ -137,7 +142,7 @@ class _BigfocusedtextState extends State<Bigfocusedtext> {
     return SizedBox(
       child: Text(widget.title,
       style: TextStyle(
-        fontSize: 60,
+        fontSize: widget.fontsize,
         fontWeight: FontWeight.bold,
         color: Apptheme.textclrspecial,
       ),
@@ -321,6 +326,7 @@ class Labelsinbuttons extends StatelessWidget {
           overflow: TextOverflow.fade,
           maxLines: 1,
           softWrap: false,
+          textAlign: TextAlign.center,
           )
         ),
       );

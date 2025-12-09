@@ -117,7 +117,7 @@ final List<Widget> widgetofpage1 = [
   Widgets1(
     maxheight: 250,
     child: AttributesMenu(
-      columnTitles: ['Class', 'Distance'],
+      columnTitles: ['Class', 'Distance (km)'],
       isTextFieldColumn: [false, true],
       dropDownLists: [
         ref.watch(vanModeProvider),
@@ -146,7 +146,7 @@ final List<Widget> widgetofpage2 = [
   Widgets1(
     maxheight: 250,
     child: AttributesMenu(
-      columnTitles: ['Machine', 'Country', 'Time of operation'],
+      columnTitles: ['Machine', 'Country', 'Time of operation (hr)'],
       isTextFieldColumn: [false, false, true],
       dropDownLists: [
         ref.watch(mazakTypesProvider),
@@ -174,7 +174,7 @@ final List<Widget> widgetofpage2 = [
   Widgets1(
     maxheight: 250,
     child: AttributesMenu(
-      columnTitles: ['GHG', 'Total Charge', 'Remaining Charge'],
+      columnTitles: ['GHG', 'Total Charge (kg)', 'Remaining Charge (kg)'],
       isTextFieldColumn: [false, true, true],
       dropDownLists: [
         ref.watch(ghgProvider),
@@ -269,187 +269,151 @@ final List<Widget> widgetofpage3 = [
 
 
     return PrimaryPages(
-      paddingadd: 15,
+      paddingadd: 15-40,
       menutogglee: widget.menutogglee, 
       header: Pageheaders(
         settingstogglee: widget.settingstogglee, 
+        height: 100,
         title: 'Attributes Analysis', 
-        child: TextButton(
-          child: 
-          Padding(
-            padding: const EdgeInsets.only(top: 20),
-            child: 
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxWidth: 170,
-              ),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Apptheme.widgetsecondaryclr,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: 
-                showThreePageTabs 
-      
-              ? Align(
-                  alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Labelsinbuttons(
-                    title: 'Cradle to Grave', 
-                    color: Apptheme.textclrlight, 
-                    fontsize: 20),
-                ),
-              )
-              
-              : Align(
-                  alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Labelsinbuttons(
-                    title: 'Cradle to Gate', 
-                    color: Apptheme.textclrlight, 
-                    fontsize: 20),
-                ),
-              )
-              ),
+        child: null,
+      ),
+      childofmainpage: Column(
+        children: [
+
+         
+
+          Expanded(
+            child: showThreePageTabs 
+              ? ManualTab3pages(
+                  tab1: 'Upstream', 
+                  tab1fontsize: 15, 
+                  tab2: 'Production', 
+                  tab2fontsize: 15, 
+                  tab3: 'Downstream', 
+                  tab3fontsize: 15, 
+                  
+                  pg1flexValue1: 1, 
+                  pg1flexValue2: 1, 
+                
+                  pg2flexValue1: 1, 
+                  pg2flexValue2: 1, 
+                
+                  pg3flexValue1: 1, 
+                  pg3flexValue2: 1, 
+                  
+                  firstchildof1: ListView.builder(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: widgetofpage1.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        elevation: 0,
+                        color: Apptheme.transparentcheat,
+                        child: widgetofpage1[index],
+                      );
+                    },
+                  ), 
+                
+                  secondchildof1: Container(), 
+                
+                  firstchildof2: ListView.builder(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: widgetofpage2.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        elevation: 0,
+                        color: Apptheme.transparentcheat,
+                        child: widgetofpage2[index],
+                      );
+                    },
+                  ), 
+                
+                  secondchildof2: Container(),
+                
+                  firstchildof3: ListView.builder(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: widgetofpage3.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        elevation: 0,
+                        color: Apptheme.transparentcheat,
+                        child: widgetofpage3[index],
+                      );
+                    },
+                  ), 
+                
+                  secondchildof3: Container(),
+                )
+                
+              : ManualTab2pages(
+                  tab1: 'Upstream', 
+                  tab1fontsize: 15, 
+                  tab2: 'Production', 
+                  tab2fontsize: 15, 
+                  tab3: 'Not included anymore', 
+                  tab3fontsize: 15, 
+                  
+                  pg1flexValue1: 1, 
+                  pg1flexValue2: 1, 
+                
+                  pg2flexValue1: 1, 
+                  pg2flexValue2: 1, 
+                
+                  pg3flexValue1: 1, 
+                  pg3flexValue2: 1, 
+                  
+                  firstchildof1: 
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: widgetofpage1.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        elevation: 0,
+                        color: Apptheme.transparentcheat,
+                        child: widgetofpage1[index],
+                      );
+                    },
+                  ), 
+                
+                  secondchildof1: Container(), 
+                
+                  firstchildof2: ListView.builder(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: widgetofpage2.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        elevation: 0,
+                        color: Apptheme.transparentcheat,
+                        child: widgetofpage2[index],
+                      );
+                    },
+                  ), 
+                
+                  secondchildof2: Container(),
+                
+                  firstchildof3: ListView.builder(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    itemCount: widgetofpage3.length,
+                    itemBuilder: (context, index) {
+                      return Card(
+                        elevation: 0,
+                        color: Apptheme.transparentcheat,
+                        child: widgetofpage3[index],
+                      );
+                    },
+                  ), 
+                
+                  secondchildof3: Container(),
+                
+                  
             ),
           ),
-          onPressed: () {
-            setState(() {
-              showThreePageTabs = !showThreePageTabs;
-            });
-          },
-        ),
-      ),
-      childofmainpage: showThreePageTabs 
-        ? ManualTab3pages(
-            tab1: 'Upstream', 
-            tab1fontsize: 15, 
-            tab2: 'Production', 
-            tab2fontsize: 15, 
-            tab3: 'Downstream', 
-            tab3fontsize: 15, 
-            
-            pg1flexValue1: 1, 
-            pg1flexValue2: 1, 
-          
-            pg2flexValue1: 1, 
-            pg2flexValue2: 1, 
-          
-            pg3flexValue1: 1, 
-            pg3flexValue2: 1, 
-            
-            firstchildof1: ListView.builder(
-              shrinkWrap: true,
-              physics: AlwaysScrollableScrollPhysics(),
-              itemCount: widgetofpage1.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 0,
-                  color: Apptheme.transparentcheat,
-                  child: widgetofpage1[index],
-                );
-              },
-            ), 
-    
-            secondchildof1: Container(), 
-    
-            firstchildof2: ListView.builder(
-              shrinkWrap: true,
-              physics: AlwaysScrollableScrollPhysics(),
-              itemCount: widgetofpage2.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 0,
-                  color: Apptheme.transparentcheat,
-                  child: widgetofpage2[index],
-                );
-              },
-            ), 
-    
-            secondchildof2: Container(),
-    
-            firstchildof3: ListView.builder(
-              shrinkWrap: true,
-              physics: AlwaysScrollableScrollPhysics(),
-              itemCount: widgetofpage3.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 0,
-                  color: Apptheme.transparentcheat,
-                  child: widgetofpage3[index],
-                );
-              },
-            ), 
-    
-            secondchildof3: Container(),
-          )
-    
-        : ManualTab2pages(
-            tab1: 'Upstream', 
-            tab1fontsize: 15, 
-            tab2: 'Production', 
-            tab2fontsize: 15, 
-            tab3: 'Not included anymore', 
-            tab3fontsize: 15, 
-            
-            pg1flexValue1: 1, 
-            pg1flexValue2: 1, 
-          
-            pg2flexValue1: 1, 
-            pg2flexValue2: 1, 
-          
-            pg3flexValue1: 1, 
-            pg3flexValue2: 1, 
-            
-            firstchildof1: 
-            ListView.builder(
-              shrinkWrap: true,
-              physics: AlwaysScrollableScrollPhysics(),
-              itemCount: widgetofpage1.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 0,
-                  color: Apptheme.transparentcheat,
-                  child: widgetofpage1[index],
-                );
-              },
-            ), 
-    
-            secondchildof1: Container(), 
-    
-            firstchildof2: ListView.builder(
-              shrinkWrap: true,
-              physics: AlwaysScrollableScrollPhysics(),
-              itemCount: widgetofpage2.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 0,
-                  color: Apptheme.transparentcheat,
-                  child: widgetofpage2[index],
-                );
-              },
-            ), 
-    
-            secondchildof2: Container(),
-    
-            firstchildof3: ListView.builder(
-              shrinkWrap: true,
-              physics: AlwaysScrollableScrollPhysics(),
-              itemCount: widgetofpage3.length,
-              itemBuilder: (context, index) {
-                return Card(
-                  elevation: 0,
-                  color: Apptheme.transparentcheat,
-                  child: widgetofpage3[index],
-                );
-              },
-            ), 
-    
-            secondchildof3: Container(),
-    
-            
+        ],
       ),
     );
   }

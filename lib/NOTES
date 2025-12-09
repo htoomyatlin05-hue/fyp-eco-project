@@ -123,3 +123,84 @@ final hgvREmissionsProvider = Provider<List<String>>((ref) {
   debugPrint('hgvREmissionsProvider returns: $list');
   return list;
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          SizedBox(
+            height: 80,
+            child: TextButton(
+            child: 
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: 
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: 500,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Apptheme.transparentcheat,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: 
+                  showThreePageTabs 
+                  
+                ? Align(
+                    alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 0),
+                    child: Labelsinbuttons(
+                      title: 'Set Boundary to Cradle to Gate', 
+                      color: Apptheme.textclrdark, 
+                      fontsize: 30
+                    ),
+                  ),
+                )
+                
+                : Align(
+                    alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 0),
+                    child: Labelsinbuttons(
+                      title: 'Cradle to Gate', 
+                      color: Apptheme.textclrlight, 
+                      fontsize: 20),
+                  ),
+                )
+                ),
+              ),
+            ),
+            onPressed: () {
+              setState(() {
+                showThreePageTabs = !showThreePageTabs;
+              });
+            },

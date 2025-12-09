@@ -88,13 +88,13 @@ List<Map<String, String?>> formattedRows(TableState tableState) {
 
     final columns = widget.columnTitles.length;
 
-    // ✅ Pass the number of columns to the family provider
+   
 final tableState = ref.watch(tableControllerProvider(columns));
 final tableNotifier = ref.read(tableControllerProvider(columns).notifier);
 
     final numRows = tableState.selections.isNotEmpty ? tableState.selections[0].length : 0;
 
-    // Convert TableState to RowFormat
+  
     List<RowFormat> rows = List.generate(
       tableState.selections[0].length,
       (rowIndex) => RowFormat(

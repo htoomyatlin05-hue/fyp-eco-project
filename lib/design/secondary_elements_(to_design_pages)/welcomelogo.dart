@@ -4,11 +4,14 @@ class Welcomepagelogo extends StatefulWidget {
   final VoidCallback? whathappens;
   final Color choosecolor;
   final double pad;
+  final double size;
+
   const Welcomepagelogo({
     super.key,
     required this.whathappens,
     required this.choosecolor,
     this.pad = 8.0,
+    this.size = 200
   });
 
   @override
@@ -20,14 +23,14 @@ class _WelcomepagelogoState extends State<Welcomepagelogo> {
   @override
   Widget build(BuildContext context) {
     return ConstrainedBox(
-                        constraints: BoxConstraints(maxHeight: 200),
+                        constraints: BoxConstraints(maxHeight: widget.size),
                         child: AspectRatio(
                           aspectRatio: 1/1,
                           child: Container(
                             alignment: Alignment.centerLeft,
-                            height: 200,
+                            height: widget.size,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(0),
                               color: widget.choosecolor,
                             ),
                             child: 

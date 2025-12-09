@@ -149,7 +149,7 @@ void initState() {
     const double openThreshold = 200;
     
     final double settingswidth = 200;
-    final double menuwidth = 266;
+    final double menuwidth = 280;
 
 
     
@@ -183,11 +183,11 @@ void initState() {
           curve: Curves.easeIn,
           right: _showSettings ? settingswidth: 5,
           left: _showMenu ? menuwidth : 5,
-          top: 2,
-          bottom: 2,
+          top: 0,
+          bottom: 0,
           child: 
           Padding(
-            padding: const EdgeInsets.only(top: 10, bottom: 10),
+            padding: const EdgeInsets.only(top: 0, bottom: 20),
             child: 
             Container(
               color: Apptheme.transparentcheat,

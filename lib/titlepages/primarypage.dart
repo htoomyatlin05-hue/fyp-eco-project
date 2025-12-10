@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:test_app/design/apptheme/colors.dart';
+import 'package:test_app/design/apptheme/textlayout.dart';
 import 'package:test_app/titlepages/background_drawer.dart';
 import 'package:test_app/screens/dynamic_pages/main_aboutus.dart';
 import 'package:test_app/screens/dynamic_pages/main_fallocation.dart';
@@ -149,7 +151,9 @@ void initState() {
     const double openThreshold = 200;
     
     final double settingswidth = 200;
-    final double menuwidth = 280;
+    final double menuwidth = 400;
+
+    final double listWidth = min(400, screenwidth);
 
 
     
@@ -165,14 +169,81 @@ void initState() {
     return Scaffold(
       body: 
     
-    Padding(padding: EdgeInsetsGeometry.all(0),
+    Padding(padding: EdgeInsets.all(0),
     child:
     Stack(
       alignment: AlignmentGeometry.center,
       children: [
+
+        Container(
+          color: Apptheme.backgroundlight,
+          width: double.infinity,
+          height: double.infinity,
+          child: null,
+        ),
+
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+            
+                SizedBox(
+                  width: listWidth,
+                  height: 60,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: [
+                      const SizedBox(width: 60),
+                      Padding(
+                        padding: const EdgeInsets.all(5),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Apptheme.widgetsecondaryclr,
+                            borderRadius: BorderRadius.all( Radius.circular(5))
+                          ),
+                          width: listWidth - 70,
+                          child:  Padding(
+                            padding: const EdgeInsets.only(left: 105),
+                            child: Bigfocusedtext(
+                              title: 'ECO-pi',
+                              fontsize: 30,
+                              color: Apptheme.textclrlight,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                      const SizedBox(width: 10,)    
+                     
+                    ],
+                  ),
+                ),
+            
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: max(0, screenwidth - 405),
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Apptheme.widgetsecondaryclr,
+                      borderRadius: BorderRadius.all( Radius.circular(5))
+                    ),
+                    height: 50,
+                    child: null,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
               
         Container(
-          color: Apptheme.drawerbackground,
+          color: Apptheme.transparentcheat,
           width: double.infinity,
           height: double.infinity,
           child: BackgroundDrawer(onSelectPage: _onPageSelected)
@@ -181,10 +252,10 @@ void initState() {
         AnimatedPositioned(
           duration: const Duration(milliseconds: 100),
           curve: Curves.easeIn,
-          right: _showSettings ? settingswidth: 5,
-          left: _showMenu ? menuwidth : 5,
-          top: 0,
-          bottom: 0,
+          right: _showSettings ? settingswidth: 10,
+          left: _showMenu ? menuwidth : 0,
+          top: 70,
+          bottom: 20,
           child: 
           Padding(
             padding: const EdgeInsets.only(top: 0, bottom: 20),
@@ -232,3 +303,5 @@ void initState() {
       );
   }
 }
+
+

@@ -23,7 +23,7 @@ class _TabtextState extends State<Tabtext> {
       textAlign: TextAlign.center,
       style: TextStyle(
         fontSize: widget.specifysize,
-        color: Apptheme.textclrlight,
+        color: Apptheme.textclrdark,
         fontWeight: FontWeight.bold
       ),
       )
@@ -125,10 +125,12 @@ class _TypehereState extends State<Typehere> {
 class Bigfocusedtext extends StatefulWidget {
   final String title;
   final double fontsize;
+  final Color color;
 
   const Bigfocusedtext({super.key, 
   required this.title,
   this.fontsize = 60,
+  this.color = Apptheme.textclrlight,
   });
 
   @override
@@ -144,7 +146,7 @@ class _BigfocusedtextState extends State<Bigfocusedtext> {
       style: TextStyle(
         fontSize: widget.fontsize,
         fontWeight: FontWeight.bold,
-        color: Apptheme.textclrspecial,
+        color: widget.color,
       ),
       overflow: TextOverflow.fade,
       maxLines: 1,
@@ -163,7 +165,7 @@ class Titletext extends StatelessWidget {
 
   const Titletext({super.key,
   required this.title,
-  this. color = Apptheme.textclrlight,
+  this. color = Apptheme.textclrdark,
   this.fontsize = 30,
   });
 
@@ -220,16 +222,20 @@ class _HeadertextState extends State<Headertext> {
   }
 }
 
+//---------------------------------------------------------------------------------------//
+
 //--Labels for containers--
 class Labels extends StatelessWidget {
   final String title;
   final Color color;
   final double fontsize;
+  final double toppadding;
 
   const Labels({super.key, 
   required this.title,
   required this.color,
   this.fontsize = 20,
+  this.toppadding = 0
   });
 
   @override
@@ -238,11 +244,11 @@ class Labels extends StatelessWidget {
       
       return
       Container(
-        padding: EdgeInsets.only(left: 5, top: 10, bottom: 0),
+        padding: EdgeInsets.only(left: 5, top: toppadding, bottom: 0),
         child: 
         Text(title, style: TextStyle(
           color: color,
-          fontWeight: FontWeight.w700,
+          fontWeight: FontWeight.w500,
           fontSize: fontsize,
         ),)
       );
@@ -258,12 +264,14 @@ class Textsinsidewidgets extends StatelessWidget {
   final Color color;
   final double fontsize;
   final double leftpaddingadd;
+  final int maxLines;
 
   const Textsinsidewidgets({super.key, 
   required this.words,
   required this.color,
   this.fontsize = 15,
   this.leftpaddingadd = 0,
+  this.maxLines = 10,
   });
 
   @override
@@ -284,7 +292,7 @@ class Textsinsidewidgets extends StatelessWidget {
             textAlign: TextAlign.left,
             overflow: TextOverflow.fade,
             softWrap: true,
-            maxLines: 10,
+            maxLines: maxLines,
           ),
         )
       );
@@ -293,6 +301,28 @@ class Textsinsidewidgets extends StatelessWidget {
     );
   }
 }
+TextStyle bodyTextLight() {
+  return TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
+    color: Apptheme.textclrlight,
+  );
+}
+TextStyle bodyTextdark() {
+  return TextStyle(
+    fontSize: 15,
+    fontWeight: FontWeight.w700,
+    color: Apptheme.textclrlight,
+  );
+}
+TextStyle bodyTextlightmini() {
+  return TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w700,
+    color: Apptheme.textclrlight,
+  );
+}
+
 
 //--Texts inside buttons--
 class Labelsinbuttons extends StatelessWidget {
@@ -335,4 +365,61 @@ class Labelsinbuttons extends StatelessWidget {
     );
   }
 }
+
+//---------------------------------------------------------------------------------------//
+
+//--Texts inside hoverdrawer--
+class Labelsinhoverdrawer extends StatelessWidget {
+  final String label;
+  final double? verticalpad;
+  const Labelsinhoverdrawer({super.key,
+  this.label = 'Type here',
+  this.verticalpad =20
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: verticalpad,
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Apptheme.textclrlight,
+          fontSize: 17,
+          fontWeight: FontWeight.w500,
+        ),
+        overflow: TextOverflow.visible,
+        softWrap: false,
+        maxLines: 1,
+        textAlign: TextAlign.justify,
+      ),
+    );
+}
+}
+
+//--Texts inside subdrawer--
+class Labelsinsubdrawer extends StatelessWidget {
+  final String label;
+  const Labelsinsubdrawer({super.key,
+  this.label = 'Type here',
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      label,
+      style: const TextStyle(
+        color: Apptheme.textclrlight,
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+      ),
+      overflow: TextOverflow.visible,
+      softWrap: false,
+      maxLines: 1,
+      textAlign: TextAlign.justify,
+    );
+}
+}
+
+//---------------------------------------------------------------------------------------//
 

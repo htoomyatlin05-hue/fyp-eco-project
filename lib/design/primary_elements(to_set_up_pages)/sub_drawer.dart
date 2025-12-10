@@ -1,5 +1,83 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/design/apptheme/colors.dart';
+import 'package:test_app/design/apptheme/textlayout.dart';
+import 'package:test_app/screens/dynamic_pages/popup_pages.dart';
+
+class ContentofL extends StatefulWidget {
+  final Function(int) onSelectPage;
+  final double widthoffirstsegment;
+
+  const ContentofL({super.key,
+  required this.onSelectPage,
+  required this.widthoffirstsegment
+  });
+
+  @override
+  State<ContentofL> createState() => _ContentofLState();
+}
+
+class _ContentofLState extends State<ContentofL> {
+  @override
+  Widget build(BuildContext context) {
+    return 
+
+    Align(
+      alignment: Alignment.centerLeft,
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: [
+            _subdrawertile((Icons.supervised_user_circle), 'Profile', () => null),
+        
+            _subdrawertile((Icons.scale), 'Units', () => null),
+        
+            _subdrawertile((Icons.settings), 'Settings',  () => showSettingsPopup(context)),
+        
+            Container(
+              color:Apptheme.transparentcheat, 
+              height: 700,
+              width: 60,
+            )
+          
+          ],
+        ),
+      ),
+    );
+
+  }
+}
+
+
+Widget _subdrawertile (IconData icon, String title, VoidCallback onTap) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(vertical: 20),
+    child: Container(
+      color: Apptheme.transparentcheat,
+      child: Column(
+        children: [
+          SizedBox(
+            width: 50,
+            height: 25,
+            child: InkWell(
+              onTap: onTap,
+              child: Icon(icon, 
+                size: 25, 
+                color: Apptheme.iconslight,
+              )
+            )
+          ),
+          SizedBox(
+            height: 10,
+            child: Labelsinsubdrawer(label: title)
+          )
+        ],
+      ),
+    ),
+  );
+}
+
+
+
 
 
 class LShapeClipper extends CustomClipper<Path> {
@@ -59,11 +137,13 @@ class LShapeClipper extends CustomClipper<Path> {
   bool shouldReclip(covariant CustomClipper<Path> oldClipper) => true;
 }
 
-class LShapeContainer extends StatelessWidget {
+class LShapeContainer extends StatefulWidget {
   final double verticalWidth;
   final double horizontalHeight;
   final double outerRadius;
   final double innerRadius;
+  final double heightoffset;
+  final Function(int) onSelectPage;
 
   final Gradient? gradient;
   final DecorationImage? image;
@@ -73,29 +153,43 @@ class LShapeContainer extends StatelessWidget {
     super.key,
     required this.verticalWidth,
     required this.horizontalHeight,
-    this.outerRadius = 50,
+    this.outerRadius = 30,
     this.innerRadius = 50,
+    this.heightoffset = 350,
     this.gradient,
     this.image,
     this.child,
+    required this.onSelectPage,
   });
 
   @override
+  State<LShapeContainer> createState() => _LShapeContainerState();
+}
+
+class _LShapeContainerState extends State<LShapeContainer> {
   Widget build(BuildContext context) {
     return ClipPath(
       clipper: LShapeClipper(
-        verticalWidth: verticalWidth,
-        horizontalHeight: horizontalHeight,
-        outerRadius: outerRadius,
-        innerRadius: innerRadius,
+        verticalWidth: widget.verticalWidth,
+        horizontalHeight: widget.horizontalHeight,
+        outerRadius: widget.outerRadius,
+        innerRadius: widget.innerRadius,
+        heightsubtract: widget.heightoffset
       ),
       child: Container(
+        alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
           color: Apptheme.auxilary,
-          gradient: gradient,
-          image: image,
+          gradient: widget.gradient,
+          image: widget.image,
         ),
-        child: child,
+        child: Padding(
+          padding: EdgeInsets.only(top: widget.heightoffset+10, left: 0),
+          child: ContentofL(
+            widthoffirstsegment: widget.verticalWidth,
+            onSelectPage: widget.onSelectPage,
+          ),
+        ),
       ),
     );
   }

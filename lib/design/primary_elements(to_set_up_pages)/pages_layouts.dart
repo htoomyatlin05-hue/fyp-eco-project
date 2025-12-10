@@ -6,12 +6,14 @@ class PrimaryPages extends StatefulWidget {
   final double paddingadd;
   final Widget? childofmainpage;
   final Widget? header;
+  final Color backgroundcolor;
 
   const PrimaryPages({super.key,
   required this.menutogglee,
   this.paddingadd =0,
   this.childofmainpage,
   required this.header,
+  this.backgroundcolor = Apptheme.backgroundlight,
   });
 
   @override
@@ -38,7 +40,7 @@ class _PrimaryPagesState extends State<PrimaryPages> {
             child: ClipRRect(
               borderRadius: BorderRadiusGeometry.circular(5),
               child: Container(
-                color: Apptheme.backgroundlight,
+                color: Apptheme.widgetclrlight,
                 child: Stack(
                 children: [
                 
@@ -54,7 +56,7 @@ class _PrimaryPagesState extends State<PrimaryPages> {
                         child: 
                         Container(
                           padding: EdgeInsets.only(bottom: 15, top:140+widget.paddingadd),
-                          color: Apptheme.backgroundlight,
+                          color:widget.backgroundcolor,
                           child: widget.childofmainpage,
                         ),
                       ),

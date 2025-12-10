@@ -127,7 +127,7 @@ class _WelcomepageState extends State<Welcomepage> {
                             child: 
                             Padding(
                               padding: const EdgeInsets.only(bottom: 50),
-                              child: Titletext(title: 'Your Projects', color: Apptheme.textclrlight),
+                              child: Titletext(title: 'Your Projects', color: Apptheme.textclrdark),
                             )),
 
                           Padding(

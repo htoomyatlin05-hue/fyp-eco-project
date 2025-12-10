@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:test_app/design/apptheme/colors.dart';
-import 'package:test_app/design/primary_elements(to_set_up_pages)/app_design.dart';
+import 'package:test_app/design/primary_elements(to_set_up_pages)/headers.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/pages_layouts.dart';
 import 'package:test_app/design/secondary_elements_(to_design_pages)/widgets.dart';
 
@@ -36,7 +36,7 @@ void initState() {
 
 Future<void> fetchNews() async {
   try {
-    final url = Uri.parse("http://127.0.0.1:8000/news/sustainabilit");
+    final url = Uri.parse("http://127.0.0.1:8000/news/sustainability");
     final response = await http.get(url);
 
     if (!mounted) return;  
@@ -73,11 +73,7 @@ Future<void> fetchNews() async {
     return PrimaryPages(
       paddingadd: 15,
       menutogglee: widget.menutoggle, 
-      header: Pageheaders(
-        settingstogglee: widget.settingstogglee, 
-        title: 'Sustainability News', 
-        child: null
-      ),
+      header: null,
       childofmainpage: Widgets1(
         maxheight: 250,
         backgroundcolor: Apptheme.widgetsecondaryclr,
@@ -90,7 +86,7 @@ Future<void> fetchNews() async {
             style: TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.w300,
-              color: Apptheme.textclrlight,
+              color: Apptheme.textclrdark,
             ),
             )
           )

@@ -162,7 +162,7 @@ class PageheadersState extends State<Pageheaders> {
                             alignment: Alignment.centerLeft,
                             child: Titletext(
                               title: widget.title,
-                              color: Apptheme.textclrlight,
+                              color: Apptheme.textclrdark,
                             ),
                           ),
 

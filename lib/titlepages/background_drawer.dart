@@ -21,7 +21,6 @@ class _BackgroundDrawerState extends ConsumerState<BackgroundDrawer> {
 
   double getShortcutCountAsDouble(List<Widget> shortcuts) => shortcuts.length.toDouble();
   double getBookmarkCountAsDouble(List<Widget> bookmarks) => bookmarks.length.toDouble();
-  
 
   @override
   Widget build(BuildContext context) {
@@ -29,241 +28,40 @@ class _BackgroundDrawerState extends ConsumerState<BackgroundDrawer> {
     final mediaQueryData = MediaQuery.of(context);
     final screenHeight = mediaQueryData.size.height;
 
-    double getShortcutCountAsDouble(List<Widget> shortcuts) => shortcuts.length.toDouble();
-
-    final List<Widget> shortcuts=[
-                          
-
-      Leftdrawerlisttile(
-          title: 'Attributes', 
-          whathappens: () => widget.onSelectPage(1)),
-    
-      Leftdrawerlisttile(
-          title: 'Allocation', 
-          whathappens: () => widget.onSelectPage(2)),
-
-      Leftdrawerlisttile(
-        title: 'Sustainability News', 
-        whathappens: () => widget.onSelectPage(3)),
-
-      Leftdrawerlisttile(
-        title: 'About Us', 
-        whathappens: () => widget.onSelectPage(4)),
-
-      Leftdrawerlisttile(
-        title: 'Debug Page', 
-        whathappens: () => widget.onSelectPage(5)),
-                  
-    ];
-
-    final List<Widget> bookmarks=[
-     
-                  
-
-      Leftdrawerlisttilelight(
-          title: 'Category 1 ', 
-          whathappens: () => widget.onSelectPage(6)),
-                  
-      Leftdrawerlisttilelight(
-          title: 'Category 2', 
-          whathappens: () => widget.onSelectPage(7)),
-                  
-      Leftdrawerlisttilelight(
-          title: 'Category 3', 
-          whathappens: () => widget.onSelectPage(8)),
-
-      Leftdrawerlisttilelight(
-          title: 'Category 4', 
-          whathappens: () => widget.onSelectPage(9)),
-
-      Leftdrawerlisttilelight(
-          title: 'Category 5', 
-          whathappens: () => widget.onSelectPage(10)),
-      
-      Leftdrawerlisttilelight(
-          title: 'Category 9', 
-          whathappens: () => widget.onSelectPage(11)),
-      
-      Leftdrawerlisttilelight(
-          title: 'Category 10', 
-          whathappens: () => widget.onSelectPage(12)),
-                
-      Leftdrawerlisttilelight(
-          title: 'Category 11', 
-          whathappens: () => widget.onSelectPage(13)),
-                
-      Leftdrawerlisttilelight(
-          title: 'Category 12', 
-          whathappens: () => widget.onSelectPage(14)),
-
-    ];
-
-    final double shotcutsno = getShortcutCountAsDouble(shortcuts);
 
     return Stack(
       children: [
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            
-            //--Header & List of Pages--
-            Container(
-                color: Apptheme.transparentcheat,
-                height: screenHeight,
-                width: 280,
-                child: 
-                Column(
-                  children: [
-                                
-                    Padding(padding: EdgeInsetsGeometry.all(8),
-                      child: 
-                      Container(
-                        alignment: Alignment.center,
-                        height: 100-(2*8),
-                        decoration: BoxDecoration(
-                          color: Apptheme.transparentcheat,
-                          borderRadius: BorderRadius.all(Radius.circular(8))
-                        ),
-                        child: Row(
-                          children: [
-                            const SizedBox(width: 20,),
-                            Welcomepagelogo(
-                              whathappens: () => widget.onSelectPage(0), 
-                              choosecolor: Apptheme.transparentcheat, 
-                              pad: 0,
-                              size: 70,
-                            ),
-                            const SizedBox(width: 10,),
-                            Bigfocusedtext(
-                              title: 'ECO-pi',
-                              fontsize: 40,
-                            )
-                          ],
-                        ),
-                      )
-                    ),
-
-                    Padding(padding: EdgeInsetsGeometry.only(left: 60),
-                    child: MasterPanel(),
-                    )
-
-                  ],
+        Container(
+            color: Apptheme.transparentcheat,
+            height: screenHeight,
+            width: 400,
+            child: 
+            Column(
+              children: [
+                            
+                Padding(
+                  padding: const EdgeInsets.all(2.5),
+                  child: HeaderofMasterPanel(onSelectPage: widget.onSelectPage),
                 ),
-              ),
-                  
-            
-            //--Settings--
-            Container(
-              padding: EdgeInsets.only(top: 25, bottom: 12),
-              width:  200,
-              decoration: BoxDecoration(color: Apptheme.transparentcheat),
-              child: 
-            
-              //--THE LIST IS HERE--
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-            
-                  LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
-                    double parentWidth = constraints.maxWidth;
-            
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      child: 
-                      Container(
-                        alignment: Alignment.center,
-                        width: parentWidth/1.1,
-                        height: 80,
-                        decoration: BoxDecoration(
-                          color: Apptheme.drawer,
-                          borderRadius: BorderRadius.circular(12)
-                        ),
-                        child: 
-                        Text('Settings',
-                          style: TextStyle(
-                            color: Apptheme.textclrlight,
-                            fontWeight: FontWeight.bold,
-                            overflow: TextOverflow.fade,
-                            fontSize: 25
-                          ),
-                          maxLines: 1,
-                          softWrap: false,
-                          textAlign: TextAlign.center,                 
-                        ),
-                      ),
-                    );
-                  },),
-            
-                  Expanded(
-                    child:
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: 
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(
-                            width: 1,
-                            style: BorderStyle.solid,
-                            color: Apptheme.dividers,
-                          )
-                        ),
-                      ),
-                    )
-                  ),
-            
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: 
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Apptheme.drawer,
-                        borderRadius: BorderRadius.circular(10)
-                        ),
-                      height: 35,
-                      width: double.infinity,
-                      child: 
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          
-                          TextButton(onPressed:   () => Navigator.pushNamed(context, '/welcomepage'),
-                          child:
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 4),
-                              child: Center(
-                                child: Text('Logout', 
-                                  style: TextStyle(
-                                  fontSize: 20,
-                                  color: Apptheme.textclrlight,
-                                  ),
-                                overflow: TextOverflow.fade,
-                                maxLines: 1,
-                                softWrap: false,
-                                ),
-                              ),
-                            ),
-                          ),
-                                  
-                          Loggingout(),
-                                              
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-                
-            )
         
-          ]
-        ),
+                Expanded(
+                  child: Padding(padding: EdgeInsetsGeometry.only(left: 70, top: 10),
+                  child: Container(
+                    color: Apptheme.transparentcheat,
+                    child: MasterPanel()
+                  ),
+                  ),
+                )
+        
+              ],
+            ),
+          ),
       
         Align(
           alignment: Alignment.topLeft,
           child: Padding(
-            padding: const EdgeInsets.only(top: 100),
+            padding: const EdgeInsets.only(top: 65),
             child: HoverSidebarWithNested(onSelectPage: widget.onSelectPage,),
           )
         ),
@@ -272,7 +70,8 @@ class _BackgroundDrawerState extends ConsumerState<BackgroundDrawer> {
           alignment: Alignment.bottomLeft,
           child: LShapeContainer(
             verticalWidth: 60, 
-            horizontalHeight: 20
+            horizontalHeight: 20,
+            onSelectPage: widget.onSelectPage,
           )
         )
       
@@ -283,117 +82,157 @@ class _BackgroundDrawerState extends ConsumerState<BackgroundDrawer> {
 }
 
 
-class Leftdrawerlisttile extends StatelessWidget {
-  final String title;
-  final VoidCallback? whathappens;
 
-  const Leftdrawerlisttile({
-    super.key,
-    required this.title,
-    this.whathappens = empty,
-  });
-
-  static void empty() {}
+class HeaderofMasterPanel extends StatelessWidget {
+  final Function(int) onSelectPage;
+  const HeaderofMasterPanel({super.key, required this.onSelectPage});
   
+
+  @override
+  Widget build(BuildContext context) {
+    double headeradjust = 0;
+    return Padding(padding: EdgeInsetsGeometry.symmetric(vertical: 0),
+      child: 
+      Container(
+        alignment: Alignment.centerLeft,
+        height: 60-(2*0),
+        decoration: BoxDecoration(
+          color: Apptheme.transparentcheat,
+          borderRadius: BorderRadius.all(Radius.circular(8))
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              SizedBox(width: 0+headeradjust,),
+              Welcomepagelogo(
+                whathappens: () => onSelectPage(0), 
+                choosecolor: Apptheme.transparentcheat, 
+                pad: 0,
+                size: 70,
+              ),
+              SizedBox(width: 75-headeradjust),
+            ],
+          ),
+        ),
+      )
+    );
+  }
+}
+
+class Settings extends StatefulWidget {
+  const Settings({super.key});
+
+  @override
+  State<Settings> createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 40,
-      decoration: 
-        BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Apptheme.drawer,
-        ),
-      child: Container(
-      padding: EdgeInsets.only(top: 1,bottom: 1),
-      alignment: Alignment.centerLeft,
-      child: TextButton(
-        onPressed: whathappens, 
-        child: 
-        SizedBox(
-          width: double.infinity,
-          child: 
-          Text(
-            title,
-            style: TextStyle(
-              color: Apptheme.textclrlight,
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-            ),
-            textAlign: TextAlign.left,
-            overflow: TextOverflow.fade,
-            softWrap: false,
-            maxLines: 1,
-          ),
-        ),
-      ),
-    )
-    );
-  }
-}
-
-class Leftdrawerlisttilelight extends StatelessWidget {
-  final String title;
-  final VoidCallback? whathappens;
-
-  const Leftdrawerlisttilelight({
-    super.key,
-    required this.title,
-    this.whathappens = empty,
-  });
-
-  static void empty() {}
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 80),
-      child: Container(
-        height: 30,
-        decoration: 
-          BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            color: Apptheme.drawerlight,
-          ),
-        child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2),
-        alignment: Alignment.centerLeft,
-        child: 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 5),
-              child: Icon(Icons.bookmark, size: 15,),
-            ),
-      
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton(
-                  onPressed: whathappens, 
-                  child: 
-                  
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: Apptheme.textclrdark,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      textAlign: TextAlign.left,
-                      overflow: TextOverflow.fade,
-                      softWrap: false,
-                      maxLines: 1,
-                    ),
-                  
+      padding: EdgeInsets.only(top: 25, bottom: 12),
+      width:  200,
+      decoration: BoxDecoration(color: Apptheme.transparentcheat),
+      child: 
+    
+      //--THE LIST IS HERE--
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+    
+          LayoutBuilder(builder: (BuildContext context, BoxConstraints constraints) {
+            double parentWidth = constraints.maxWidth;
+    
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: 
+              Container(
+                alignment: Alignment.center,
+                width: parentWidth/1.1,
+                height: 80,
+                decoration: BoxDecoration(
+                  color: Apptheme.drawer,
+                  borderRadius: BorderRadius.circular(12)
+                ),
+                child: 
+                Text('Settings',
+                  style: TextStyle(
+                    color: Apptheme.textclrlight,
+                    fontWeight: FontWeight.bold,
+                    overflow: TextOverflow.fade,
+                    fontSize: 25
+                  ),
+                  maxLines: 1,
+                  softWrap: false,
+                  textAlign: TextAlign.center,                 
                 ),
               ),
+            );
+          },),
+    
+          Expanded(
+            child:
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: 
+              Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(30),
+                  border: Border.all(
+                    width: 1,
+                    style: BorderStyle.solid,
+                    color: Apptheme.dividers,
+                  )
+                ),
+              ),
+            )
+          ),
+    
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: 
+            Container(
+              decoration: BoxDecoration(
+                color: Apptheme.drawer,
+                borderRadius: BorderRadius.circular(10)
+                ),
+              height: 35,
+              width: double.infinity,
+              child: 
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  
+                  TextButton(onPressed:   () => Navigator.pushNamed(context, '/welcomepage'),
+                  child:
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Center(
+                        child: Text('Logout', 
+                          style: TextStyle(
+                          fontSize: 20,
+                          color: Apptheme.textclrlight,
+                          ),
+                        overflow: TextOverflow.fade,
+                        maxLines: 1,
+                        softWrap: false,
+                        ),
+                      ),
+                    ),
+                  ),
+                          
+                  Loggingout(),
+                                      
+                ],
+              ),
             ),
-          ],
-        ),
-      )
+          ),
+        ],
       ),
+        
     );
   }
 }
+

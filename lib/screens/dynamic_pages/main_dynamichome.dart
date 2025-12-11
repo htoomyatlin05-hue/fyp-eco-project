@@ -5,7 +5,6 @@ import 'package:test_app/design/primary_elements(to_set_up_pages)/pages_layouts.
 
 
 
-
 class Dynamichome extends ConsumerStatefulWidget {
   final VoidCallback settingstogglee;
   final VoidCallback menutogglee;
@@ -35,7 +34,8 @@ final List<String> toggleOptions = [
       menutogglee: widget.menutogglee, 
       header: null,
       backgroundcolor: Apptheme.widgetclrlight,
-      childofmainpage: null,
+      childofmainpage: null
+,
     );
   }
 }

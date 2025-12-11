@@ -39,7 +39,7 @@ String getPercentageTitle(double value, double total) {
   @override
   Widget build(BuildContext context) {
 
-    final emissions = ref.watch(emissionCalculatorProvider);
+    final emissions = ref.watch(convertedEmissionsProvider);
     
 
     final List<Map<String, double>> toggleTotals = [
@@ -154,7 +154,7 @@ String getPercentageTitle(double value, double total) {
             value: 1,
             title: 'No Data Defined',
             radius: pieChartSize / 2,
-            titleStyle: bodyTextlightmini().copyWith(color: Apptheme.textclrlight),
+            titleStyle: bodyTextlightmini(16).copyWith(color: Apptheme.textclrlight),
             titlePositionPercentageOffset: 0,
           )
         ];
@@ -169,7 +169,7 @@ String getPercentageTitle(double value, double total) {
 
         return section.copyWith(
           radius: radius,
-          titleStyle:bodyTextlightmini(),
+          titleStyle:bodyTextlightmini(fontSize),
           title:  getPercentageTitle(section.value, total),
         );
       });
@@ -278,7 +278,7 @@ String getPercentageTitle(double value, double total) {
                     child: SizedBox(
                       height: pieChartSize,
                       child: PieChart(
-                        duration: const Duration(milliseconds: 50),
+                        duration: const Duration(milliseconds: 200),
                         curve: Curves.easeInOut,
                         PieChartData(
                           centerSpaceRadius: 0,
@@ -357,7 +357,7 @@ String getPercentageTitle(double value, double total) {
                                   RichTextsInsideWidget(
                                     firstPart: key,
                                     firstColor: color,
-                                    secondPart: ' emissions: ${value.toStringAsFixed(2)} kg CO2e',
+                                    secondPart: ' emissions: ${value.toStringAsFixed(2)} ${ref.watch(unitLabelProvider)} CO2e',
                                     secondColor: Apptheme.textclrdark,
                                   )
                                 ],

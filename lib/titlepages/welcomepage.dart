@@ -32,8 +32,6 @@ void dispose() {
     return Scaffold(
       backgroundColor: Apptheme.drawerbackground,
       body: LayoutBuilder(builder: (context, constraints) {
-        double parentheight = constraints.maxHeight;
-        double parentwidth = constraints.maxWidth;
 
         return Stack(
           children: [
@@ -153,17 +151,58 @@ void dispose() {
                                           color: Apptheme.drawer,
                                           borderRadius: BorderRadius.circular(20),
                                         ),
-                                        child: Align(
-                                          alignment: Alignment.centerLeft,
-                                          child: Labels(
-                                            title: product.name,
-                                            color: Apptheme.textclrlight,
-                                          ),
+                                        child: Row(
+                                          children: [
+                                            // Product name
+                                            Expanded(
+                                              child: Padding(
+                                                padding: const EdgeInsets.only(left: 20),
+                                                child: Labels(
+                                                  title: product.name,
+                                                  color: Apptheme.textclrlight,
+                                                ),
+                                              ),
+                                            ),
+
+                                            // Trash button
+                                            IconButton(
+                                              icon: const Icon(Icons.delete),
+                                              color: Apptheme.iconslight,
+  
+  onPressed: () {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Confirm Delete"),
+          content: Text("Delete ${product.name}?"),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                ref.read(deleteProfileProvider.notifier).delete(product.name);
+                Navigator.of(context).pop(); // close dialog
+              },
+              child: const Text("Delete"),
+            ),
+          ],
+        );
+      },
+    );
+  },
+                                            ),
+
+                                            const SizedBox(width: 10),
+                                          ],
                                         ),
                                       ),
                                     ),
                                   );
                                 }).toList(),
+
 
 
                                 const SizedBox(height: 40),

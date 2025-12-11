@@ -230,12 +230,14 @@ class Labels extends StatelessWidget {
   final Color color;
   final double fontsize;
   final double toppadding;
+  final double leftpadding;
 
   const Labels({super.key, 
   required this.title,
   required this.color,
   this.fontsize = 20,
-  this.toppadding = 0
+  this.toppadding = 0,
+  this.leftpadding = 5,
   });
 
   @override
@@ -244,7 +246,7 @@ class Labels extends StatelessWidget {
       
       return
       Container(
-        padding: EdgeInsets.only(left: 5, top: toppadding, bottom: 0),
+        padding: EdgeInsets.only(left: leftpadding, top: toppadding, bottom: 0),
         child: 
         Text(title, style: TextStyle(
           color: color,
@@ -317,9 +319,9 @@ TextStyle bodyTextdark() {
     color: Apptheme.textclrlight,
   );
 }
-TextStyle bodyTextlightmini() {
+TextStyle bodyTextlightmini(double fontsize) {
   return TextStyle(
-    fontSize: 12,
+    fontSize: fontsize,
     fontWeight: FontWeight.w700,
     color: Apptheme.textclrlight,
   );

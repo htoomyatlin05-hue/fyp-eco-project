@@ -289,7 +289,7 @@ class _ManualTab3pages extends State<ManualTab3pages> with SingleTickerProviderS
                 child: TabBar(
                   padding: EdgeInsets.all(0),
                   indicatorPadding: EdgeInsetsGeometry.all(0),
-                  unselectedLabelColor: Apptheme.textclrdark,
+                  unselectedLabelColor: Apptheme.textclrlight,
                   labelColor: Apptheme.textclrlight,
                   indicatorColor: Apptheme.widgetclrlight,  
                   indicator: null,
@@ -343,12 +343,13 @@ class _ManualTab3pages extends State<ManualTab3pages> with SingleTickerProviderS
 
     Tab(
       child: 
-      SizedBox.expand(
+      SizedBox(
+        height: 35,
         child: 
             Container(
               child:child,
               decoration: BoxDecoration(
-                color: (_selectedTab == index ? Apptheme.tabbedpageclr : Apptheme.transparentcheat),
+                color: (_selectedTab == index ? Apptheme.header : Apptheme.widgetsecondaryclr),
                 borderRadius: BorderRadius.all(Radius.circular(5))
         ),
               ),

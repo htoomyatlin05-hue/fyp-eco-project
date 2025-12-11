@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:test_app/design/apptheme/colors.dart';
 import 'package:test_app/design/apptheme/textlayout.dart';
-import 'package:test_app/screens/dynamic_pages/popup_pages.dart';
+import 'package:test_app/screens/dynamic_pages/popup_settings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:test_app/riverpod.dart';
 
-class ContentofL extends StatefulWidget {
+class ContentofL extends ConsumerStatefulWidget {
   final Function(int) onSelectPage;
   final double widthoffirstsegment;
 
@@ -13,35 +15,75 @@ class ContentofL extends StatefulWidget {
   });
 
   @override
-  State<ContentofL> createState() => _ContentofLState();
+  ConsumerState<ContentofL> createState() => _ContentofLState();
 }
 
-class _ContentofLState extends State<ContentofL> {
+class _ContentofLState extends ConsumerState<ContentofL> {
   @override
   Widget build(BuildContext context) {
     return 
 
-    Align(
-      alignment: Alignment.centerLeft,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.vertical,
-        child: Column(
-          children: [
-            _subdrawertile((Icons.supervised_user_circle), 'Profile', () => null),
-        
-            _subdrawertile((Icons.scale), 'Units', () => null),
-        
-            _subdrawertile((Icons.settings), 'Settings',  () => showSettingsPopup(context)),
-        
-            Container(
-              color:Apptheme.transparentcheat, 
-              height: 700,
-              width: 60,
-            )
-          
-          ],
+    Row(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+              children: [
+                _subdrawertile((Icons.supervised_user_circle), 'Profile', () => null),
+            
+                _subdrawertile((Icons.scale), 'Units', () => null),
+            
+                _subdrawertile((Icons.settings), 'Settings',  () => showSettingsPopup(context)),
+            
+                Container(
+                  color:Apptheme.transparentcheat, 
+                  height: 700,
+                  width: 60,
+                )
+              
+              ],
+            ),
+          ),
         ),
-      ),
+      
+        Expanded(
+          child: Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: 20, bottom: 1),
+              child: Container(
+                color: Apptheme.widgetsecondaryclr,
+                width: 150,
+                height: 20,
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<double>(
+                    dropdownColor: Apptheme.header,
+                    value: ref.watch(unitConversionProvider),
+                    items: conversionFactors.entries.map((entry) {
+                      return DropdownMenuItem<double>(
+                        value: entry.value,
+                        child: Labels(
+                          title: entry.key, 
+                          color: Apptheme.textclrlight,
+                          fontsize: 12,
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value != null) {
+                        ref.read(unitConversionProvider.notifier).state = value;
+                      }
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
+        )
+      
+      ],
     );
 
   }
@@ -179,7 +221,7 @@ class _LShapeContainerState extends State<LShapeContainer> {
       child: Container(
         alignment: Alignment.centerLeft,
         decoration: BoxDecoration(
-          color: Apptheme.auxilary,
+          color: Apptheme.header,
           gradient: widget.gradient,
           image: widget.image,
         ),

@@ -9,15 +9,15 @@ import 'package:test_app/screens/dynamic_pages/main_dynamichome.dart';
 import 'package:test_app/screens/dynamic_pages/main_productanlys.dart';
 import 'package:test_app/screens/dynamic_pages/main_sustainabilitynews.dart';
 import 'package:test_app/screens/dynamic_pages/zdebug.dart';
-import 'package:test_app/screens/dynamic_pages/bookmark_category1.dart';
-import 'package:test_app/screens/dynamic_pages/bookmark_category2.dart';
-import 'package:test_app/screens/dynamic_pages/bookmark_category3.dart';
-import 'package:test_app/screens/dynamic_pages/bookmark_category4.dart';
-import 'package:test_app/screens/dynamic_pages/bookmark_category5.dart';
-import 'package:test_app/screens/dynamic_pages/bookmark_category9.dart';
-import 'package:test_app/screens/dynamic_pages/bookmark_category10.dart';
-import 'package:test_app/screens/dynamic_pages/bookmark_category11.dart';
-import 'package:test_app/screens/dynamic_pages/bookmark_category12.dart';
+import 'package:test_app/screens/dynamic_pages/scope3_category1.dart';
+import 'package:test_app/screens/dynamic_pages/scope3_category2.dart';
+import 'package:test_app/screens/dynamic_pages/scope3_category3.dart';
+import 'package:test_app/screens/dynamic_pages/scope3_category4.dart';
+import 'package:test_app/screens/dynamic_pages/scope3_category5.dart';
+import 'package:test_app/screens/dynamic_pages/scope3_category9.dart';
+import 'package:test_app/screens/dynamic_pages/scope3_category10.dart';
+import 'package:test_app/screens/dynamic_pages/scope3_category11.dart';
+import 'package:test_app/screens/dynamic_pages/scope3_category12.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:test_app/riverpod.dart';
 
@@ -201,7 +201,7 @@ void initState() {
                         padding: const EdgeInsets.all(5),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: Apptheme.widgetsecondaryclr,
+                            color: Apptheme.header,
                             borderRadius: BorderRadius.all( Radius.circular(5))
                           ),
                           width: listWidth - 70,
@@ -230,7 +230,7 @@ void initState() {
                   ),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: Apptheme.widgetsecondaryclr,
+                      color: Apptheme.header,
                       borderRadius: BorderRadius.all( Radius.circular(5))
                     ),
                     height: 50,
@@ -317,7 +317,7 @@ class CurrentPageIndicator extends ConsumerWidget {
     // Map index to page name
     final pageNames = [
       'ECO-pi',
-      'Analysis',
+      'Attributes',
       'Allocation',
       'News',
       'About',

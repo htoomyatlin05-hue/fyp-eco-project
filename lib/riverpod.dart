@@ -5,6 +5,30 @@ import 'dart:convert';
 // -------------------  PAGE TRACKING  -------------------
 final currentPageProvider = StateProvider<int>((ref) => 0);
 
+// ------------------- UNIT CONVERSION -------------------
+
+// Dropdown options you will show in UI
+const Map<String, double> conversionFactors = {
+  "Metric (kg CO₂)" : 1.0,     // default
+  "Imperial (lb CO₂)" : 2.20462,
+  "Grams (g CO₂)" : 1000.0,
+};
+Map<double, String> unitLabels = {
+  1.0: 'kg',
+  2.20462: 'lb',
+  1000.0: 'g',
+};
+
+// Stores the selected unit
+final unitConversionProvider =
+    StateProvider<double>((ref) => 1.0); // default 
+
+final unitLabelProvider = Provider<String>((ref) {
+  final factor = ref.watch(unitConversionProvider);
+  return unitLabels[factor] ?? 'kg'; // default 
+});
+
+
 // ------------------- DATA FETCHING  -------------------
 class MetaOptions {
   final List<String> countries;
@@ -289,6 +313,7 @@ class EmissionResults {
     this.fugitive = 0,
   });
 
+  // Returns a new instance with updated values
   EmissionResults copyWith({
     double? material,
     double? transport,
@@ -303,15 +328,30 @@ class EmissionResults {
     );
   }
 
-  double get total =>
-      material + transport + machining + fugitive;
+  // Total of all emissions
+  double get total => material + transport + machining + fugitive;
 }
+
+
 
 // ------------------- PROVIDER -------------------
 final emissionCalculatorProvider = StateNotifierProvider<
     EmissionCalculator, EmissionResults>(
   (ref) => EmissionCalculator(),
 );
+
+final convertedEmissionsProvider = Provider<EmissionResults>((ref) {
+  final base = ref.watch(emissionCalculatorProvider);
+  final factor = ref.watch(unitConversionProvider);
+
+  return EmissionResults(
+    material: base.material * factor,
+    transport: base.transport * factor,
+    machining: base.machining * factor,
+    fugitive: base.fugitive * factor,
+  );
+});
+
 
 // ------------------- CALCULATOR -------------------
 class EmissionCalculator extends StateNotifier<EmissionResults> {
@@ -560,7 +600,7 @@ class ProfileService {
   ProfileService(this.baseUrl);
 
   Future<bool> deleteProfile(String profileName) async {
-    final url = Uri.parse('$baseUrl/profiles/$profileName');
+    final url = Uri.parse('http://127.0.0.1:8000/profiles/delete/$profileName');
 
     final response = await http.delete(url);
 
@@ -573,7 +613,7 @@ class ProfileService {
 
 final profileServiceProvider = Provider((ref) {
   
-  return ProfileService("http://10.0.2.2:8000");
+  return ProfileService("http://127.0.0.1:8000");
 });
 
 final deleteProfileProvider = AsyncNotifierProvider<DeleteProfileNotifier, void>(() {
@@ -590,6 +630,9 @@ class DeleteProfileNotifier extends AsyncNotifier<void> {
     try {
       final service = ref.read(profileServiceProvider);
       await service.deleteProfile(name);
+
+      ref.invalidate(productsProvider);
+
       state = const AsyncData(null);
     } catch (e, st) {
       state = AsyncError(e, st);

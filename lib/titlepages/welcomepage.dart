@@ -219,6 +219,19 @@ void dispose() {
                                           child: const Text("Save Profile"),
                                         ),
                                       ),
+
+                                      const SizedBox(height: 15),
+
+                                      SizedBox(
+                                        width: 200,
+                                        height: 45,
+                                        child: ElevatedButton(
+                                          onPressed:  () {
+                                            ref.read(deleteProfileProvider.notifier).delete("Test");
+                                          },
+                                          child: const Text("Delete Profile"),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),

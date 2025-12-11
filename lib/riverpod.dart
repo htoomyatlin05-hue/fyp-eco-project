@@ -553,6 +553,50 @@ class ProfileSaveRequest {
 
 
 
+// ------------------- DELETE PROJECTS -------------------
+class ProfileService {
+  final String baseUrl;
+
+  ProfileService(this.baseUrl);
+
+  Future<bool> deleteProfile(String profileName) async {
+    final url = Uri.parse('$baseUrl/profiles/$profileName');
+
+    final response = await http.delete(url);
+
+    if (response.statusCode == 200) return true;
+    if (response.statusCode == 404) throw Exception("Profile not found");
+
+    throw Exception("Failed: ${response.statusCode}");
+  }
+}
+
+final profileServiceProvider = Provider((ref) {
+  
+  return ProfileService("http://10.0.2.2:8000");
+});
+
+final deleteProfileProvider = AsyncNotifierProvider<DeleteProfileNotifier, void>(() {
+  return DeleteProfileNotifier();
+});
+
+class DeleteProfileNotifier extends AsyncNotifier<void> {
+  @override
+  Future<void> build() async {}
+
+  Future<void> delete(String name) async {
+    state = const AsyncLoading();
+
+    try {
+      final service = ref.read(profileServiceProvider);
+      await service.deleteProfile(name);
+      state = const AsyncData(null);
+    } catch (e, st) {
+      state = AsyncError(e, st);
+    }
+  }
+}
+
 
 
 

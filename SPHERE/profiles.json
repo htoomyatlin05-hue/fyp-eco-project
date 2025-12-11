@@ -5,5 +5,12 @@
       "sample": "test"
     },
     "owner": "demoUser"
+  },
+  "Test": {
+    "description": "Mock description",
+    "data": {
+      "sample": "test"
+    },
+    "owner": "demoUser"
   }
 }

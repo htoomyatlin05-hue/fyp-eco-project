@@ -1161,7 +1161,7 @@ def save_profile(req: ProfileSaveRequest):
     save_profiles(profiles)
     return {"status": "ok", "saved_profile": req.profile_name}
     
-@app.delete("/profiles/{profile_name}")
+@app.delete("/profiles/delete/{profile_name}")
 def delete_profile(profile_name: str):
     """
     Delete a saved profile by name.
@@ -1246,4 +1246,3 @@ def login_user(req: UserLoginRequest):
         "username": req.username,
         "profiles": user_profiles,
     }
-

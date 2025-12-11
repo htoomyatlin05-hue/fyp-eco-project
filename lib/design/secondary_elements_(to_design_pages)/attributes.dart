@@ -266,7 +266,7 @@ final tableNotifier = ref.read(tableControllerProvider(columns).notifier);
                                           : DropdownButtonHideUnderline(
                                                       child: 
                                                       DropdownButton<String>(
-                                                        dropdownColor: Apptheme.widgetclrlight,
+                                                        dropdownColor: Apptheme.widgetsecondaryclr,
                                                         icon:
                                                           Icon(Icons.arrow_drop_down,
                                                             color: Apptheme.iconsprimary,
@@ -275,12 +275,12 @@ final tableNotifier = ref.read(tableControllerProvider(columns).notifier);
                                                         padding: EdgeInsets.zero,
                                                         style: TextStyle(
                                                             fontSize: 15,
-                                                            color: Apptheme.textclrdark,
+                                                            color: Apptheme.textclrlight,
                                                             fontWeight: FontWeight.w500
                                                           ),
                                                         value: dropDownListsInternal[col].contains(tableState.selections[col][row])
       ? tableState.selections[col][row]
-      : null, 
+      : null,
                                                         isExpanded: true,
                                                         items: (dropDownListsInternal[col]).isEmpty
                                                             ? [const DropdownMenuItem(value: '',child: Text("Loading..."),)]
@@ -292,6 +292,7 @@ final tableNotifier = ref.read(tableControllerProvider(columns).notifier);
                                                                     overflow: TextOverflow.fade,
                                                                     maxLines: 1,
                                                                     softWrap: false,
+                                                                    
                                                                   ),
                                                                 ))
                                                                 .toList(),

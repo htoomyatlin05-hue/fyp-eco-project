@@ -16,8 +16,6 @@ from datetime import datetime, timedelta
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # folder of trial.py (SPHERE)
 USERS_FILE = os.path.join(BASE_DIR, "users.xlsx")
-df.to_excel(USERS_FILE, index=False)
-# and anywhere you read it: pd.read_excel(USERS_FILE)
 
 #1.File Storage Setup
 #Function to locate where user data is stored on their system
@@ -30,12 +28,10 @@ def get_user_data_path(filename):
     return os.path.join(base, filename)
 
 # Define file names
-BASE_DIR = os.path.dirname(os.path.abspath(__file__)) #Folder where trial.py is located
 PROFILE_FILE = os.path.join(BASE_DIR, "profiles.json")
 print("Using profile file:", PROFILE_FILE)
 
 EMISSION_FACTORS_FILE = get_user_data_path("custom_emission_factors.json")
-USERS_FILE = get_user_data_path("users_data.xlsx")
 
 print("Profile file path:", PROFILE_FILE)
 # Make sure required files exist    
@@ -56,6 +52,7 @@ def load_profiles() -> dict:
         with open(PROFILE_FILE, "r", encoding="utf-8") as f:
             return json.load(f)
     except json.JSONDecodeError:
+        save_profiles({})
         # If file is corrupted/empty, fail safely with an empty dict
         return {}
 
@@ -960,29 +957,26 @@ def get_sustainability_news():
     )
 
 @app.get("/profiles/{profile_name}")
-def get_profile(profile_name: str):
-    """
-    Load a specific profile by name.
-    """
+def get_profile(profile_name: str, username: str = Depends(get_current_username)):
     profiles = load_profiles()
     if profile_name not in profiles:
         raise HTTPException(status_code=404, detail="Profile not found")
-    return profiles[profile_name]
+
+    prof = profiles[profile_name]
+    if not isinstance(prof, dict) or prof.get("owner") != username:
+        raise HTTPException(status_code=403, detail="Not allowed")
+
+    return prof
 
 @app.get("/profiles")
-def list_profiles(username: Optional[str] = Query(None)):
-    """
-    List profile names.
-    If 'username' query param is provided, only return that user's profiles.
-    """
+def list_profiles(username: str = Depends(get_current_username)):
     profiles = load_profiles()
-    if username:
-        filtered = [
-            name for name, info in profiles.items()
-            if isinstance(info, dict) and info.get("owner") == username
-        ]
-        return {"profiles": filtered}
-    return {"profiles": list(profiles.keys())}
+    filtered = [
+        name for name, info in profiles.items()
+        if isinstance(info, dict) and info.get("owner") == username
+    ]
+    return {"profiles": filtered}
+
 
 @app.post("/calculate/material_emission")
 def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of the input the fastapi endpoint receives.
@@ -1188,59 +1182,50 @@ def save_profile(req: ProfileSaveRequest, username: str = Depends(get_current_us
 
     
 @app.delete("/profiles/delete/{profile_name}")
-def delete_profile(profile_name: str):
-    """
-    Delete a saved profile by name.
-    """
+def delete_profile(profile_name: str, username: str = Depends(get_current_username)):
     profiles = load_profiles()
     if profile_name not in profiles:
         raise HTTPException(status_code=404, detail="Profile not found")
 
-    # remove and save
+    prof = profiles[profile_name]
+    if not isinstance(prof, dict) or prof.get("owner") != username:
+        raise HTTPException(status_code=403, detail="Not allowed")
+
     del profiles[profile_name]
     save_profiles(profiles)
-
     return {"status": "deleted", "profile_name": profile_name}
 
+
 @app.post("/profiles/rename")
-def rename_profile(req: ProfileRenameRequest):
-    """
-    Rename an existing profile.
-    """
+def rename_profile(req: ProfileRenameRequest, username: str = Depends(get_current_username)):
     profiles = load_profiles()
 
     if req.old_name not in profiles:
         raise HTTPException(status_code=404, detail="Old profile name not found")
 
+    old_prof = profiles[req.old_name]
+    if not isinstance(old_prof, dict) or old_prof.get("owner") != username:
+        raise HTTPException(status_code=403, detail="Not allowed")
+
     if req.new_name in profiles:
         raise HTTPException(status_code=400, detail="New profile name already exists")
 
-    # move data to new key
-    profiles[req.new_name] = profiles[req.old_name]
+    profiles[req.new_name] = old_prof
     del profiles[req.old_name]
-
     save_profiles(profiles)
+    return {"status": "renamed", "old_name": req.old_name, "new_name": req.new_name}
 
-    return {
-        "status": "renamed",
-        "old_name": req.old_name,
-        "new_name": req.new_name,
-    }
 
 @app.post("/auth/signup")
-def signup_user(req: UserSignupRequest):
-    """
-    Create a new user and store username/password in users.xlsx.
-    """
+def signup(req: UserSignupRequest):
     wb, ws = load_users_sheet()
 
-    # Check if username already exists
-    existing_row = find_user_row(ws, req.username)
-    if existing_row is not None:
-        raise HTTPException(status_code=400, detail="Username already exists")
+    # prevent duplicate usernames
+    if find_user_row(ws, req.username) is not None:
+        raise HTTPException(status_code=409, detail="Username already exists")
 
-    pwd_hash = hash_password(req.password)
-    ws.append([req.username, pwd_hash])
+    # append new user
+    ws.append([req.username, hash_password(req.password)])
     wb.save(USERS_FILE)
 
     return {"status": "ok", "username": req.username}
@@ -1249,8 +1234,9 @@ def signup_user(req: UserSignupRequest):
 @app.post("/auth/login")
 def login_user(req: UserLoginRequest):
     """
-    Verify username/password against users.xlsx and return that user's profiles.
+    Verify username/password against users.xlsx and return an access token.
     """
+
     wb, ws = load_users_sheet()
     row = find_user_row(ws, req.username)
     if row is None:
@@ -1272,5 +1258,5 @@ def login_user(req: UserLoginRequest):
         "access_token": token,
         "token_type": "bearer",
         "username": req.username,
-}
-import os; print(os.path.abspath("users.xlsx"))
+        "profiles": user_profiles
+    }

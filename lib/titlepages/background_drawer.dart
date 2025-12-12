@@ -5,7 +5,7 @@ import 'package:test_app/design/apptheme/buttons_and_icons.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/hover_drawer.dart';
 import 'package:test_app/design/secondary_elements_(to_design_pages)/welcomelogo.dart';
 import 'package:test_app/design/primary_elements(to_set_up_pages)/sub_drawer.dart';
-import 'package:test_app/screens/dynamic_pages/master_panel.dart';
+import 'package:test_app/dynamic_pages/master_panel.dart';
 
 class BackgroundDrawer extends ConsumerStatefulWidget {
   final Function(int) onSelectPage;

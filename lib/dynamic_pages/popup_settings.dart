@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math';
 import 'package:test_app/design/apptheme/colors.dart';
 import 'package:test_app/design/apptheme/textlayout.dart';
-import 'package:test_app/screens/dynamic_pages/popup_pages.dart';
+import 'package:test_app/dynamic_pages/popup_pages.dart';
 import 'dart:ui';
 
 void showSettingsPopup(BuildContext context) {

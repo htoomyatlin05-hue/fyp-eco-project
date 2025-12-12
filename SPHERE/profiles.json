@@ -12,5 +12,19 @@
       "sample": "test"
     },
     "owner": "demoUser"
+  },
+  "testerprofile2": {
+    "description": "Mock description",
+    "data": {
+      "sample": "test"
+    },
+    "owner": "tester"
+  },
+  "testerprofile3": {
+    "description": "Mock description",
+    "data": {
+      "sample": "test"
+    },
+    "owner": "tester"
   }
 }

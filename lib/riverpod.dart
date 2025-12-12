@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+final secureStorage = FlutterSecureStorage();
 
 // -------------------  PAGE TRACKING  -------------------
 final currentPageProvider = StateProvider<int>((ref) => 0);
@@ -12,16 +15,19 @@ const Map<String, double> conversionFactors = {
   "Metric (kg CO₂)" : 1.0,     // default
   "Imperial (lb CO₂)" : 2.20462,
   "Grams (g CO₂)" : 1000.0,
+  "Centimeters (cm)" : 100,
 };
 Map<double, String> unitLabels = {
   1.0: 'kg',
   2.20462: 'lb',
   1000.0: 'g',
+  100.0 : 'cm'
 };
 Map<double, String> unitNames = {
   1.0: 'Metric',
   2.20462: 'Imperial',
   1000.0: 'Metric x10^-3',
+  100 : 'Me'
 };
 
 // Stores the selected unit
@@ -537,14 +543,25 @@ class Product {
 
 
 Future<List<Product>> fetchProducts() async {
-  final response = await http.get(Uri.parse('http://127.0.0.1:8000/profiles'));
+  final token = await secureStorage.read(key: "access_token");
+
+  if (token == null) {
+    throw Exception("Not logged in");
+  }
+
+  final response = await http.get(
+    Uri.parse('http://127.0.0.1:8000/profiles'),
+    headers: {
+      "Authorization": "Bearer $token", // ✅ REAL token
+    },
+  );
 
   if (response.statusCode == 200) {
     final Map<String, dynamic> map = jsonDecode(response.body);
-
-    final List<dynamic> rawList = map["profiles"]; // <-- list of strings
-
+    final List<dynamic> rawList = map["profiles"];
     return rawList.map((item) => Product.fromJson(item)).toList();
+  } else if (response.statusCode == 401) {
+    throw Exception("Unauthorized – please log in again");
   } else {
     throw Exception('Failed to load products');
   }
@@ -559,33 +576,50 @@ final productsProvider = FutureProvider<List<Product>>((ref) async {
 
 // ------------------- ADD/SAVE PROJECTS -------------------
 
-final saveProfileProvider = FutureProvider.family<String, ProfileSaveRequest>((ref, req) async {
-  print("POST /profiles/save payload: ${jsonEncode({
-  "profile_name": req.profileName,
-  "description": req.description,
-  "data": req.data,
-  "username": req.username,
-})}");
+final saveProfileProvider =
+    FutureProvider.family<String, ProfileSaveRequest>((ref, req) async {
+
+  final token = await secureStorage.read(key: "access_token");
+
+  if (token == null) {
+    throw Exception("Not logged in");
+  }
+
+
+
   final response = await http.post(
     Uri.parse('http://127.0.0.1:8000/profiles/save'),
-    headers: {"Content-Type": "application/json"},
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token", 
+    },
     body: jsonEncode({
       "profile_name": req.profileName,
       "description": req.description,
       "data": req.data,
-      "username": req.username,
     }),
   );
 
+
+
   if (response.statusCode == 200) {
+
     final json = jsonDecode(response.body);
+
     ref.invalidate(productsProvider);
+
     return json["saved_profile"];
-    
+
+  } else if (response.statusCode == 401) {
+
+    throw Exception("Unauthorized – please log in again");
+
   } else {
-    throw Exception("Failed to save profile");
+
+    throw Exception("Failed to save profile: ${response.body}");
+
   }
-  
+
 });
 
 class ProfileSaveRequest {
@@ -604,7 +638,7 @@ class ProfileSaveRequest {
 
 // ------------------- POST (THE REQUEST) LOG IN AUTHENTICATION -------------------
 final signUpAuth = FutureProvider.family<String, SignUpParameters>((ref, req) async {
-  print("Log in fields: ${jsonEncode({
+  print("Sign up fields: ${jsonEncode({
   "username": req.profileName,
   "password": req.password,
 
@@ -639,6 +673,43 @@ class SignUpParameters {
 }
 
 
+// ------------------- POST (THE REQUEST) LOG IN AUTHENTICATION -------------------
+final logInAuth = FutureProvider.family<String, LoginParameters>((ref, req) async {
+  final response = await http.post(
+    Uri.parse('http://127.0.0.1:8000/auth/login'),
+    headers: {"Content-Type": "application/x-www-form-urlencoded"},
+    body: {
+      "username": req.profileName,
+      "password": req.password,
+    },
+  );
+
+  if (response.statusCode == 200) {
+    final json = jsonDecode(response.body);
+    final token = json["access_token"];
+
+    // 🔑 STORE TOKEN
+    await secureStorage.write(key: "access_token", value: token);
+
+    // refresh profiles AFTER token is stored
+    ref.invalidate(productsProvider);
+
+    return token;
+  } else {
+    throw Exception("Failed to log in");
+  }
+});
+
+class LoginParameters {
+  final String profileName;
+  final String password;
+  LoginParameters({
+    required this.profileName,
+    required this.password,
+  });
+}
+
+
 // ------------------- DELETE PROJECTS -------------------
 class ProfileService {
   final String baseUrl;
@@ -647,11 +718,18 @@ class ProfileService {
 
   Future<bool> deleteProfile(String profileName) async {
     final url = Uri.parse('http://127.0.0.1:8000/profiles/delete/$profileName');
+    final token = await secureStorage.read(key: "access_token");
 
-    final response = await http.delete(url);
+    final response = await http.delete(
+      url,
+      headers: {
+        "Authorization": "Bearer $token", 
+      },
+    );
 
     if (response.statusCode == 200) return true;
     if (response.statusCode == 404) throw Exception("Profile not found");
+    if (response.statusCode == 401) throw Exception("Unauthorized – please log in again");
 
     throw Exception("Failed: ${response.statusCode}");
   }

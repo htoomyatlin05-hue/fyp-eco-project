@@ -14,6 +14,10 @@ from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from datetime import datetime, timedelta
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # folder of trial.py (SPHERE)
+USERS_FILE = os.path.join(BASE_DIR, "users.xlsx")
+df.to_excel(USERS_FILE, index=False)
+# and anywhere you read it: pd.read_excel(USERS_FILE)
 
 #1.File Storage Setup
 #Function to locate where user data is stored on their system

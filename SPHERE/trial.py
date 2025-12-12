@@ -9,6 +9,10 @@ from geopy.geocoders import Nominatim #converting a place name like "Germany" in
 import requests
 import re 
 import hashlib # for hashing passwords
+from fastapi import Depends
+from fastapi.security import OAuth2PasswordBearer
+from jose import jwt, JWTError
+from datetime import datetime, timedelta
 
 
 #1.File Storage Setup
@@ -50,6 +54,28 @@ def load_profiles() -> dict:
     except json.JSONDecodeError:
         # If file is corrupted/empty, fail safely with an empty dict
         return {}
+
+SECRET_KEY = "CHANGE_ME_TO_SOMETHING_LONG_RANDOM"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_DAYS = 7
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+
+def create_access_token(username: str) -> str:
+    expire = datetime.utcnow() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
+    payload = {"sub": username, "exp": expire}
+    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def get_current_username(token: str = Depends(oauth2_scheme)) -> str:
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        if not username:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        return username
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
 def ensure_users_excel():
     """
     Make sure the users.xlsx file exists with a 'Users' sheet and headers.
@@ -676,8 +702,8 @@ class FugitiveEmissionFromExcelRequest(BaseModel):
 class ProfileSaveRequest(BaseModel):
     profile_name: str
     description: Optional[str] = ""
-    data: dict  # arbitrary blob from Flutter (full form state)
-    username: Optional[str]=None
+    data: dict  # full UI state
+
 
 class ProfileRenameRequest(BaseModel):
     old_name: str
@@ -1146,19 +1172,16 @@ def calculate_fugitive_emissions(req: FugitiveEmissionFromExcelRequest):
     }
 
 @app.post("/profiles/save")
-def save_profile(req: ProfileSaveRequest):
-    """
-    Save a full UI state as a named profile.
-    """
+def save_profile(req: ProfileSaveRequest, username: str = Depends(get_current_username)):
     profiles = load_profiles()
     profiles[req.profile_name] = {
         "description": req.description,
         "data": req.data,
-        "owner": req.username
+        "owner": username
     }
-    print("Saving profiles:", profiles)
     save_profiles(profiles)
     return {"status": "ok", "saved_profile": req.profile_name}
+
     
 @app.delete("/profiles/delete/{profile_name}")
 def delete_profile(profile_name: str):
@@ -1216,7 +1239,7 @@ def signup_user(req: UserSignupRequest):
     ws.append([req.username, pwd_hash])
     wb.save(USERS_FILE)
 
-    return {"status": "ok", "username": req.username,"passowrd" : req.password}
+    return {"status": "ok", "username": req.username}
 
 
 @app.post("/auth/login")
@@ -1240,8 +1263,10 @@ def login_user(req: UserLoginRequest):
         if isinstance(info, dict) and info.get("owner") == req.username
     ]
 
+    token = create_access_token(req.username)
     return {
-        "status": "ok",
+        "access_token": token,
+        "token_type": "bearer",
         "username": req.username,
-        "profiles": user_profiles,
-    }
+}
+import os; print(os.path.abspath("users.xlsx"))

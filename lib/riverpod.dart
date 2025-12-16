@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/material.dart';
+
 
 final secureStorage = FlutterSecureStorage();
 
@@ -625,7 +627,7 @@ class ProfileSaveRequest {
 }
 
 
-// ------------------- POST (THE REQUEST) LOG IN AUTHENTICATION -------------------
+// ------------------- POST (THE REQUEST) SIGN UP AUTHENTICATION -------------------
 final signUpAuth = FutureProvider.family<String, SignUpParameters>((ref, req) async {
   print("Sign up fields: ${jsonEncode({
   "username": req.profileName,
@@ -685,6 +687,7 @@ final logInAuth = FutureProvider.family<String, LoginParameters>((ref, req) asyn
 
     return token;
   } else {
+    debugLog("Login failed with status: ${response.statusCode}");
     throw Exception("Failed to log in");
   }
 });
@@ -698,6 +701,23 @@ class LoginParameters {
   });
 }
 
+final tokenProvider = FutureProvider<String?>((ref) async {
+  final token = await secureStorage.read(key: "access_token");
+  return token;
+});
+
+final isLoggedInProvider = Provider<bool>((ref) {
+  final token = ref.watch(tokenProvider).value; // value is nullable String
+  return token != null && token.isNotEmpty;
+});
+
+bool enableDebug = true; // toggle this anywhere in your app
+
+void debugLog(String message) {
+  if (enableDebug) {
+    debugPrint("[DEBUG] $message");
+  }
+}
 
 // ------------------- DELETE PROJECTS -------------------
 class ProfileService {

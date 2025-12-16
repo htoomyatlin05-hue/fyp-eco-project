@@ -496,18 +496,7 @@ class _LoginFieldState extends ConsumerState<LoginField> {
                 ),
               ),
 
-              if (loginState != null)
-                loginState.when(
-                  data: (result) => Text(
-                    "Sign up success! Saved profile: $result",
-                    style: TextStyle(color: Colors.green),
-                  ),
-                  loading: () => const CircularProgressIndicator(),
-                  error: (err, _) => Text(
-                    "Error: $err",
-                    style: TextStyle(color: Colors.red),
-                  ),
-                ),
+    
               
               //--Sign In Button--
               Flexible(
@@ -521,34 +510,51 @@ class _LoginFieldState extends ConsumerState<LoginField> {
                       child: SizedBox(
                         width: parentWidth * 0.7, 
                         height: 50, 
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Apptheme.tertiarysecondaryclr,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            padding: const EdgeInsets.all(8),
-                          ),
-                          onPressed: () {
-                            ref.read(loginParamsProvider.notifier).state = LoginParameters(
-                              profileName: usernameController.text,
-                              password: passwordController.text,
-                            );
-                          },
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
-                            child: Text(
-                              "Log In",
-                              style: TextStyle(
-                                color: Apptheme.textclrlight,
-                                fontWeight: FontWeight.bold,
-                                fontSize: parentHeight * 0.3 < 14
-                                    ? 14
-                                    : parentHeight * 0.3, 
+                        child: SizedBox(
+                          width: parentWidth * 0.7,
+                          height: 50,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Apptheme.tertiarysecondaryclr,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
+                              padding: const EdgeInsets.all(8),
                             ),
+                            onPressed: (loginState?.isLoading ?? false)
+                                ? null
+                                : () {
+                                    ref.read(loginParamsProvider.notifier).state = LoginParameters(
+                                      profileName: usernameController.text,
+                                      password: passwordController.text,
+                                    );
+                                  },
+
+                            child: (loginState?.isLoading ?? false)
+                                ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor: AlwaysStoppedAnimation(Colors.white),
+                                    ),
+                                  )
+                                : FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      "Log In",
+                                      style: TextStyle(
+                                        color: Apptheme.textclrlight,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: parentHeight * 0.3 < 14
+                                            ? 14
+                                            : parentHeight * 0.3,
+                                      ),
+                                    ),
+                                  ),
                           ),
                         ),
+
                       ),
                     );
                   },

@@ -214,8 +214,8 @@ String getPercentageTitle(double value, double total) {
                           Textsinsidewidgets(
                             words: '[Insert Name of Product]', 
                             color: Apptheme.textclrlight,
-                            fontsize: 19,
-                            fontweight: FontWeight.w700,
+                            fontsize: 17,
+                            fontweight: FontWeight.w600,
                             toppadding: 0,
                           ),
                         ],

@@ -25,7 +25,6 @@ class _HoverSidebarWithNestedState extends State<HoverSidebarWithNested>
       
       _drawerTile((Icons.calculate),"Attributes", () => widget.onSelectPage(1)),
       _drawerTile((Icons.percent),"Allocation", () => widget.onSelectPage(2)),
-      _drawerTile((Icons.info),"About Us", () => widget.onSelectPage(4)),
       _drawerTile((Icons.laptop),"Debug Page", () => widget.onSelectPage(5)),
     ];
 
@@ -117,7 +116,7 @@ Widget _drawerTile(IconData icon, String title, VoidCallback onTap) {
         const SizedBox(width: 16), // Icon padding
         SizedBox(
           height: 25,
-          child: Icon(icon,  color:Apptheme.iconslight, size: 25)
+          child: Icon(icon,  color:Apptheme.iconslight, size: 22)
         ),
         if (_hovered) ...[
           const SizedBox(width: 16), // Space between icon and label
@@ -155,7 +154,7 @@ Widget _parentTile({
               const SizedBox(width: 16), // Icon padding
               SizedBox(
                 height: 25,
-                child: Icon(icon, color:Apptheme.iconslight, size: 25)
+                child: Icon(icon, color:Apptheme.iconslight, size: 22)
               ),
               if (_hovered) ...[
                 const SizedBox(width: 16), // Space between icon and label

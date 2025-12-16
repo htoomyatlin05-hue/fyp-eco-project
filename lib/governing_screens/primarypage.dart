@@ -210,7 +210,12 @@ void initState() {
                       children: [
                         CurrentPageIndicator(),
 
-                        _titlebaricons((Icons.newspaper),() => _onPageSelected(3)),
+                        Row(
+                          children: [
+                            _titlebaricons(Icons.newspaper,() => _onPageSelected(3)),
+                            _titlebaricons(Icons.info, () => _onPageSelected(4))
+                          ]
+                        )
                       ],
                     ),
                   ),

@@ -59,14 +59,56 @@ def load_profiles() -> dict:
 
 SECRET_KEY = "CHANGE_ME_TO_SOMETHING_LONG_RANDOM"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_DAYS = 7
+REFRESH_TOKEN_EXPIRE_DAYS = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+REFRESH_TOKENS_FILE = os.path.join(BASE_DIR, "refresh_tokens.json")
+
+def ensure_refresh_tokens_file():
+    if not os.path.exists(REFRESH_TOKENS_FILE):
+        with open(REFRESH_TOKENS_FILE, "w", encoding="utf-8") as f:
+            json.dump({}, f)
+
+def load_refresh_tokens() -> dict:
+    ensure_refresh_tokens_file()
+    with open(REFRESH_TOKENS_FILE, "r", encoding="utf-8") as f:
+        try:
+            return json.load(f)
+        except json.JSONDecodeError:
+            return {}
+
+def save_refresh_tokens(data: dict) -> None:
+    with open(REFRESH_TOKENS_FILE, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
 
 def create_access_token(username: str) -> str:
-    expire = datetime.utcnow() + timedelta(days=ACCESS_TOKEN_EXPIRE_DAYS)
-    payload = {"sub": username, "exp": expire}
+    now = datetime.utcnow()
+    payload = {
+        "sub": username,
+        "type": "access",
+        "iat": int(now.timestamp()),
+        "exp": int((now + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)).timestamp()),
+    }
     return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+def create_refresh_token(username: str) -> str:
+    now = datetime.utcnow()
+    payload = {
+        "sub": username,
+        "type": "refresh",
+        "iat": int(now.timestamp()),
+        "exp": int((now + timedelta(days=REFRESH_TOKEN_EXPIRE_DAYS)).timestamp()),
+    }
+    token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+
+    # store refresh token so you can revoke later
+    store = load_refresh_tokens()
+    store[token] = {"username": username, "exp": payload["exp"]}
+    save_refresh_tokens(store)
+
+    return token
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 def get_current_username(token: str = Depends(oauth2_scheme)) -> str:
     try:
@@ -733,6 +775,9 @@ class UserLoginRequest(BaseModel):
     username: str
     password: str
 
+class RefreshRequest(BaseModel):
+    refresh_token: str
+
 
 # --------- 6. FASTAPI APP + ENDPOINTS ---------------------------------------#
 
@@ -743,7 +788,7 @@ NEWSAPI_KEY = os.getenv("NEWSAPI_KEY", "adfd0f78d5304adea0d4490623f32aec")
 NEWSAPI_ENDPOINT = "https://newsapi.org/v2/everything"
 
 @app.get("/meta/machines")
-def get_machinedata():
+def get_machinedata(username: str = Depends(get_current_username)):
     """
     machine information
     """
@@ -752,7 +797,7 @@ def get_machinedata():
     } 
     
 @app.get("/meta/material type")
-def get_materialdata():
+def get_materialdata(username: str = Depends(get_current_username)):
     """
     material data 
     """
@@ -761,7 +806,7 @@ def get_materialdata():
     }
 
 @app.get("/meta/Grid_intensity_of_all_countries")
-def Grid_intensity_of_all_countries():
+def Grid_intensity_of_all_countries(username: str = Depends(get_current_username)):
     """
     Grid intensity for different countries
     """
@@ -771,7 +816,7 @@ def Grid_intensity_of_all_countries():
     }
 
 @app.get("/meta/transport(cargotype)")
-def get_transport_types():
+def get_transport_types(username: str = Depends(get_current_username)):
     """
     different transport types
     """
@@ -780,7 +825,7 @@ def get_transport_types():
     }
 
 @app.get("/meta/GWP of GHG_gases")
-def getGWPvalues():
+def getGWPvalues(username: str = Depends(get_current_username)):
     """
     Values of the Indicator, GHG, and GWP values
     """
@@ -792,7 +837,7 @@ def getGWPvalues():
     } 
 
 @app.get("/meta/options")
-def get_options():
+def get_options(username: str = Depends(get_current_username)):
     """
     Flutter calls this to populate dropdowns:
       - countries
@@ -833,12 +878,12 @@ def get_options():
         "Van_emissions":van_emission_list,
         "HGV_mode":HGV_mode_list,
         "HGV_emissions":HGV_emission_list,
-        "HGV_r_mode:":HGV_r_mode_list,
+        "HGV_r_mode":HGV_r_mode_list,
         "HGV_r_emissions":HGV_r_emission_list
     }
 
 @app.get("/meta/transport/config")
-def get_transport_config():
+def get_transport_config(username: str = Depends(get_current_username)):
     """
     Return all transport modes, and for each mode:
       - classes
@@ -861,7 +906,7 @@ def get_transport_config():
     }
 
 @app.get("/meta/machines_type")
-def get_machinetypes():
+def get_machinetypes(username: str = Depends(get_current_username)):
     '''
     -machine info like milling etc.
     '''
@@ -870,7 +915,7 @@ def get_machinetypes():
     }
 
 @app.get("/meta/YCM_model")
-def get_machinetypes_YCM():
+def get_machinetypes_YCM(username: str = Depends(get_current_username)):
     '''
     -YCM machine models
     -main spindle(kW)
@@ -883,7 +928,7 @@ def get_machinetypes_YCM():
     }
 
 @app.get("/meta/Amada_model")
-def get_machinetypes_YCM():
+def get_machinetypes_YCM(username: str = Depends(get_current_username)):
     '''
     -Amada machine models
     -main spindle(kW)
@@ -896,7 +941,7 @@ def get_machinetypes_YCM():
     }
 
 @app.get("/meta/Mazak_model")
-def get_machinetypes_YCM():
+def get_machinetypes_YCM(username: str = Depends(get_current_username)):
     '''
     -Mazak machine models
     -main spindle(kW)
@@ -909,7 +954,7 @@ def get_machinetypes_YCM():
     }
 
 @app.get("/news/sustainability", response_model=NewsResponse)
-def get_sustainability_news():
+def get_sustainability_news(username: str = Depends(get_current_username)):
     """
     Returns sustainability & carbon-emissions–related news articles
     for the Flutter UI.
@@ -1011,13 +1056,13 @@ def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of 
     }
 
 @app.get("/meta/machining/mazak")
-def get_mazak_list():
+def get_mazak_list(username: str = Depends(get_current_username)):
     return {
         "Mazak_machine_model": Mazak_machine_model
     }
 
 @app.get("/meta/machining/countries")
-def get_countries():
+def get_countries(username: str = Depends(get_current_username)):
     return {
         "countries": country_list
     }
@@ -1250,10 +1295,35 @@ def login_user(form: OAuth2PasswordRequestForm = Depends()):
         if isinstance(info, dict) and info.get("owner") == form.username
     ]
 
-    token = create_access_token(form.username)
+    access = create_access_token(form.username)
+    refresh = create_refresh_token(form.username)
+
     return {
-        "access_token": token,
+        "access_token": access,
+        "refresh_token": refresh,
         "token_type": "bearer",
         "username": form.username,
         "profiles": user_profiles
-    }
+}
+
+
+@app.post("/auth/refresh")
+def refresh_access_token(req: RefreshRequest):
+    # check exists in server store (revocation support)
+    store = load_refresh_tokens()
+    if req.refresh_token not in store:
+        raise HTTPException(status_code=401, detail="Refresh token revoked or unknown")
+
+    try:
+        payload = jwt.decode(req.refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "refresh":
+            raise HTTPException(status_code=401, detail="Wrong token type")
+        username = payload.get("sub")
+        if not username:
+            raise HTTPException(status_code=401, detail="Invalid refresh token")
+    except JWTError:
+        raise HTTPException(status_code=401, detail="Invalid or expired refresh token")
+
+    # issue NEW access token
+    new_access = create_access_token(username)
+    return {"access_token": new_access, "token_type": "bearer"}

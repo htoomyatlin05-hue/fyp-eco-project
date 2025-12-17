@@ -22,7 +22,7 @@ class _HoverSidebarWithNestedState extends State<HoverSidebarWithNested>
   Widget build(BuildContext context) {
     // --- Shortcuts (main items) ---
     final shortcuts = [
-      
+      _drawerTile(Icons.home, "Home" ,() => widget.onSelectPage(0)),
       _drawerTile((Icons.calculate),"Attributes", () => widget.onSelectPage(1)),
       _drawerTile((Icons.percent),"Allocation", () => widget.onSelectPage(2)),
       _drawerTile((Icons.laptop),"Debug Page", () => widget.onSelectPage(5)),

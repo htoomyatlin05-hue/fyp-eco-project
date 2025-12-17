@@ -297,7 +297,7 @@ class CurrentPageIndicator extends ConsumerWidget {
       'ECO-pi',
       'Attributes',
       'Allocation',
-      'News',
+      'Sustainability News',
       'About',
       'Debug',
       'Scope 3 Category 1',

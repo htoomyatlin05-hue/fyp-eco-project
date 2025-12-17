@@ -33,7 +33,7 @@ class Apptheme{
 
   //text colors--
   static const Color textclrlight =  lightpallete1;
-  static const Color textclrdark = primarycolour2;
+  static const Color textclrdark = darkpallete6;
   static const Color textclrspecial = lightpallete1; //--Title (SPHERE)--
 
     //--icons and buttons--

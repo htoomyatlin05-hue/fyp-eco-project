@@ -75,56 +75,59 @@ class UnitsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return FrostedBackgroundGeneral(
-      child: ListView(
+      child: Row(
         children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: Labels(
-              title: "Output display unit: ${ref.watch(unitNameProvider)}",
-              color: Apptheme.textclrdark,
-              fontsize: 20,
-              toppadding: 5,
-              leftpadding: 10,
-            ),
-          ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Labels(
-              title: "Input Unit: [To be defined]",
-              color: Apptheme.textclrdark,
-              fontsize: 20,
-              toppadding: 30,
-              leftpadding: 10,
-            ),
-          ),
-          Align(
-            alignment: Alignment.topLeft,
-            child: Row(
+          SizedBox(
+            width: 150,
+            child: ListView(
               children: [
-                Textsinsidewidgets(
-                  words: 'Keep input as same unit', 
-                  color: Apptheme.textclrdark,
-                  leftpadding: 15,
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Labels(
+                      title: "Display unit",
+                      color: Apptheme.textclrlight,
+                      fontsize: 19,
+                      toppadding: 0,
+                      leftpadding: 10,
+                    ),
+                  ),
                 ),
-                StatefulBuilder(
-                  builder: (context, setState) {
-                    bool isChecked = true;
-      
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 8),
-                      child: Checkbox(
-                        value: isChecked,
-                        onChanged: (value) {
-                          setState(() => isChecked = value ?? false);
-                        },
-                      ),
-                    );
-                  },
-                )
-      
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    child: Labels(
+                      title: "[]",
+                      color: Apptheme.textclrlight,
+                      fontsize: 19,
+                      toppadding: 0,
+                      leftpadding: 10,
+                    ),
+                  ),
+                ),
               ],
-            )
+            ),
           ),
+        
+          Expanded(
+            child: FrostedBackgroundGeneral(
+              child: ListView(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Textsinsidewidgets(
+                      words: 'Output display unit: ${ref.watch(unitNameProvider)}', 
+                      color: Apptheme.textclrlight,
+                      fontsize: 17,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          )
+
         ],
       ),
     );
@@ -181,8 +184,8 @@ class MethodologyPage extends ConsumerWidget {
     return FrostedBackgroundGeneral(
       child: ListView(
         children: [
-          Labels(title: 'Uncertainies', color: Apptheme.textclrdark, fontsize: 30,),
-          Labels(title: 'Parameter uncertainty', color: Apptheme.textclrdark, fontsize: 20,)
+          Labels(title: 'Uncertainies', color: Apptheme.textclrlight, fontsize: 30,),
+          Labels(title: 'Parameter uncertainty', color: Apptheme.textclrlight, fontsize: 20,)
         ],
       )
     );
@@ -208,7 +211,7 @@ class FrostedBackgroundGeneral extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
         child: Container(
-          color: Apptheme.widgetclrlight.withOpacity(0.9),
+          color: Apptheme.widgetclrlight.withOpacity(0.2),
           child: child,
         ),
       ),

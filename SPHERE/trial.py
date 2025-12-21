@@ -1015,14 +1015,20 @@ def get_profile(profile_name: str, username: str = Depends(get_current_username)
     return prof
 
 @app.get("/profiles")
-def list_profiles(username: str = Depends(get_current_username)):
+def list_profiles(
+    request: Request,
+    username: str = Depends(get_current_username)
+):
+    print("=== DEBUG /profiles ===")
+    print("Authorization header:", request.headers.get("authorization"))
+    print("Decoded username:", username)
+
     profiles = load_profiles()
     filtered = [
         name for name, info in profiles.items()
         if isinstance(info, dict) and info.get("owner") == username
     ]
     return {"profiles": filtered}
-
 
 @app.post("/calculate/material_emission")
 def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of the input the fastapi endpoint receives.

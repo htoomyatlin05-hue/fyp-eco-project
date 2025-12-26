@@ -121,8 +121,22 @@ class MetaOptions {
 
 
 final metaOptionsProvider = FutureProvider<MetaOptions>((ref) async {
+  final isLoggedIn = ref.watch(isLoggedInProvider);
+
+  if (!isLoggedIn) {
+    throw Exception("Not logged in");
+  }
+
+  final token = await ref.watch(tokenProvider.future);
+
   const url = 'http://127.0.0.1:8000/meta/options';
-  final res = await http.get(Uri.parse(url));
+  final res = await http.get(
+    Uri.parse(url),
+    headers: {
+      "Authorization": "Bearer $token",
+      "Content-Type": "application/json",
+    },
+  );
 
   if (res.statusCode != 200) {
     throw Exception('Failed to load meta options');
@@ -131,6 +145,7 @@ final metaOptionsProvider = FutureProvider<MetaOptions>((ref) async {
   final jsonMap = jsonDecode(res.body);
   return MetaOptions.fromJson(jsonMap);
 });
+
 
 // --- Individual data fetching ---
 final countriesProvider = Provider<List<String>>((ref) {
@@ -540,7 +555,10 @@ Future<List<Product>> fetchProducts() async {
   final response = await authedRequestWithRetry((token) {
     return http.get(
       Uri.parse('http://127.0.0.1:8000/profiles'),
-      headers: {"Authorization": "Bearer <token>"},
+      headers: {"Authorization": "Bearer <token>",
+      "Content-Type": "application/json",
+
+      },
     );
   });
 

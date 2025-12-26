@@ -22,7 +22,6 @@ class Widgets1 extends StatelessWidget {
       padding: const EdgeInsets.all(4),
       child: Container(
         height: maxheight,
-        width: double.infinity,
         decoration: BoxDecoration(
           color: backgroundcolor,
           borderRadius: BorderRadius.circular(15),

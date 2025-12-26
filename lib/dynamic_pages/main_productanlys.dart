@@ -90,11 +90,11 @@ final List<Widget> widgetofpage1 = [
   Widgets1(
     maxheight: 250,
     child: AttributesMenu(
-      columnTitles: ['Country', 'Material', 'Mass (kg)'],
+      columnTitles: ['Material', 'Country', 'Mass (kg)'],
       isTextFieldColumn: [false, false, true],
       dropDownLists: [
-        ref.watch(countriesProvider),
         ref.watch(materialsProvider),
+        ref.watch(countriesProvider),
         [],
       ],
       addButtonLabel: 'Add material',

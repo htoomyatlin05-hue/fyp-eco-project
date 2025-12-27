@@ -817,6 +817,105 @@ class DeleteProfileNotifier extends AsyncNotifier<void> {
 
 
 
+// --------------- StateNotifier -----------------
+class MaterialTableState {
+  final List<String?> materials;
+  final List<String?> countries;
+  final List<String?> masses;
+  final List<String?> allocationValues; // NEW COLUMN
 
+  MaterialTableState({
+    required this.materials,
+    required this.countries,
+    required this.masses,
+    required this.allocationValues,
+  });
+
+  MaterialTableState copyWith({
+    List<String?>? materials,
+    List<String?>? countries,
+    List<String?>? masses,
+    List<String?>? allocationValues,
+  }) {
+    return MaterialTableState(
+      materials: materials ?? this.materials,
+      countries: countries ?? this.countries,
+      masses: masses ?? this.masses,
+      allocationValues: allocationValues ?? this.allocationValues,
+    );
+  }
+}
+
+// ---------------- NOTIFIER ----------------
+
+class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
+  MaterialTableNotifier()
+      : super(
+          MaterialTableState(
+            materials: [''],
+            countries: [''],
+            masses: [''],
+            allocationValues: [''], // NEW
+          ),
+        );
+
+  void addRow() {
+    state = state.copyWith(
+      materials: [...state.materials, ''],
+      countries: [...state.countries, ''],
+      masses: [...state.masses, ''],
+      allocationValues: [...state.allocationValues, ''],
+    );
+  }
+
+  void removeRow() {
+    if (state.materials.length > 1) {
+      state = state.copyWith(
+        materials: state.materials.sublist(0, state.materials.length - 1),
+        countries: state.countries.sublist(0, state.countries.length - 1),
+        masses: state.masses.sublist(0, state.masses.length - 1),
+        allocationValues: state.allocationValues.sublist(0, state.allocationValues.length - 1),
+      );
+    }
+  }
+
+  void updateCell({
+    required int row,
+    required String column, // 'Material', 'Country', 'Mass', 'Notes'
+    required String? value,
+  }) {
+    final materials = [...state.materials];
+    final countries = [...state.countries];
+    final masses = [...state.masses];
+    final allocationValues = [...state.allocationValues];
+
+    switch (column) {
+      case 'Material':
+        materials[row] = value;
+        break;
+      case 'Country':
+        countries[row] = value;
+        break;
+      case 'Mass':
+        masses[row] = value;
+        break;
+      case 'Allocation Value':
+        allocationValues[row] = value;
+        break;
+    }
+
+    state = state.copyWith(
+      materials: materials,
+      countries: countries,
+      masses: masses,
+      allocationValues: allocationValues,
+    );
+  }
+}
+
+
+final materialTableProvider =
+    StateNotifierProvider<MaterialTableNotifier, MaterialTableState>(
+        (ref) => MaterialTableNotifier());
 
 

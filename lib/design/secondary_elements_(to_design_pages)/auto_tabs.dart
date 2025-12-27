@@ -16,12 +16,6 @@ class ManualTab2pages extends StatefulWidget {
   final Widget secondchildof1;
   final Widget secondchildof2;
   final Widget secondchildof3;
-  final int pg1flexValue1;
-  final int pg1flexValue2;
-  final int pg2flexValue1;
-  final int pg2flexValue2;
-  final int pg3flexValue1;
-  final int pg3flexValue2;
 
   final Color backgroundcolor;
 
@@ -32,13 +26,6 @@ class ManualTab2pages extends StatefulWidget {
   required this.tab2fontsize,
   required this.tab3,
   required this.tab3fontsize,
-
-  required this. pg1flexValue1,
-  required this. pg1flexValue2,
-  required this. pg2flexValue1,
-  required this. pg2flexValue2,
-  required this. pg3flexValue1,
-  required this. pg3flexValue2,
 
   required this.firstchildof1,
   required this.firstchildof2,
@@ -126,8 +113,8 @@ class _ManualTab2pages extends State<ManualTab2pages> with SingleTickerProviderS
                       physics: NeverScrollableScrollPhysics(),
                       controller: _tabController,
                       children: [
-                        ManualColumn2(childof1: widget.firstchildof1, childof2: widget.secondchildof1, flexValue1: widget.pg1flexValue1, flexValue2: widget.pg1flexValue1),
-                        ManualColumn2(childof1: widget.firstchildof2, childof2: widget.secondchildof2, flexValue1: widget.pg2flexValue1, flexValue2: widget.pg2flexValue2),
+                        ManualColumn2(childof1: widget.firstchildof1, childof2: widget.secondchildof1,),
+                        ManualColumn2(childof1: widget.firstchildof2, childof2: widget.secondchildof2,),
                       ],
                     ),
                   ),
@@ -163,15 +150,11 @@ class _ManualTab2pages extends State<ManualTab2pages> with SingleTickerProviderS
 class ManualColumn2 extends StatefulWidget {
   final Widget childof1;
   final Widget childof2;
-  final int flexValue1;
-  final int flexValue2;
 
   const ManualColumn2({
     super.key,
     required this.childof1,
     required this.childof2,
-    required this.flexValue1,
-    required this.flexValue2,
   
   });
 
@@ -211,12 +194,6 @@ class ManualTab3pages extends StatefulWidget {
   final Widget secondchildof1;
   final Widget secondchildof2;
   final Widget secondchildof3;
-  final int pg1flexValue1;
-  final int pg1flexValue2;
-  final int pg2flexValue1;
-  final int pg2flexValue2;
-  final int pg3flexValue1;
-  final int pg3flexValue2;
 
   final Color backgroundcolor;
 
@@ -227,13 +204,6 @@ class ManualTab3pages extends StatefulWidget {
   required this.tab2fontsize,
   required this.tab3,
   required this.tab3fontsize,
-
-  required this. pg1flexValue1,
-  required this. pg1flexValue2,
-  required this. pg2flexValue1,
-  required this. pg2flexValue2,
-  required this. pg3flexValue1,
-  required this. pg3flexValue2,
 
   required this.firstchildof1,
   required this.firstchildof2,
@@ -324,9 +294,9 @@ class _ManualTab3pages extends State<ManualTab3pages> with SingleTickerProviderS
                       physics: NeverScrollableScrollPhysics(),
                       controller: _tabController,
                       children: [
-                        ManualColumn3(childof1: widget.firstchildof1, childof2: widget.secondchildof1, flexValue1: widget.pg1flexValue1, flexValue2: widget.pg1flexValue1),
-                        ManualColumn3(childof1: widget.firstchildof2, childof2: widget.secondchildof2, flexValue1: widget.pg2flexValue1, flexValue2: widget.pg2flexValue2),
-                        ManualColumn3(childof1: widget.firstchildof3, childof2: widget.secondchildof3, flexValue1: widget.pg3flexValue1, flexValue2: widget.pg3flexValue2)
+                        ManualColumn3(childof1: widget.firstchildof1, childof2: widget.secondchildof1, ),
+                        ManualColumn3(childof1: widget.firstchildof2, childof2: widget.secondchildof2,),
+                        ManualColumn3(childof1: widget.firstchildof3, childof2: widget.secondchildof3,)
                       ],
                     ),
                   ),
@@ -363,15 +333,11 @@ class _ManualTab3pages extends State<ManualTab3pages> with SingleTickerProviderS
 class ManualColumn3 extends StatefulWidget {
   final Widget childof1;
   final Widget childof2;
-  final int flexValue1;
-  final int flexValue2;
 
   const ManualColumn3({
     super.key,
     required this.childof1,
     required this.childof2,
-    required this.flexValue1,
-    required this.flexValue2,
   
   });
 

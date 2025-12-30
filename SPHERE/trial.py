@@ -1150,6 +1150,7 @@ def calculate_freight_flight(req: TonKmRequest):
     total = ef_per_km * req.distance_km
 
     return {
+        "vehicle_type": None,
         "category": "Freight Flight",
         "transport_type": req.transport_type,
         "distance_km": req.distance_km,
@@ -1169,6 +1170,7 @@ def calculate_rail_sheet(req: TonKmRequest):
     total = ef_per_km * req.distance_km
 
     return {
+        "vehicle_type": None,
         "category": "Rail",
         "transport_type": req.transport_type,
         "distance_km": req.distance_km,
@@ -1189,6 +1191,7 @@ def calculate_sea_tanker(req: TonKmRequest):
     total = ef_per_km * req.distance_km
 
     return {
+        "vehicle_type": None,
         "category": "Sea Tanker",
         "transport_type": req.transport_type,
         "distance_km": req.distance_km,
@@ -1208,13 +1211,13 @@ def calculate_cargo_ship(req: TonKmRequest):
     total = ef_per_km * req.distance_km
 
     return {
+        "vehicle_type": None,
         "category": "Cargo Ship",
         "transport_type": req.transport_type,
         "distance_km": req.distance_km,
         "emission_factor_per_km": ef_per_km,
         "total_emission_kgco2e": total
     }
-
 
 @app.post("/calculate/van")
 def calculate_van(req: dict):

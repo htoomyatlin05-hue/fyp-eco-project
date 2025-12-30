@@ -71,6 +71,11 @@ class MetaOptions {
   final List<String> mazakTypes;
   final List<String> vanMode;
   final List<String> hgvMode;
+  final List<String> hgvRefrigeratedMode;
+  final List<String> railMode;
+  final List<String> freightFlightMode;
+  final List<String> seaTankerMode;
+  final List<String> cargoShipMode;
 
   MetaOptions({
     required this.countries,
@@ -92,6 +97,11 @@ class MetaOptions {
     required this.mazakTypes,
     required this.vanMode,
     required this.hgvMode,
+    required this.hgvRefrigeratedMode,
+    required this.railMode,
+    required this.freightFlightMode,
+    required this.seaTankerMode,
+    required this.cargoShipMode,
   });
 
   factory MetaOptions.fromJson(Map<String, dynamic> json) {
@@ -115,6 +125,11 @@ class MetaOptions {
       mazakTypes: List<String>.from(json['Mazak_types'] ?? []),
       vanMode: List<String>.from(json['Van_mode'] ?? []),
       hgvMode: List<String>.from(json['HGV_mode'] ?? []),
+      hgvRefrigeratedMode: List<String>.from(json['HGV_r_mode'] ?? []),
+      railMode: List<String>.from(json['Rail_mode'] ?? []),
+      freightFlightMode: List<String>.from(json['Freight_flight_modes'] ?? []),
+      seaTankerMode: List<String>.from(json['Sea_Tanker_mode'] ?? []),
+      cargoShipMode: List<String>.from(json['Cargo_ship_mode'] ?? []),
     );
   }
 }
@@ -319,15 +334,61 @@ final hgvModeProvider = Provider<List<String>>((ref) {
   );
 });
 
+final hgvRefrigeratedModeProvider = Provider<List<String>>((ref) {
+  final asyncMeta = ref.watch(metaOptionsProvider);
+  return asyncMeta.when(
+    data: (meta) => meta.hgvRefrigeratedMode,
+    loading: () => [],
+    error: (_, __) => [],
+  );
+}); 
 
+final railmodeProvider = Provider<List<String>>((ref) {
+  final asyncMeta = ref.watch(metaOptionsProvider);
+  return asyncMeta.when(
+    data: (meta) => meta.railMode,
+    loading: () => [],
+    error: (_, __) => [],
+  );
+});
+
+final freightFlightModeProvider = Provider<List<String>>((ref) {
+  final asyncMeta = ref.watch(metaOptionsProvider);
+  return asyncMeta.when(
+    data: (meta) => meta.freightFlightMode,
+    loading: () => [],
+    error: (_, __) => [],
+  );
+});
+
+final seaTankerModeProvider = Provider<List<String>>((ref) {
+  final asyncMeta = ref.watch(metaOptionsProvider);
+  return asyncMeta.when(
+    data: (meta) => meta.seaTankerMode,
+    loading: () => [],
+    error: (_, __) => [],
+  );
+});
+
+final cargoShipModeProvider = Provider<List<String>>((ref) {
+  final asyncMeta = ref.watch(metaOptionsProvider);
+  return asyncMeta.when(
+    data: (meta) => meta.cargoShipMode,
+    loading: () => [],
+    error: (_, __) => [],
+  );
+});
 
 
 final classOptionsProvider = Provider.family<List<String>, String>((ref, vehicle) {
   switch (vehicle) {
-    case 'Van':
-      return ref.watch(vanModeProvider);
-    case 'HGV (Diesel)':
-      return ref.watch(hgvModeProvider);
+    case 'Van': return ref.watch(vanModeProvider);
+    case 'HGV (Diesel)': return ref.watch(hgvModeProvider);
+    case 'HGV Refrigerated (Diesel)': return ref.watch(hgvRefrigeratedModeProvider);
+    case 'Rail': return ref.watch(railmodeProvider);
+    case 'Freight Flights': return ref.watch(freightFlightModeProvider);
+    case 'Sea Tanker': return ref.watch(seaTankerModeProvider);
+    case 'Cargo Ship': return ref.watch(cargoShipModeProvider);
     default:
       return [];
   }

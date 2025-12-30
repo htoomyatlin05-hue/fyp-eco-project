@@ -13,18 +13,10 @@
     },
     "owner": "demoUser"
   },
-  "testerprofile2": {
+  "hy": {
     "description": "Mock description",
     "data": {
       "sample": "test"
-    },
-    "owner": "tester"
-  },
-  "testerprofile3": {
-    "description": "Mock description",
-    "data": {
-      "sample": "test"
-    },
-    "owner": "tester"
+    }
   }
 }

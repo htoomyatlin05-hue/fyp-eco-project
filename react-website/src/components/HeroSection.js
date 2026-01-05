@@ -8,7 +8,7 @@ function HeroSection() {
     <div className='hero-container'>
       <video src="/videos/nature.mp4" autoPlay loop muted />
       <h1> SUSTAINABILITY</h1>
-      <p>What</p>
+      <p>Small changes. Real impact.</p>
       <div className="hero-btns">
         <Button className='btns' buttonStyle='btn--outline'
         buttonSize='btn--large'

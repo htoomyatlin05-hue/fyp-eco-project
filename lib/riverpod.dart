@@ -136,28 +136,18 @@ class MetaOptions {
 
 
 final metaOptionsProvider = FutureProvider<MetaOptions>((ref) async {
-  final isLoggedIn = ref.watch(isLoggedInProvider);
-
-  if (!isLoggedIn) {
-    throw Exception("Not logged in");
-  }
-
-  final token = await ref.watch(tokenProvider.future);
-
   const url = 'http://127.0.0.1:8000/meta/options';
+
   final res = await http.get(
     Uri.parse(url),
-    headers: {
-      "Authorization": "Bearer $token",
-      "Content-Type": "application/json",
-    },
+    headers: {"Content-Type": "application/json"},
   );
 
   if (res.statusCode != 200) {
-    throw Exception('Failed to load meta options');
+    throw Exception('Failed to load meta options: ${res.statusCode}');
   }
 
-  final jsonMap = jsonDecode(res.body);
+  final jsonMap = jsonDecode(res.body) as Map<String, dynamic>;
   return MetaOptions.fromJson(jsonMap);
 });
 
@@ -459,12 +449,18 @@ final convertedEmissionsProvider = Provider<EmissionResults>((ref) {
   final base = ref.watch(emissionCalculatorProvider);
   final factor = ref.watch(unitConversionProvider);
 
-  return EmissionResults(
-    material: base.material * factor,
-    transport: base.transport * factor,
-    machining: base.machining * factor,
-    fugitive: base.fugitive * factor,
-  );
+  final materialAlloc = ref.watch(materialAllocationSumProvider);
+  final transportAlloc = ref.watch(transportAllocationSumProvider);
+  final machiningAlloc = ref.watch(machiningAllocationSumProvider);
+  final fugitiveAlloc = ref.watch(fugitiveAllocationSumProvider);
+
+return EmissionResults(
+  material: base.material * (materialAlloc / 100) * factor,
+  transport: base.transport * (transportAlloc / 100) * factor,
+  machining: base.machining * (machiningAlloc / 100) * factor,
+  fugitive: base.fugitive * (fugitiveAlloc / 100) * factor,
+);
+
 });
 
 
@@ -482,11 +478,12 @@ class EmissionCalculator extends StateNotifier<EmissionResults> {
       }
     },
     'upstream_transport': {
-      'endpoint': 'http://127.0.0.1:8000/calculate/sea_tanker',
+      'endpoint': 'http://127.0.0.1:8000/calculate/van',
       'apiKeys': {
         "Vehicle": "vehicle_type",
         "Class": "transport_type",
         "Distance (km)": "distance_km",
+        "Mass (kg)": "mass_kg", 
       }
     },
     'machining': {
@@ -507,19 +504,29 @@ class EmissionCalculator extends StateNotifier<EmissionResults> {
     },
   };
 
-   Future<void> calculate(String featureType, List<RowFormat> rows) async {
-    double subtotal = 0;
+Future<void> calculate(String featureType, List<RowFormat> rows) async {
+  double subtotal = 0;
 
-    final config = _config[featureType];
-    if (config == null) {
-      throw Exception("Feature type not configured: $featureType");
-    }
+  final config = _config[featureType];
+  if (config == null) {
+    throw Exception("Feature type not configured: $featureType");
+  }
+  
+  final defaultEndpoint = config['endpoint'] as String;
+  final apiKeyMap = config['apiKeys'] as Map<String, String>;
 
-    final endpoint = config['endpoint'] as String;
-    final apiKeyMap = config['apiKeys'] as Map<String, String>;
+  final Map<String, String> transportEndpoints = {
+    'Van': 'http://127.0.0.1:8000/calculate/van',
+    'HGV (Diesel)': 'http://127.0.0.1:8000/calculate/hgv',
+    'HGV Refrigerated (Diesel)': 'http://127.0.0.1:8000/calculate/hgv_refrigerated',
+    'Freight Flights': 'http://127.0.0.1:8000/calculate/freight_flight',
+    'Rail': 'http://127.0.0.1:8000/calculate/rail_sheet',
+    'Sea Tanker': 'http://127.0.0.1:8000/calculate/sea_tanker',
+    'Cargo Ship': 'http://127.0.0.1:8000/calculate/cargo_ship',
+  };
 
-    for (var row in rows) {
-      final payload = <String, dynamic>{};
+  for (var row in rows) {
+    final payload = <String, dynamic>{};
 
     for (int i = 0; i < row.columnTitles.length; i++) {
       final columnName = row.columnTitles[i];
@@ -531,50 +538,57 @@ class EmissionCalculator extends StateNotifier<EmissionResults> {
             ? double.tryParse(rawValue ?? '0') ?? 0
             : rawValue ?? '';
       } else {
-        print('Column "$columnName" has no mapping in apiKeyMap!'); // <- this will catch mismatches
+        print('Column "$columnName" has no mapping in apiKeyMap!');
       }
     }
 
-      
+    String endpoint = defaultEndpoint;
 
-      print("Payload for $featureType: $payload");
- 
-      final response = await http.post(
-        Uri.parse(endpoint),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(payload),
-      );
+    if (featureType == 'upstream_transport') {
+      final vehicle = row.selections[0]; 
 
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-
-        subtotal += (json["materialacq_emission"] ?? 0).toDouble();
-        subtotal += (json["total_emission_kgco2e"] ?? 0).toDouble();
-        subtotal += (json["emissions_kgco2e"] ?? 0).toDouble();
-        subtotal += (json["emissions"] ?? 0).toDouble();
-      } else {
-        print("API error ${response.statusCode}: ${response.body}");
-      }
+      endpoint = transportEndpoints[vehicle] ??
+          defaultEndpoint; 
     }
 
-    // Update only the specific part of the result
-    switch (featureType) {
-      case 'material':
-        state = state.copyWith(material: subtotal);
-        break;
-      case 'upstream_transport':
-        state = state.copyWith(transport: subtotal);
-        break;
-      case 'machining':
-        state = state.copyWith(machining: subtotal);
-        break;
-      case 'fugitive':
-        state = state.copyWith(fugitive: subtotal);
-        break;
-      default:
-        throw Exception("Invalid feature type: $featureType");
+    print("POST to $endpoint");
+    print("Payload: $payload");
+
+    final response = await http.post(
+      Uri.parse(endpoint),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+
+      subtotal += (json["materialacq_emission"] ?? 0).toDouble();
+      subtotal += (json["total_transport_type_emission"] ?? 0).toDouble();
+      subtotal += (json["emissions_kgco2e"] ?? 0).toDouble();
+      subtotal += (json["emissions"] ?? 0).toDouble();
+    } else {
+      print("API error ${response.statusCode}: ${response.body}");
     }
   }
+
+  switch (featureType) {
+    case 'material':
+      state = state.copyWith(material: subtotal);
+      break;
+    case 'upstream_transport':
+      state = state.copyWith(transport: subtotal);
+      break;
+    case 'machining':
+      state = state.copyWith(machining: subtotal);
+      break;
+    case 'fugitive':
+      state = state.copyWith(fugitive: subtotal);
+      break;
+    default:
+      throw Exception("Invalid feature type: $featureType");
+  }
+}
 }
 
 
@@ -631,21 +645,19 @@ class Product {
   Product({required this.name});
 
   factory Product.fromJson(dynamic value) {
-    // value is just a string
+    // backend returns a simple string for each profile
     return Product(name: value.toString());
   }
 }
 
+// ---------------- FETCH PRODUCTS ----------------
 Future<List<Product>> fetchProducts() async {
-  final response = await authedRequestWithRetry((token) {
-    return http.get(
-      Uri.parse('http://127.0.0.1:8000/profiles'),
-      headers: {"Authorization": "Bearer <token>",
-      "Content-Type": "application/json",
+  final url = Uri.parse('http://127.0.0.1:8000/profiles');
 
-      },
-    );
-  });
+  final response = await http.get(
+    url,
+    headers: {"Content-Type": "application/json"},
+  );
 
   if (response.statusCode == 200) {
     final Map<String, dynamic> map = jsonDecode(response.body);
@@ -658,38 +670,16 @@ Future<List<Product>> fetchProducts() async {
   }
 }
 
+// ---------------- PROVIDER ----------------
 final productsProvider = FutureProvider<List<Product>>((ref) async {
   return fetchProducts();
 });
 
 
 // ------------------- ADD/SAVE PROJECTS -------------------
-final saveProfileProvider =
-    FutureProvider.family<String, ProfileSaveRequest>((ref, req) async {
-  final response = await authedRequestWithRetry((token) {
-    return http.post(
-      Uri.parse('http://127.0.0.1:8000/profiles/save'),
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer $token",
-      },
-      body: jsonEncode({
-        "profile_name": req.profileName,
-        "description": req.description,
-        "data": req.data,
-      }),
-    );
-  });
 
-  if (response.statusCode == 200) {
-    final json = jsonDecode(response.body);
-    ref.invalidate(productsProvider);
-    return json["saved_profile"];
-  } else {
-    throw Exception("Failed to save profile: ${response.body}");
-  }
-});
 
+// ---------------- PROFILE SAVE REQUEST ----------------
 
 class ProfileSaveRequest {
   final String profileName;
@@ -705,191 +695,157 @@ class ProfileSaveRequest {
   });
 }
 
+// ---------------- SAVE PROFILE PROVIDER ----------------
 
-// ------------------- POST (THE REQUEST) SIGN UP AUTHENTICATION -------------------
-final signUpAuth = FutureProvider.family<String, SignUpParameters>((ref, req) async {
-  print("Sign up fields: ${jsonEncode({
-  "username": req.profileName,
-  "password": req.password,
-
-})}");
+final saveProfileProvider =
+    FutureProvider.family<String, ProfileSaveRequest>((ref, req) async {
   final response = await http.post(
-    Uri.parse('http://127.0.0.1:8000/auth/signup'),
+    Uri.parse('http://127.0.0.1:8000/profiles/save'),
     headers: {"Content-Type": "application/json"},
     body: jsonEncode({
-      "username": req.profileName,
-      "password": req.password,
+      "profile_name": req.profileName,
+      "description": req.description,
+      "data": req.data,
+      "username": req.username,
     }),
   );
 
   if (response.statusCode == 200) {
     final json = jsonDecode(response.body);
     ref.invalidate(productsProvider);
-    return json["username"];
-    
+    return json["saved_profile"]; // whatever your backend returns
   } else {
-    throw Exception("Failed to sign up");
+    throw Exception("Failed to save profile: ${response.body}");
   }
-  
 });
+
+// ---------------- SIGN UP REQUEST ----------------
 
 class SignUpParameters {
   final String profileName;
   final String password;
+
   SignUpParameters({
     required this.profileName,
     required this.password,
   });
 }
 
+final signUpProvider =
+    FutureProvider.family<String, SignUpParameters>((ref, req) async {
+  final payload = jsonEncode({
+    "username": req.profileName,
+    "password": req.password,
+  });
 
-// ------------------- POST (THE REQUEST) LOG IN AUTHENTICATION -------------------
-final logInAuth = FutureProvider.family<String, LoginParameters>((ref, req) async {
+  print("Sign up payload: $payload");
+
   final response = await http.post(
-    Uri.parse('http://127.0.0.1:8000/auth/login'),
-    headers: {"Content-Type": "application/x-www-form-urlencoded"},
-    body: {
-      "username": req.profileName,
-      "password": req.password,
-    },
+    Uri.parse('http://127.0.0.1:8000/auth/signup'),
+    headers: {"Content-Type": "application/json"},
+    body: payload,
   );
 
   if (response.statusCode == 200) {
     final json = jsonDecode(response.body);
-
-    final access = json["access_token"] as String;
-    final refresh = json["refresh_token"] as String;
-
-    await secureStorage.write(key: "access_token", value: access);
-    await secureStorage.write(key: "refresh_token", value: refresh);
-
+    // refresh products or profiles UI if needed
     ref.invalidate(productsProvider);
-    return access;
-
+    return json["username"];
   } else {
-    debugLog("Login failed with status: ${response.statusCode}");
-    throw Exception("Failed to log in");
+    throw Exception("Failed to sign up: ${response.body}");
   }
 });
+
+
+
+
+// ------------------- POST (THE REQUEST) LOG IN AUTHENTICATION -------------------
 
 class LoginParameters {
   final String profileName;
   final String password;
+
   LoginParameters({
     required this.profileName,
     required this.password,
   });
 }
 
-final tokenProvider = FutureProvider<String?>((ref) async {
-  final token = await secureStorage.read(key: "access_token");
-  return token;
-});
+// --------- LOGIN CALL ----------
 
-final isLoggedInProvider = Provider<bool>((ref) {
-  final token = ref.watch(tokenProvider).value; // value is nullable String
-  return token != null && token.isNotEmpty;
-});
+final logInProvider =
+    FutureProvider.family<void, LoginParameters>((ref, req) async {
+  final payload = jsonEncode({
+    "username": req.profileName,
+    "password": req.password,
+  });
 
-bool enableDebug = true; // toggle this anywhere in your app
+  print("Login payload: $payload");
 
-void debugLog(String message) {
-  if (enableDebug) {
-    debugPrint("[DEBUG] $message");
-  }
-}
-
-Future<String> refreshAccessToken() async {
-  final refresh = await secureStorage.read(key: "refresh_token");
-  if (refresh == null) throw Exception("No refresh token (logged out)");
-
-  final res = await http.post(
-    Uri.parse('http://127.0.0.1:8000/auth/refresh'),
+  final response = await http.post(
+    Uri.parse('http://127.0.0.1:8000/auth/login'),
     headers: {"Content-Type": "application/json"},
-    body: jsonEncode({"refresh_token": refresh}),
+    body: payload,
   );
 
-  print("Refresh response status: ${res.statusCode}"); // <-- print status
-  print("Refresh response body: ${res.body}");    
+  print("Login status: ${response.statusCode}");
+  print("Login body: ${response.body}");
 
-  if (res.statusCode != 200) {
-    // refresh invalid/expired/revoked -> force logout
-    await secureStorage.delete(key: "access_token");
-    await secureStorage.delete(key: "refresh_token");
-    throw Exception("Session expired. Please log in again.");
+  if (response.statusCode != 200) {
+    throw Exception("Login failed: ${response.body}");
   }
 
-  final json = jsonDecode(res.body);
-  final newAccess = json["access_token"] as String;
+  // If backend returns tokens, you could read & store them here later
+});
 
-  await secureStorage.write(key: "access_token", value: newAccess);
-  return newAccess;
-}
-
-Future<http.Response> authedRequestWithRetry(
-  Future<http.Response> Function(String accessToken) doRequest,
-) async {
-  String? access = await secureStorage.read(key: "access_token");
-  if (access == null) throw Exception("Not logged in");
-
-  http.Response res = await doRequest(access);
-  debugPrint("First request status = ${res.statusCode}");
-
-  if (res.statusCode == 401) {
-    debugPrint("Access expired -> refreshing...");
-    final newAccess = await refreshAccessToken();
-    res = await doRequest(newAccess);
-    debugPrint("Retry status = ${res.statusCode}");
-  }
-
-  return res;
-}
 
 
 // ------------------- DELETE PROJECTS -------------------
+
 class ProfileService {
   final String baseUrl;
 
   ProfileService(this.baseUrl);
 
+  /// Deletes a profile. Returns true if success, throws exception if failure.
   Future<bool> deleteProfile(String profileName) async {
     final url = Uri.parse('$baseUrl/profiles/delete/$profileName');
 
-    final response = await authedRequestWithRetry((token) {
-      return http.delete(
-        url,
-        headers: {"Authorization": "Bearer $token"},
-      );
-    });
+    // Make the POST or DELETE request (use DELETE if backend supports it)
+    final response = await http.delete(url);
 
     if (response.statusCode == 200) return true;
     if (response.statusCode == 404) throw Exception("Profile not found");
 
-    throw Exception("Failed: ${response.statusCode}");
+    throw Exception("Failed to delete profile: ${response.statusCode}");
   }
 }
 
-
-final profileServiceProvider = Provider((ref) {
-  
+final profileServiceProvider = Provider<ProfileService>((ref) {
   return ProfileService("http://127.0.0.1:8000");
 });
 
-final deleteProfileProvider = AsyncNotifierProvider<DeleteProfileNotifier, void>(() {
-  return DeleteProfileNotifier();
-});
+// ---------------- DELETE PROFILE NOTIFIER ----------------
+
+final deleteProfileProvider =
+    AsyncNotifierProvider<DeleteProfileNotifier, void>(
+  () => DeleteProfileNotifier(),
+);
 
 class DeleteProfileNotifier extends AsyncNotifier<void> {
   @override
-  Future<void> build() async {}
+  Future<void> build() async {
+    // nothing to build initially
+  }
 
-  Future<void> delete(String name) async {
+  Future<void> delete(String profileName, WidgetRef ref) async {
     state = const AsyncLoading();
 
     try {
       final service = ref.read(profileServiceProvider);
-      await service.deleteProfile(name);
+      await service.deleteProfile(profileName);
 
+      // invalidate products or profiles if you want UI to refresh
       ref.invalidate(productsProvider);
 
       state = const AsyncData(null);
@@ -901,6 +857,11 @@ class DeleteProfileNotifier extends AsyncNotifier<void> {
 
 
 
+// Helper function to convert string to double safely
+double _toDouble(String? value) {
+  if (value == null) return 0.0;
+  return double.tryParse(value) ?? 0.0;
+}
 
 // --------------- MATERIAL STATE -----------------
 class MaterialTableState {
@@ -938,7 +899,7 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
             materials: [''],
             countries: [''],
             masses: [''],
-            materialAllocationValues: [''], // NEW
+            materialAllocationValues: ['100'], // NEW
           ),
         );
 
@@ -947,7 +908,7 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
       materials: [...state.materials, ''],
       countries: [...state.countries, ''],
       masses: [...state.masses, ''],
-      materialAllocationValues: [...state.materialAllocationValues, ''],
+      materialAllocationValues: [...state.materialAllocationValues, '100'],
     );
   }
 
@@ -999,6 +960,14 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
 final materialTableProvider =
     StateNotifierProvider<MaterialTableNotifier, MaterialTableState>(
         (ref) => MaterialTableNotifier());
+
+final materialAllocationSumProvider = Provider<double>((ref) {
+  final table = ref.watch(materialTableProvider);
+
+  return table.materialAllocationValues
+      .map(_toDouble)
+      .fold(0.0, (a, b) => a + b);
+});
 
 
 // --------------- UPSTREAM TRANSPORT STATE -----------------
@@ -1070,7 +1039,7 @@ class UpstreamTransportTableNotifier extends StateNotifier<UpstreamTransportTabl
 
   void updateCell({
     required int row,
-    required String column, // 'Material', 'Country', 'Mass', 'Notes'
+    required String column,
     required String? value,
   }) {
     final vehicles = [...state.vehicles];
@@ -1111,7 +1080,13 @@ final upstreamTransportTableProvider =
     StateNotifierProvider<UpstreamTransportTableNotifier, UpstreamTransportTableState>(
         (ref) => UpstreamTransportTableNotifier());
 
+final transportAllocationSumProvider = Provider<double>((ref) {
+  final table = ref.watch(upstreamTransportTableProvider);
 
+  return table.transportAllocationValues
+      .map(_toDouble)
+      .fold(0.0, (a, b) => a + b);
+});
 
 // ---------------- MACHINING STATE ----------------
 
@@ -1214,6 +1189,13 @@ final machiningTableProvider =
   (ref) => MachiningTableNotifier(),
 );
 
+final machiningAllocationSumProvider = Provider<double>((ref) {
+  final table = ref.watch(machiningTableProvider);
+
+  return table.machiningAllocationValues
+      .map(_toDouble)
+      .fold(0.0, (a, b) => a + b);
+});
 
 // ---------------- FUGITIVE STATE ----------------
 
@@ -1317,3 +1299,13 @@ final fugitiveLeaksTableProvider =
     StateNotifierProvider<FugitiveLeaksTableNotifier, FugitiveLeaksTableState>(
   (ref) => FugitiveLeaksTableNotifier(),
 );
+
+final fugitiveAllocationSumProvider = Provider<double>((ref) {
+  final table = ref.watch(fugitiveLeaksTableProvider);
+
+  return table.fugitiveAllocationValues
+      .map(_toDouble)
+      .fold(0.0, (a, b) => a + b);
+});
+
+

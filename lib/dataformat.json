@@ -1,0 +1,147 @@
+{
+  "project": {
+    "description": "Mock description",
+    "product_name": {
+        "name": "Demo Product",
+
+        "timeline1": {
+            "year": 2020, 
+            "month": 12,
+            "components": {
+                "component_1": {
+                    "material_acquisition": {
+                        "emission_cycle_1": {
+                            "material": "Steel",
+                            "country": "China",
+                            "mass_(kg)": 10
+                        },
+                        "emission_cycle_2": {
+                            "material": "Aluminum",
+                            "country": "USA",
+                            "mass_(kg)": 5
+                        }  
+                    },
+                    "manufacturing": {
+                        "emission_cycle_1": {
+                            "machine": "Electricity",
+                            "country": 50,
+                            "time_(hours)": 2
+                        },
+                        "emission_cycle_2": {
+                            "machine": "Natural Gas",
+                            "country": 30,
+                            "time_(hours)": 1
+                        }  
+                    }  
+                },
+                "component_2": {
+                    "material_acquisition": {
+                        "emission_cycle_1": {
+                            "material": "Steel",
+                            "country": "China",
+                            "mass_(kg)": 10,
+                            "emissions": 100
+                        },
+                        "emission_cycle_2": {
+                            "material": "Aluminum",
+                            "country": "USA",
+                            "mass_(kg)": 5,
+                            "emissions": 50
+                        }  
+                    },
+                    "manufacturing": {
+                        "emission_cycle_1": {
+                            "machine": "INTEGRIX i-100 NEO",
+                            "country": 50,
+                            "time_(hours)": 2,
+                            "emissions": 200
+                        },
+                        "emission_cycle_2": {
+                            "machine": "INTEGRIX i-100 NEO",
+                            "country": 30,
+                            "time_(hours)": 1,
+                            "emissions": 150
+                        }  
+                    }  
+                }
+            }
+        },
+
+        "timeline2": {
+            "year": 2021, 
+            "month": 12,
+            "components": {
+                "component_1": {
+                    "material_acquisition": {
+                        "emission_cycle_1": {
+                            "material": "Steel",
+                            "country": "China",
+                            "mass_(kg)": 10,
+                            "emissions": 100
+                        },
+                        "emission_cycle_2": {
+                            "material": "Aluminum",
+                            "country": "USA",
+                            "mass_(kg)": 5,
+                            "emissions": 50
+                        }  
+                    },
+                    "manufacturing": {
+                        "emission_cycle_1": {
+                            "machine": "INTEGRIX i-100 NEO",
+                            "country": 50,
+                            "time_(hours)": 2,
+                            "emissions": 200
+                        },
+                        "emission_cycle_2": {
+                            "machine": "INTEGRIX i-100 NEO",
+                            "country": 30,
+                            "time_(hours)": 1,
+                            "emissions": 150
+                        }  
+                    }  
+                }
+            }
+        },
+        "timeline3": { 
+            "year": 2022, 
+            "month": 12,
+            "components": {
+                "component_1": {
+                    "material_acquisition": {
+                        "emission_cycle_1": {
+                            "material": "Steel",
+                            "country": "China",
+                            "mass_(kg)": 10,
+                            "emissions": 100
+                        },
+                        "emission_cycle_2": {
+                            "material": "Aluminum",
+                            "country": "USA",
+                            "mass_(kg)": 5,
+                            "emissions": 50
+                        }  
+                    },
+                    "manufacturing": {
+                        "emission_cycle_1": {
+                            "machine": "INTEGRIX i-100 NEO",
+                            "country": 50,
+                            "time_(hours)": 2,
+                            "emissions": 200
+                        },
+                        "emission_cycle_2": {
+                            "machine": "INTEGRIX i-100 NEO",
+                            "country": 30,
+                            "time_(hours)": 1,
+                            "emissions": 150
+                        }  
+                    }  
+                }
+            }
+        }
+    },
+    "owner": "demoUser"
+  }
+}
+
+ 

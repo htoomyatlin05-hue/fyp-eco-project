@@ -450,7 +450,6 @@ class UpstreamTransportAttributesMenu extends ConsumerWidget {
                   title: 'Class',
                   values: tableState.classes,
                   itemsPerRow: List.generate(tableState.vehicles.length, (i) {
-                    // Provide fallback empty string if vehicle is null
                     final selectedVehicle = tableState.vehicles[i] ?? '';
                     return ref.watch(classOptionsProvider(selectedVehicle));
                   }),

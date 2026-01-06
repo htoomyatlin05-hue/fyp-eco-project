@@ -264,20 +264,26 @@ Widget _staticCell(String? text) => Padding(
 
 Widget _editableCell({
   required String? text,
-  required Function(String) onChanged,
-}) => Padding(
-  padding: const EdgeInsets.only(top: 2),
-  child: TextField(
-    controller: TextEditingController(text: text ?? ''),
-    decoration: const InputDecoration(
-      isDense: true,
-      border: InputBorder.none,
-      hintText: '1.00',
-      hintStyle: TextStyle(fontSize: 15, color: Apptheme.texthintclrdark),
+  required void Function(String) onChanged,
+}) {
+  return Padding(
+    padding: const EdgeInsets.only(top: 2),
+    child: TextFormField(
+      initialValue: text ?? '100', // default to 100 if null
+      keyboardType: TextInputType.number,
+      style: const TextStyle(fontSize: 15, color: Apptheme.textclrdark),
+      decoration: const InputDecoration(
+        isDense: true,
+        border: InputBorder.none,
+        hintText: '100',
+        hintStyle: TextStyle(fontSize: 15, color: Apptheme.texthintclrdark),
+        contentPadding: EdgeInsets.symmetric(horizontal: 6, vertical: 6),
+      ),
+      onChanged: onChanged,
     ),
-    onChanged: onChanged,
-  ),
-);
+  );
+}
+
 
 Widget _checkCell() => const Padding(
   padding: EdgeInsets.all(6),

@@ -17,9 +17,7 @@ class Welcomepage extends ConsumerStatefulWidget {
 
 class _WelcomepageState extends ConsumerState<Welcomepage> {
   final TextEditingController _profileNameCtrl = TextEditingController();
-  final Widget dynamicfield = LoginField();
-
-
+  bool showLogin = true;
 
 @override
 void dispose() {
@@ -30,6 +28,9 @@ void dispose() {
   @override
   Widget build(BuildContext context) {
     final productsAsync = ref.watch(productsProvider);
+
+
+    final dynamicfield = showLogin ? const LoginField() : const SignUpField();
 
     return Scaffold(
       backgroundColor: Apptheme.backgroundlight,
@@ -89,6 +90,23 @@ void dispose() {
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
                             child: dynamicfield,
+                          ),
+                        ),
+
+                        Center(
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                showLogin = !showLogin;
+                              });
+                            },
+                            child: Text(
+                              showLogin ? "Don't have an account? Sign Up" : "Already have an account? Log In",
+                              style: TextStyle(
+                                color: Apptheme.textclrdark,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
                           ),
                         ),
 
@@ -171,30 +189,30 @@ void dispose() {
                                               icon: const Icon(Icons.delete),
                                               color: Apptheme.iconslight,
   
-  onPressed: () {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Confirm Delete"),
-          content: Text("Delete ${product.name}?"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                ref.read(deleteProfileProvider.notifier).delete(product.name);
-                Navigator.of(context).pop(); // close dialog
-              },
-              child: const Text("Delete"),
-            ),
-          ],
-        );
-      },
-    );
-  },
+                                                onPressed: () {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        title: const Text("Confirm Delete"),
+                                                        content: Text("Delete ${product.name}?"),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () => Navigator.of(context).pop(),
+                                                            child: const Text("Cancel"),
+                                                          ),
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              ref.read(deleteProfileProvider.notifier).delete(product.name, ref);
+                                                              Navigator.of(context).pop(); // close dialog
+                                                            },
+                                                            child: const Text("Delete"),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                },
                                             ),
 
                                             const SizedBox(width: 10),
@@ -341,7 +359,7 @@ class _LoginFieldState extends ConsumerState<LoginField> {
 
   final loginState = params == null
       ? null
-      : ref.watch(logInAuth(params));
+      : ref.watch(logInProvider(params));
 
 
 
@@ -521,14 +539,12 @@ class _LoginFieldState extends ConsumerState<LoginField> {
                               ),
                               padding: const EdgeInsets.all(8),
                             ),
-                            onPressed: (loginState?.isLoading ?? false)
-                                ? null
-                                : () {
+                            onPressed: () =>
                                     ref.read(loginParamsProvider.notifier).state = LoginParameters(
                                       profileName: usernameController.text,
                                       password: passwordController.text,
-                                    );
-                                  },
+                                    )
+                                  ,
 
                             child: (loginState?.isLoading ?? false)
                                 ? const SizedBox(
@@ -592,7 +608,7 @@ class _SignUpFieldState extends ConsumerState<SignUpField> {
 
   final signUpState = params == null
       ? null
-      : ref.watch(signUpAuth(params));
+      : ref.watch(signUpProvider(params));
 
 
 

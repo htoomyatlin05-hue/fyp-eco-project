@@ -1161,7 +1161,7 @@ def calculate_freight_flight(req: TonKmRequest):
         "mass_kg": req.mass_kg,
         "ef_kgco2e_per_1000kg_km": float(ef_1000),
         "ef_kgco2e_per_kg_km": float(ef_1000) / 1000.0,
-        "total_emission_kgco2e": total
+        "total_transport_type_emission": total
     }
 
 @app.post("/calculate/rail_sheet")
@@ -1179,7 +1179,7 @@ def calculate_rail_sheet(req: TonKmRequest):
         "mass_kg": req.mass_kg,
         "ef_kgco2e_per_1000kg_km": float(ef_1000),
         "ef_kgco2e_per_kg_km": float(ef_1000) / 1000.0,
-        "total_emission_kgco2e": total
+        "total_transport_type_emission": total
     }
 
 @app.post("/calculate/sea_tanker")
@@ -1197,7 +1197,7 @@ def calculate_sea_tanker(req: TonKmRequest):
         "mass_kg": req.mass_kg,
         "ef_kgco2e_per_1000kg_km": float(ef_1000),
         "ef_kgco2e_per_kg_km": float(ef_1000) / 1000.0,
-        "total_emission_kgco2e": total
+        "total_transport_type_emission": total
     }
 
 @app.post("/calculate/cargo_ship") 
@@ -1214,7 +1214,8 @@ def calculate_cargo_ship(req: TonKmRequest):
         "mass_kg": req.mass_kg, 
         "ef_kgco2e_per_1000kg_km": float(ef_1000), 
         "ef_kgco2e_per_kg_km": float(ef_1000) / 1000.0, 
-        "total_emission_kgco2e": total }
+        "total_transport_type_emission": total }
+
 @app.post("/calculate/van")
 def calculate_van(req: dict):
 
@@ -1230,7 +1231,7 @@ def calculate_van(req: dict):
         "transport_type": transport_type,
         "distance_km": distance,
         "emission_factor": ef,
-        "total_emission": ef * distance
+        "total_transport_type_emission": ef * distance
     }
 
 @app.post("/calculate/fugitive_emissions")

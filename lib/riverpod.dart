@@ -478,7 +478,7 @@ class EmissionCalculator extends StateNotifier<EmissionResults> {
       }
     },
     'upstream_transport': {
-      'endpoint': 'http://127.0.0.1:8000/calculate/sea_tanker',
+      'endpoint': 'http://127.0.0.1:8000/calculate/van',
       'apiKeys': {
         "Vehicle": "vehicle_type",
         "Class": "transport_type",
@@ -504,19 +504,29 @@ class EmissionCalculator extends StateNotifier<EmissionResults> {
     },
   };
 
-   Future<void> calculate(String featureType, List<RowFormat> rows) async {
-    double subtotal = 0;
+Future<void> calculate(String featureType, List<RowFormat> rows) async {
+  double subtotal = 0;
 
-    final config = _config[featureType];
-    if (config == null) {
-      throw Exception("Feature type not configured: $featureType");
-    }
+  final config = _config[featureType];
+  if (config == null) {
+    throw Exception("Feature type not configured: $featureType");
+  }
+  
+  final defaultEndpoint = config['endpoint'] as String;
+  final apiKeyMap = config['apiKeys'] as Map<String, String>;
 
-    final endpoint = config['endpoint'] as String;
-    final apiKeyMap = config['apiKeys'] as Map<String, String>;
+  final Map<String, String> transportEndpoints = {
+    'Van': 'http://127.0.0.1:8000/calculate/van',
+    'HGV (Diesel)': 'http://127.0.0.1:8000/calculate/hgv',
+    'HGV Refrigerated (Diesel)': 'http://127.0.0.1:8000/calculate/hgv_refrigerated',
+    'Freight Flights': 'http://127.0.0.1:8000/calculate/freight_flight',
+    'Rail': 'http://127.0.0.1:8000/calculate/rail_sheet',
+    'Sea Tanker': 'http://127.0.0.1:8000/calculate/sea_tanker',
+    'Cargo Ship': 'http://127.0.0.1:8000/calculate/cargo_ship',
+  };
 
-    for (var row in rows) {
-      final payload = <String, dynamic>{};
+  for (var row in rows) {
+    final payload = <String, dynamic>{};
 
     for (int i = 0; i < row.columnTitles.length; i++) {
       final columnName = row.columnTitles[i];
@@ -528,50 +538,57 @@ class EmissionCalculator extends StateNotifier<EmissionResults> {
             ? double.tryParse(rawValue ?? '0') ?? 0
             : rawValue ?? '';
       } else {
-        print('Column "$columnName" has no mapping in apiKeyMap!'); // <- this will catch mismatches
+        print('Column "$columnName" has no mapping in apiKeyMap!');
       }
     }
 
-      
+    String endpoint = defaultEndpoint;
 
-      print("Payload for $featureType: $payload");
- 
-      final response = await http.post(
-        Uri.parse(endpoint),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode(payload),
-      );
+    if (featureType == 'upstream_transport') {
+      final vehicle = row.selections[0]; 
 
-      if (response.statusCode == 200) {
-        final json = jsonDecode(response.body);
-
-        subtotal += (json["materialacq_emission"] ?? 0).toDouble();
-        subtotal += (json["total_emission_kgco2e"] ?? 0).toDouble();
-        subtotal += (json["emissions_kgco2e"] ?? 0).toDouble();
-        subtotal += (json["emissions"] ?? 0).toDouble();
-      } else {
-        print("API error ${response.statusCode}: ${response.body}");
-      }
+      endpoint = transportEndpoints[vehicle] ??
+          defaultEndpoint; 
     }
 
-    // Update only the specific part of the result
-    switch (featureType) {
-      case 'material':
-        state = state.copyWith(material: subtotal);
-        break;
-      case 'upstream_transport':
-        state = state.copyWith(transport: subtotal);
-        break;
-      case 'machining':
-        state = state.copyWith(machining: subtotal);
-        break;
-      case 'fugitive':
-        state = state.copyWith(fugitive: subtotal);
-        break;
-      default:
-        throw Exception("Invalid feature type: $featureType");
+    print("POST to $endpoint");
+    print("Payload: $payload");
+
+    final response = await http.post(
+      Uri.parse(endpoint),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(payload),
+    );
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+
+      subtotal += (json["materialacq_emission"] ?? 0).toDouble();
+      subtotal += (json["total_transport_type_emission"] ?? 0).toDouble();
+      subtotal += (json["emissions_kgco2e"] ?? 0).toDouble();
+      subtotal += (json["emissions"] ?? 0).toDouble();
+    } else {
+      print("API error ${response.statusCode}: ${response.body}");
     }
   }
+
+  switch (featureType) {
+    case 'material':
+      state = state.copyWith(material: subtotal);
+      break;
+    case 'upstream_transport':
+      state = state.copyWith(transport: subtotal);
+      break;
+    case 'machining':
+      state = state.copyWith(machining: subtotal);
+      break;
+    case 'fugitive':
+      state = state.copyWith(fugitive: subtotal);
+      break;
+    default:
+      throw Exception("Invalid feature type: $featureType");
+  }
+}
 }
 
 
@@ -1022,7 +1039,7 @@ class UpstreamTransportTableNotifier extends StateNotifier<UpstreamTransportTabl
 
   void updateCell({
     required int row,
-    required String column, // 'Material', 'Country', 'Mass', 'Notes'
+    required String column,
     required String? value,
   }) {
     final vehicles = [...state.vehicles];

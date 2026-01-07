@@ -379,11 +379,7 @@ String getPercentageTitle(double value, double total) {
                   
                   SizedBox(height: 10,),
                       
-                  Container(
-                    color: Apptheme.transparentcheat,
-                    height: 1200,
-                    child: Placeholder(),
-                  ),
+                  
                 
                 ],
               ),

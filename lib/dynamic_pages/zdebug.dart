@@ -6,13 +6,14 @@ import 'package:test_app/design/primary_elements(to_set_up_pages)/pages_layouts.
 import 'package:test_app/riverpod.dart';
 
 class DebugPage extends ConsumerWidget {
-  const DebugPage({super.key});
+  final String productID;
+  const DebugPage({super.key, required this.productID });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // ---------- PROVIDERS ----------
-    final materialState = ref.watch(materialTableProvider);
-    final materialNotifier = ref.read(materialTableProvider.notifier);
+    final materialState = ref.watch(materialTableProvider(productID));
+    final materialNotifier = ref.read(materialTableProvider(productID).notifier);
 
     final upstreamTransportState = ref.watch(upstreamTransportTableProvider);
     final upstreamTransportNotifier = ref.read(upstreamTransportTableProvider.notifier);

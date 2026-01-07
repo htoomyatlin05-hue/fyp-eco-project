@@ -25,6 +25,8 @@ void dispose() {
   super.dispose();
 }
 
+
+
   @override
   Widget build(BuildContext context) {
     final productsAsync = ref.watch(productsProvider);
@@ -158,37 +160,38 @@ void dispose() {
                                   ),
                                 ),
 
-                                // Dynamic product list
+                               
                                 ...products.map((product) {
                                   return Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 10),
                                     child: Align(
                                       alignment: Alignment.centerLeft,
-                                      child: Container(
-                                        width: 600,
-                                        height: 60,
-                                        decoration: BoxDecoration(
-                                          color: Apptheme.error,
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                        child: Row(
-                                          children: [
-                                            // Product name
-                                            Expanded(
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(left: 20),
-                                                child: Labels(
-                                                  title: product.name,
-                                                  color: Apptheme.textclrdark,
+                                      child: InkWell(
+                                        onTap: () {
+                                          print('HomeScreen tapped for product: ${product.name}');
+                                          RootScaffold.of(context)?.goToHomePageWithArgs(product.name);
+                                        },
+                                        child: Container(
+                                          width: 600,
+                                          height: 60,
+                                          decoration: BoxDecoration(
+                                            color: Apptheme.widgettertiaryclr,
+                                            borderRadius: BorderRadius.circular(20),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Expanded(
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left: 20),
+                                                  child: Labels(
+                                                    title: product.name,
+                                                    color: Apptheme.textclrdark,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-
-                                            // Trash button
-                                            IconButton(
-                                              icon: const Icon(Icons.delete),
-                                              color: Apptheme.iconslight,
-  
+                                              IconButton(
+                                                icon: const Icon(Icons.delete),
+                                                color: Apptheme.iconslight,
                                                 onPressed: () {
                                                   showDialog(
                                                     context: context,
@@ -203,8 +206,11 @@ void dispose() {
                                                           ),
                                                           TextButton(
                                                             onPressed: () {
-                                                              ref.read(deleteProfileProvider.notifier).delete(product.name, ref);
-                                                              Navigator.of(context).pop(); // close dialog
+                                                              ref
+                                                                  .read(deleteProfileProvider.notifier)
+                                                                  .delete(product.name, ref);
+
+                                                              Navigator.of(context).pop();
                                                             },
                                                             child: const Text("Delete"),
                                                           ),
@@ -213,17 +219,15 @@ void dispose() {
                                                     },
                                                   );
                                                 },
-                                            ),
-
-                                            const SizedBox(width: 10),
-                                          ],
+                                              ),
+                                              const SizedBox(width: 10),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                     ),
                                   );
                                 }).toList(),
-
-
 
                                 const SizedBox(height: 40),
 
@@ -289,14 +293,31 @@ void dispose() {
                                             final name = _profileNameCtrl.text.trim();
                                             if (name.isEmpty) return;
 
+                                            final username = await secureStorage.read(key: "username");
+                                            print("Create pressed. storage username = $username");
+
+                                            if (username == null || username.isEmpty) {
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                const SnackBar(content: Text("Please log in first")),
+                                              );
+                                              return;
+                                            }
+
                                             final req = ProfileSaveRequest(
                                               profileName: name,
                                               description: "Mock description",
-                                              data: {"sample": "test"},   // mock data
-                                              username: "demoUser",
+                                              data: {"sample": "test"}, 
+                                              username: username,   
                                             );
 
-                                            ref.read(saveProfileProvider(req));
+                                            await ref.read(saveProfileProvider(req).future);
+
+                                            _profileNameCtrl.clear();
+                                            ref.invalidate(productsProvider);
+
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(content: Text("Saved profile: $name")),
+                                            );
                                           },
                                           child: const Text("Create"),
                                         ),

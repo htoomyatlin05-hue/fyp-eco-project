@@ -24,11 +24,19 @@ import 'package:test_app/riverpod.dart';
 
 
 class HomeScreen extends ConsumerStatefulWidget {
-  const HomeScreen({super.key});
+  final String profileName;
+  final String productID; // <-- add this
+
+  const HomeScreen({
+    super.key,
+    required this.profileName,
+    required this.productID,
+  });
 
   @override
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
+
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
 
@@ -39,6 +47,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 void initState() {
   super.initState();
 
+  String defaultProductID = widget.productID ;
+
   pages = [
     KeyedSubtree(
       key: ValueKey('home'),
@@ -46,7 +56,7 @@ void initState() {
     ),
     KeyedSubtree(
       key: ValueKey('analysis'),
-      child: Dynamicprdanalysis(),
+      child: Dynamicprdanalysis(productID: widget.profileName,),
     ),
     KeyedSubtree(
       key: ValueKey('allocation'),
@@ -62,7 +72,7 @@ void initState() {
     ),
     KeyedSubtree(
       key: ValueKey('debug'),
-      child: DebugPage(),
+      child: DebugPage(productID: widget.profileName),
     ),
 
     //--BOOKMARKS---------------------------------------------------------------------
@@ -149,7 +159,7 @@ void initState() {
           color: Apptheme.transparentcheat,
           width: double.infinity,
           height: double.infinity,
-          child: BackgroundDrawer(onSelectPage: _onPageSelected)
+          child: BackgroundDrawer(onSelectPage: _onPageSelected, profileName: widget.profileName)
         ),
 
         Positioned(

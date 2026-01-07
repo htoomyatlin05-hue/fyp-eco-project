@@ -5,6 +5,7 @@ import 'package:test_app/dynamic_pages/popup_pages.dart';
 import 'package:test_app/dynamic_pages/settings.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:test_app/riverpod.dart';
+import 'package:test_app/sub_navigator.dart';
 
 class ContentofL extends ConsumerStatefulWidget {
   final Function(int) onSelectPage;
@@ -38,11 +39,29 @@ class _ContentofLState extends ConsumerState<ContentofL> {
             
                 _subdrawertile((Icons.supervised_user_circle), 'Method', () => showMethodologyPopup(context)),
             
-                Container(
-                  color:Apptheme.transparentcheat, 
-                  height: 700,
-                  width: 60,
-                )
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: InkWell(
+                    onTap: () {
+                      RootScaffold.of(context)?.goToWelcomePage();
+                    },
+                    child: Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        color: Apptheme.transparentcheat,
+                        borderRadius: BorderRadius.circular(5),
+                        border: Border.all(color: Apptheme.widgetclrdark),
+                      ),
+                      alignment: Alignment.center,
+                      child: Labels(
+                        title: "Logout",
+                        color: Colors.redAccent,
+                        fontsize: 18,
+                      ),
+                    ),
+                  ),
+                ),
               
               ],
             ),

@@ -28,6 +28,14 @@ class RootScaffoldState extends State<RootScaffold> {
     _innerNavigatorKey.currentState!.pushReplacementNamed('/homepage');
   }
 
+  void goToHomePageWithArgs(String profileName) {
+  _innerNavigatorKey.currentState?.pushReplacementNamed(
+    '/homepage',
+    arguments: profileName,
+  );
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,8 +50,12 @@ class RootScaffoldState extends State<RootScaffold> {
               return MaterialPageRoute(
                   builder: (_) => const Welcomepage(), settings: settings);
             case '/homepage':
+              final product = settings.arguments as String;
               return MaterialPageRoute(
-                  builder: (_) => const HomeScreen(), settings: settings);
+                builder: (_) => HomeScreen(profileName: product, productID: 'product_001',),
+                settings: settings,
+              );
+
             default:
               return MaterialPageRoute(
                   builder: (_) => const Welcomepage(), settings: settings);

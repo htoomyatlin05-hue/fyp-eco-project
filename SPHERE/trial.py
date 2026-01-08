@@ -155,6 +155,7 @@ sheet18 = book['HGV']
 sheet19 = book['Freight Flight']
 sheet20 = book['Rail']
 sheet21 = book['Ship']
+sheet22 = book['Usage']
 
 # Helper functions to read values from Excel columns
 def extract_selection_list(cells):
@@ -313,6 +314,15 @@ Facilities_cells    = sheet11["A2":"A999"]
 Usage_type_cells     = sheet10["A2":"A999"]
 Disassembly_by_Industry_cells    = sheet9["A2":"A999"]
 
+Usage_category_cells    = sheet22["A2":"A5"]
+Usage_electronic_cells  = sheet22["C2":"C5"]
+Usage_electronic_ef_cells  = sheet22["D2":"D5"]
+Usage_energy_cells      = sheet22["E2":"E5"]
+Usage_energy_ef_cells      = sheet22["F2":"F5"]
+Usage_Consumables_cells = sheet22["G2":"G5"]
+Usage_Consumables_ef_cells = sheet22["H2":"H5"]
+Usage_services_cells    = sheet22["I2":"I5"]
+Usage_services_ef_cells    = sheet22["J2":"J5"]
 # turn into lists
 country_list      = extract_selection_list(country_cells)
 distance_list     = extract_list(distance_cells)
@@ -416,6 +426,15 @@ Disassembly_by_Industry = extract_selection_list(Disassembly_by_Industry_cells)
 Usage_type = extract_selection_list(Usage_type_cells)
 Facilities = extract_selection_list(Facilities_cells)
 Process = extract_selection_list(Process_cells)
+Usage_category = extract_selection_list(Usage_category_cells)
+Usage_electronic = extract_selection_list(Usage_electronic_cells)
+Usage_electronic_ef = extract_selection_list(Usage_electronic_ef_cells)
+Usage_energy = extract_selection_list(Usage_energy_cells)
+Usage_energy_ef = extract_selection_list(Usage_energy_ef_cells)
+Usage_Consumables = extract_selection_list(Usage_Consumables_cells)
+Usage_Consumables_ef = extract_selection_list(Usage_Consumables_ef_cells)
+Usage_services = extract_selection_list(Usage_services_cells)
+Usage_services_ef = extract_selection_list(Usage_services_ef_cells)
 
 # --- LOOKUP DICTIONARIES FOR FAST CALCULATION ---
 van_lookup = dict(zip(van_mode_list, van_emission_list))
@@ -841,6 +860,7 @@ def get_options():
       - Disassembly by Industry
       - Machine Types
       - Transport types
+      - Usage Categories
     """
     return {
         "countries": country_list,
@@ -874,7 +894,16 @@ def get_options():
         "Sea_Tanker_mode":Sea_Tanker_mode_list,
         "Sea_Tanker_emissions":Sea_Tanker_emission_list,
         "Cargo_ship_mode":Cargo_ship_mode_list,
-        "Cargo_ship_emissions":Cargo_ship_emission_list
+        "Cargo_ship_emissions":Cargo_ship_emission_list,
+        "Usage_categories": Usage_category,
+        "Usage_electronics": Usage_electronic,
+        "Usage_electronic_ef": Usage_electronic_ef,
+        "Usage_energy": Usage_energy,
+        "Usage_energy_ef":Usage_energy_ef,
+        "Usage_consumables": Usage_Consumables,
+        "Usage_consumables_ef": Usage_Consumables_ef,
+        "Usage_services": Usage_services,
+        "USage_services_ef": Usage_services_ef
     }
 
 @app.get("/meta/transport/config")

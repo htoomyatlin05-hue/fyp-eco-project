@@ -911,8 +911,8 @@ def get_options():
         "Usage_consumables": Usage_Consumables,
         "Usage_consumables_ef": Usage_Consumables_ef,
         "Usage_services": Usage_services,
-        "USage_services_ef": Usage_services_ef,
-        "End_of_Life_Activites": End_of_Life_Activities,
+        "Usage_services_ef": Usage_services_ef,
+        "End_of_Life_Activities": End_of_Life_Activities,
         "End_of_Life_ef": End_of_Life_ef
     }
 

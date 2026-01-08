@@ -9,8 +9,9 @@ import 'package:test_app/riverpod.dart';
 
 
 class MasterPanel extends ConsumerStatefulWidget {
+  final String profileName;
 
-  const MasterPanel({super.key, });
+  const MasterPanel({super.key, required this.profileName });
 
 
   @override
@@ -39,7 +40,7 @@ String getPercentageTitle(double value, double total) {
   @override
   Widget build(BuildContext context) {
 
-    final emissions = ref.watch(convertedEmissionsProvider);
+    final emissions = ref.watch(convertedEmissionsProvider(widget.profileName));
     
 
     final List<Map<String, double>> toggleTotals = [
@@ -212,7 +213,7 @@ String getPercentageTitle(double value, double total) {
                         children: [
                           const SizedBox(width: 4),
                           Textsinsidewidgets(
-                            words: '[Insert Name of Product]', 
+                            words: widget.profileName, 
                             color: Apptheme.textclrlight,
                             fontsize: 17,
                             fontweight: FontWeight.w600,

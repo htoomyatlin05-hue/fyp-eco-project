@@ -334,7 +334,6 @@ class DeveloperPage extends ConsumerWidget {
     final metaOptionsAsync = ref.watch(metaOptionsProvider);
     final productsAsync = ref.watch(productsProvider);
     final emissions = ref.watch(emissionCalculatorProvider);
-    final convertedEmissions = ref.watch(convertedEmissionsProvider);
     final unit = ref.watch(unitLabelProvider);
 
     return 
@@ -443,13 +442,6 @@ class DeveloperPage extends ConsumerWidget {
           Textsinsidewidgets(words: 'Fugitive: ${emissions.fugitive}', color: Apptheme.textclrlight),
           Textsinsidewidgets(words: 'Total: ${emissions.total}', color: Apptheme.textclrlight),
 
-          const SizedBox(height: 10),
-          _sectionHeader('Emissions (converted)'),
-          Textsinsidewidgets(words: 'Material: ${convertedEmissions.material} $unit', color: Apptheme.textclrlight),
-          Textsinsidewidgets(words: 'Transport: ${convertedEmissions.transport} $unit', color: Apptheme.textclrlight),
-          Textsinsidewidgets(words: 'Machining: ${convertedEmissions.machining} $unit', color: Apptheme.textclrlight),
-          Textsinsidewidgets(words: 'Fugitive: ${convertedEmissions.fugitive} $unit', color: Apptheme.textclrlight),
-          Textsinsidewidgets(words: 'Total: ${convertedEmissions.total} $unit', color: Apptheme.textclrlight),
 
 
           const SizedBox(height: 20),

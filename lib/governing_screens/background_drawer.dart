@@ -8,9 +8,10 @@ import 'package:test_app/design/primary_elements(to_set_up_pages)/sub_drawer.dar
 import 'package:test_app/dynamic_pages/master_panel.dart';
 
 class BackgroundDrawer extends ConsumerStatefulWidget {
+  final String profileName;
   final Function(int) onSelectPage;
 
-  const BackgroundDrawer({super.key, required this.onSelectPage});
+  const BackgroundDrawer({super.key, required this.profileName, required this.onSelectPage});
 
     @override
   ConsumerState<BackgroundDrawer> createState() => _BackgroundDrawerState();
@@ -46,7 +47,7 @@ class _BackgroundDrawerState extends ConsumerState<BackgroundDrawer> {
         
                 Expanded(
                   child: Padding(padding: EdgeInsetsGeometry.only(left: 70, top: 10, right: 10),
-                  child: Align(alignment: Alignment.centerLeft,child: MasterPanel()),
+                  child: Align(alignment: Alignment.centerLeft,child: MasterPanel(profileName: widget.profileName)),
                   ),
                 ),
         

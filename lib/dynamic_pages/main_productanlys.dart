@@ -11,7 +11,8 @@ import 'package:test_app/dynamic_pages/popup_pages.dart';
 import 'package:test_app/riverpod.dart';
 
 class Dynamicprdanalysis extends ConsumerStatefulWidget {
-  const Dynamicprdanalysis({super.key});
+  final String productID;
+  const Dynamicprdanalysis({super.key, required this.productID});
 
   @override
   ConsumerState<Dynamicprdanalysis> createState() => _DynamicprdanalysisState();
@@ -49,7 +50,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
 
   @override
   Widget build(BuildContext context) {
-    final emissions = ref.watch(convertedEmissionsProvider);
+    final emissions = ref.watch(convertedEmissionsProvider(widget.productID));
 
     // ------------------- Page 1 Widgets (Upstream) -------------------
     final List<Widget> widgetofpage1 = [
@@ -83,7 +84,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
           ),
         ],
       ),
-      MaterialAttributesMenu(ref: ref),
+      MaterialAttributesMenu(productId: widget.productID),
 
       //--ROW 2: Upstream Transportation--
       Row(
@@ -285,12 +286,14 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
 // ------------------- Manual Material Attributes Menu -------------------
 
 class MaterialAttributesMenu extends ConsumerWidget {
-  const MaterialAttributesMenu({super.key, required WidgetRef ref});
+  final String productId;
+
+  const MaterialAttributesMenu({super.key, required this.productId});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final tableState = ref.watch(materialTableProvider);
-    final tableNotifier = ref.read(materialTableProvider.notifier);
+    final tableState = ref.watch(materialTableProvider(productId));
+    final tableNotifier = ref.read(materialTableProvider(productId).notifier);
 
     final materials = ref.watch(materialsProvider);
     final countries = ref.watch(countriesProvider);

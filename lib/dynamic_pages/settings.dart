@@ -4,6 +4,8 @@ import 'package:test_app/design/apptheme/colors.dart';
 import 'package:test_app/design/apptheme/textlayout.dart';
 import 'package:test_app/dynamic_pages/popup_pages.dart';
 import 'dart:ui';
+import 'package:test_app/governing_screens/welcomepage.dart';
+import 'package:test_app/sub_navigator.dart';
 
 void showSettingsPopup(BuildContext context) {
   showGeneralDialog(
@@ -134,23 +136,63 @@ class _SettingsContentState extends State<SettingsContent> {
                     padding: EdgeInsets.only(top: 0),
                     width: 200,
                     color: Apptheme.transparentcheat,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10),
-                      child: ListView.builder(
-                        itemCount: menuPages.length,
-                        itemBuilder: (context, index) {
-                          final item = menuPages[index];
-                          return ListTileItems(
-                            title: item.title, 
-                            navigateto: (title) {
-                              setState(() {
-                                selectedMenu = index;
+                    child: ListView(
+                      children: [
+                        SizedBox(
+                          height: 400,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 10),
+                            child: ListView.builder(
+                              itemCount: menuPages.length,
+                              itemBuilder: (context, index) {
+                                final item = menuPages[index];
+                                return ListTileItems(
+                                  title: item.title, 
+                                  navigateto: (title) {
+                                    setState(() {
+                                      selectedMenu = index;
+                                    });
+                                  }, 
+                                  padding: padding
+                                );
+                              }
+                            )
+                          ),
+                        ),
+
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          child: InkWell(
+                            onTap: () {
+                              // Close the settings popup first
+                              Navigator.of(context).pop();
+
+                              // Reset the entire navigator stack to Welcomepage
+                              Future.delayed(const Duration(milliseconds: 100), () {
+                                RootScaffold.of(context)?.goToWelcomePage();
                               });
-                            }, 
-                            padding: padding
-                          );
-                        }
-                      )
+                            },
+                            child: Container(
+                              width: 200,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: Apptheme.transparentcheat,
+                                borderRadius: BorderRadius.circular(5),
+                                border: Border.all(color: Apptheme.widgetclrdark),
+                              ),
+                              alignment: Alignment.center,
+                              child: Labels(
+                                title: "Logout",
+                                color: Colors.redAccent,
+                                fontsize: 18,
+                              ),
+                            ),
+                          ),
+                        ),
+
+
+
+                      ],
                     ),
                   ),
                 ),

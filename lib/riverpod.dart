@@ -446,23 +446,27 @@ final emissionCalculatorProvider = StateNotifierProvider<
   (ref) => EmissionCalculator(),
 );
 
-final convertedEmissionsProvider = Provider<EmissionResults>((ref) {
+final convertedEmissionsProvider =
+    Provider.family<EmissionResults, String>((ref, productId) {
   final base = ref.watch(emissionCalculatorProvider);
   final factor = ref.watch(unitConversionProvider);
 
-  final materialAlloc = ref.watch(materialAllocationSumProvider);
+  // per-product material allocation
+  final materialAlloc = ref.watch(materialAllocationSumProvider(productId));
+
+  
   final transportAlloc = ref.watch(transportAllocationSumProvider);
   final machiningAlloc = ref.watch(machiningAllocationSumProvider);
   final fugitiveAlloc = ref.watch(fugitiveAllocationSumProvider);
 
-return EmissionResults(
-  material: base.material * (materialAlloc / 100) * factor,
-  transport: base.transport * (transportAlloc / 100) * factor,
-  machining: base.machining * (machiningAlloc / 100) * factor,
-  fugitive: base.fugitive * (fugitiveAlloc / 100) * factor,
-);
-
+  return EmissionResults(
+    material: base.material * (materialAlloc / 100) * factor,
+    transport: base.transport * (transportAlloc / 100) * factor,
+    machining: base.machining * (machiningAlloc / 100) * factor,
+    fugitive: base.fugitive * (fugitiveAlloc / 100) * factor,
+  );
 });
+
 
 
 // ------------------- CALCULATOR -------------------
@@ -991,17 +995,21 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
   }
 }
 
-final materialTableProvider =
-    StateNotifierProvider<MaterialTableNotifier, MaterialTableState>(
-        (ref) => MaterialTableNotifier());
+final materialTableProvider = StateNotifierProvider.family<
+    MaterialTableNotifier,
+    MaterialTableState,
+    String>((ref, productId) {
+  return MaterialTableNotifier();
+});
 
-final materialAllocationSumProvider = Provider<double>((ref) {
-  final table = ref.watch(materialTableProvider);
 
+final materialAllocationSumProvider = Provider.family<double, String>((ref, productId) {
+  final table = ref.watch(materialTableProvider(productId));
   return table.materialAllocationValues
       .map(_toDouble)
       .fold(0.0, (a, b) => a + b);
 });
+
 
 
 // --------------- UPSTREAM TRANSPORT STATE -----------------

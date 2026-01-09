@@ -722,10 +722,14 @@ class MaterialEmissionReq(BaseModel):
     material: str  #e.g.Steel,Aluminum,etc.
     country: str   #e.g.Singapore,Malaysia,China,etc.
     mass_kg: float #mass from flutter ui
-class MachineEmissionsReq(BaseModel):
-    machine_model: str #Machine types
+class MachineEmissionsAdvancedReq(BaseModel):
+    machine_model: str
     country: str
-    time_operated_hr: float 
+    time_operated_main_hr: float = 0.0
+    time_operated_second_hr: float = 0.0
+    time_operated_secondary_hr: float = 0.0
+
+
 class TransportCalcRequest(BaseModel):
     mode: str            # "van", "hgv", "flight", "rail", "sea_cargo", ...
     vehicle_class: str   # one entry from the relevant classes list
@@ -794,10 +798,6 @@ class DistanceOnlyRequest(BaseModel):
 class MaterialEmissionAdvancedReq(BaseModel):
     material: str
     country: str
-
-    time_operated_main_hr: float = 0.0
-    time_operated_sub_hr: float = 0.0
-    time_operated_secondary_hr: float = 0.0
 
     # masses (kg)
     total_material_purchased_kg: float   # total purchased for that material type

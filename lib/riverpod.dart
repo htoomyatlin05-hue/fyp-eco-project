@@ -583,7 +583,7 @@ Future<void> calculate(String featureType, List<RowFormat> rows) async {
   final Map<String, String> transportEndpoints = {
     'Van': 'http://127.0.0.1:8000/calculate/van',
     'HGV (Diesel)': 'http://127.0.0.1:8000/calculate/hgv',
-    'HGV Refrigerated (Diesel)': 'http://127.0.0.1:8000/calculate/hgv_refrigerated',
+    'HGV Refrigerated (Diesel)': 'http://127.0.0.1:8000/calculate/hgv_r',
     'Freight Flights': 'http://127.0.0.1:8000/calculate/freight_flight',
     'Rail': 'http://127.0.0.1:8000/calculate/rail_sheet',
     'Sea Tanker': 'http://127.0.0.1:8000/calculate/sea_tanker',
@@ -706,6 +706,8 @@ final tableControllerProvider =
         (ref, columns) => TableNotifier(columns));
 
 
+
+
 // ------------------- PROJECT LIST FETCH -------------------
 class Product {
   final String name;
@@ -759,7 +761,6 @@ final productsProvider = FutureProvider<List<Product>>((ref) async {
 });
 
 // ---------------- PROFILE SAVE ----------------
-
 class ProfileSaveRequest {
   final String profileName;
   final String description;
@@ -798,7 +799,6 @@ final saveProfileProvider =
 });
 
 // ---------------- SIGN UP REQUEST ----------------
-
 class SignUpParameters {
   final String profileName;
   final String password;
@@ -838,7 +838,6 @@ final signUpProvider =
 
 
 // ------------------- POST (THE REQUEST) LOG IN AUTHENTICATION -------------------
-
 class LoginParameters {
   final String profileName;
   final String password;
@@ -895,27 +894,22 @@ final usernameProvider = FutureProvider<String?>((ref) async {
   return username;
 });
 
-
-
 // ------------------- DELETE PROJECTS -------------------
-
 class ProfileService {
   final String baseUrl;
 
   ProfileService(this.baseUrl);
 
   /// Deletes a profile. Returns true if success, throws exception if failure.
-  Future<bool> deleteProfile(String profileName) async {
-    final url = Uri.parse('$baseUrl/profiles/delete/$profileName');
+Future<bool> deleteProfile(String username, String profileName) async {
+  final url = Uri.parse('$baseUrl/profiles/delete/$username/$profileName');
+  final response = await http.delete(url);
 
-    // Make the POST or DELETE request (use DELETE if backend supports it)
-    final response = await http.delete(url);
+  if (response.statusCode == 200) return true;
+  if (response.statusCode == 404) throw Exception("Profile not found");
+  throw Exception("Failed: ${response.statusCode} ${response.body}");
+}
 
-    if (response.statusCode == 200) return true;
-    if (response.statusCode == 404) throw Exception("Profile not found");
-
-    throw Exception("Failed to delete profile: ${response.statusCode}");
-  }
 }
 
 final profileServiceProvider = Provider<ProfileService>((ref) {
@@ -923,7 +917,6 @@ final profileServiceProvider = Provider<ProfileService>((ref) {
 });
 
 // ---------------- DELETE PROFILE NOTIFIER ----------------
-
 final deleteProfileProvider =
     AsyncNotifierProvider<DeleteProfileNotifier, void>(
   () => DeleteProfileNotifier(),
@@ -940,7 +933,8 @@ class DeleteProfileNotifier extends AsyncNotifier<void> {
 
     try {
       final service = ref.read(profileServiceProvider);
-      await service.deleteProfile(profileName);
+      final username = await ref.watch(usernameProvider.future);
+      await service.deleteProfile(username!, profileName);
 
       // invalidate products or profiles if you want UI to refresh
       ref.invalidate(productsProvider);
@@ -956,6 +950,10 @@ double _toDouble(String? value) {
   if (value == null) return 0.0;
   return double.tryParse(value) ?? 0.0;
 }
+
+
+
+
 
 // --------------- MATERIAL STATE -----------------
 class MaterialTableState {
@@ -1653,4 +1651,5 @@ final unitNameProvider = Provider<String>((ref) {
 });
 
 final myCheckboxProvider = StateProvider<bool>((ref) => false);
+
 

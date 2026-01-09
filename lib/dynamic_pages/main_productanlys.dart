@@ -1061,7 +1061,7 @@ Widget _buildDynamicColumn({
               margin: const EdgeInsets.symmetric(vertical: 4),
               padding: const EdgeInsets.all(3),
               decoration: BoxDecoration(
-                color: Apptheme.widgetsecondaryclr,
+                color: Apptheme.widgettertiaryclr,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: isTextField
@@ -1081,18 +1081,18 @@ Widget _buildDynamicColumn({
                     )
                   : DropdownButtonHideUnderline(
                       child: DropdownButton<String>(
-                        dropdownColor: Apptheme.widgetsecondaryclr,
+                        dropdownColor: Apptheme.widgettertiaryclr,
                         value: (itemsPerRow[i].contains(values[i])) ? values[i] : null,
                         hint: const Text("Select"),
                         isExpanded: true,
-                        icon: Icon(Icons.arrow_drop_down, color: Apptheme.iconslight),
+                        icon: Icon(Icons.arrow_drop_down, color: Apptheme.iconsdark),
                         items: itemsPerRow[i]
                             .map(
                               (e) => DropdownMenuItem(
                                 value: e,
                                 child: Text(
                                   e,
-                                  style: TextStyle(color: Apptheme.textclrlight, fontSize: 15),
+                                  style: TextStyle(color: Apptheme.textclrdark, fontSize: 15),
                                 ),
                               ),
                             )

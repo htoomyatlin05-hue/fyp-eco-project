@@ -53,15 +53,15 @@ String getPercentageTitle(double value, double total) {
       },
       // Scope Categories
       {
-        'Scope 1': 60,
-        'Scope 2': 40,
-        'Scope 3': 30,
+        'Scope 1 (hardcoded for demo)': 60 ,
+        'Scope 2 (hardcoded for demo)': 40,
+        'Scope 3 (hardcoded for demo)': 30,
       },
       // Boundary
       {
-        'Upstream': 155,
-        'Production': 134,
-        'Downstream': 98,
+        'Upstream': emissions.material + emissions.transport,
+        'Production': emissions.machining+ emissions.fugitive,
+        'Downstream': emissions.usageCycle+ emissions.endofLife,
       },
     ];
 
@@ -123,20 +123,20 @@ String getPercentageTitle(double value, double total) {
       [
         PieChartSectionData(
           color: Apptheme.piechart1,
-          value: 155,
+          value: emissions.material + emissions.transport,
           title: 'Upstream',
           radius: pieChartSize/2,
         ),
         PieChartSectionData(
           color: Apptheme.piechart2,
-          value: 134,
+          value: emissions.machining + emissions.fugitive,
           title: 'Production',
           radius: pieChartSize/2,
         ),
 
         PieChartSectionData(
           color: Apptheme.piechart3,
-          value: 98,
+          value: emissions.usageCycle + emissions.endofLife,
           title: 'Downstream',
           radius: pieChartSize/2,
         ),

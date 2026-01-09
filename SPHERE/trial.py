@@ -722,6 +722,12 @@ class MaterialEmissionReq(BaseModel):
     material: str  #e.g.Steel,Aluminum,etc.
     country: str   #e.g.Singapore,Malaysia,China,etc.
     mass_kg: float #mass from flutter ui
+
+class MachineEmissionsReq(BaseModel):
+    machine_model: str
+    country: str
+    time_operated_hr: float
+
 class MachineEmissionsAdvancedReq(BaseModel):
     machine_model: str
     country: str
@@ -1221,7 +1227,7 @@ def get_countries():
     }
 
 @app.post("/calculate/machining_advanced")
-def calculate_machine(req:MachineEmissionsReq):
+def calculate_machine(req:MachineEmissionsAdvancedReq):
     if req.country not in country_list:
         raise HTTPException(
             status_code=400,

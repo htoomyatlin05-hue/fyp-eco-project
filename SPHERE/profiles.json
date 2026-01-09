@@ -12,13 +12,27 @@
         "sample": "test"
       }
     },
-    "t": {
+    "Lohith": {
+      "description": "Mock description",
+      "data": {
+        "sample": "test"
+      }
+    }
+  },
+  "Htoo": {
+    "Testing": {
       "description": "Mock description",
       "data": {
         "sample": "test"
       }
     },
-    "Lohith": {
+    "Product 1": {
+      "description": "Mock description",
+      "data": {
+        "sample": "test"
+      }
+    },
+    "Product 2": {
       "description": "Mock description",
       "data": {
         "sample": "test"

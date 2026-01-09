@@ -26,6 +26,7 @@ class _ContentofLState extends ConsumerState<ContentofL> {
     return 
 
     Row(
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         Align(
           alignment: Alignment.centerLeft,
@@ -38,30 +39,10 @@ class _ContentofLState extends ConsumerState<ContentofL> {
                 _subdrawertile((Icons.scale), 'Units', () => showUnitsPopup(context)),
             
                 _subdrawertile((Icons.supervised_user_circle), 'Method', () => showMethodologyPopup(context)),
-            
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10),
-                  child: InkWell(
-                    onTap: () {
-                      RootScaffold.of(context)?.goToWelcomePage();
-                    },
-                    child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Apptheme.transparentcheat,
-                        borderRadius: BorderRadius.circular(5),
-                        border: Border.all(color: Apptheme.widgetclrdark),
-                      ),
-                      alignment: Alignment.center,
-                      child: Labels(
-                        title: "Logout",
-                        color: Colors.redAccent,
-                        fontsize: 18,
-                      ),
-                    ),
-                  ),
-                ),
+
+                _subdrawertile(Icons.logout, 'Logout', () {RootScaffold.of(context)?.goToWelcomePage();}),
+
+                SizedBox(height: 1000,)
               
               ],
             ),

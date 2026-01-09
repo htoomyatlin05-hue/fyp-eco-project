@@ -171,7 +171,7 @@ void dispose() {
                                           RootScaffold.of(context)?.goToHomePageWithArgs(product.name);
                                         },
                                         child: Container(
-                                          width: 600,
+                                          width: double.infinity,
                                           height: 60,
                                           decoration: BoxDecoration(
                                             color: Apptheme.widgettertiaryclr,
@@ -190,7 +190,7 @@ void dispose() {
                                               ),
                                               IconButton(
                                                 icon: const Icon(Icons.delete),
-                                                color: Apptheme.iconslight,
+                                                color: Apptheme.iconsdark,
                                                 onPressed: () {
                                                   showDialog(
                                                     context: context,

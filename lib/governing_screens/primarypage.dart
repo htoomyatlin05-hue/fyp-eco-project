@@ -52,7 +52,7 @@ void initState() {
   pages = [
     KeyedSubtree(
       key: ValueKey('home'),
-      child: Dynamichome(),
+      child: Dynamichome(productName: widget.profileName,),
     ),
     KeyedSubtree(
       key: ValueKey('analysis'),
@@ -138,6 +138,8 @@ void initState() {
 
     final selectedIndex = ref.watch(currentPageProvider);
 
+    final username = ref.watch(usernameProvider);
+
 
     return Scaffold(
       body: 
@@ -183,24 +185,34 @@ void initState() {
                         child: Container(
                           decoration: BoxDecoration(
                             color: Apptheme.header,
-                            borderRadius: BorderRadius.all( Radius.circular(5))
+                            borderRadius: BorderRadius.all(Radius.circular(5)),
                           ),
                           width: listWidth - 10,
-                          child:  Padding(
+                          child: Padding(
                             padding: const EdgeInsets.only(bottom: 5),
                             child: Center(
-                              child: Bigfocusedtext(
-                                title: 'Welcome [User]',
-                                fontsize: 25,
-                                color: Apptheme.textclrlight,
+                              child: username.when(
+                                data: (username) => Bigfocusedtext(
+                                  title: 'Welcome $username',
+                                  fontsize: 23,
+                                  color: Apptheme.textclrlight,
+                                ),
+                                loading: () => const Bigfocusedtext(
+                                  title: 'Loading...',
+                                  fontsize: 23,
+                                  color: Apptheme.textclrlight,
+                                ),
+                                error: (e, _) => const Bigfocusedtext(
+                                  title: 'Error',
+                                  fontsize: 23,
+                                  color: Apptheme.textclrlight,
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-
-                      const SizedBox(width: 10,)    
-                     
+                      const SizedBox(width: 10),
                     ],
                   ),
                 ),

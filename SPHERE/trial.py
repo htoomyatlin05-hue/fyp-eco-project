@@ -785,6 +785,9 @@ class UserLoginRequest(BaseModel):
     username: str
     password: str
 
+class DistanceOnlyRequest(BaseModel):
+    transport_type: str
+    distance_km: float
 
 # --------- 6. FASTAPI APP + ENDPOINTS ---------------------------------------#
 
@@ -1199,6 +1202,25 @@ def calculate_transport_emission(data: TransportCalcRequest):
         }
 
     return {"error": "Invalid transport type."}
+
+@app.post("/calculate/hgv_r")
+def calculate_hgv_r(req: DistanceOnlyRequest):
+    transport_type = req.transport_type
+    distance = req.distance_km
+
+    # HGV R (your HGV_r_mode_list / HGV_r_emission_list)
+    if transport_type not in hgv_refrig_lookup:  # this dict is built from HGV_r_mode_list + HGV_r_emission_list
+        raise HTTPException(status_code=400, detail="Invalid HGV R transport type")
+
+    ef = float(hgv_refrig_lookup[transport_type])
+
+    return {
+        "category": "HGV R",
+        "transport_type": transport_type,
+        "distance_km": distance,
+        "emission_factor": ef,
+        "total_transport_type_emission": ef * distance
+    }
 
 @app.post("/calculate/freight_flight")
 def calculate_freight_flight(req: TonKmRequest):

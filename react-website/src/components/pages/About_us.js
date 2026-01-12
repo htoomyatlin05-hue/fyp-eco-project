@@ -56,7 +56,7 @@ export default function About_us() {
 
             <div className="about__panel">
               <h2>Contact</h2>
-              <p>Have questions or want a demo?</p>
+              <p>Have questions about the app?</p>
               <a className="about__btn" href="/contact">Get in touch</a>
             </div>
           </section>

@@ -7,7 +7,7 @@ export default function Contact() {
     <div className="page">
       <div className="page__container">
         <h1>Contact</h1>
-        <p className="page__muted">Ask a question or request a demo.</p>
+        <p className="page__muted">Ask anything below.</p>
 
         <div className="page__card">
           <form onSubmit={(e) => e.preventDefault()}>

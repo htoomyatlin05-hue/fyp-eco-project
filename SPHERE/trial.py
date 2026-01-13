@@ -157,6 +157,7 @@ sheet20 = book['Rail']
 sheet21 = book['Ship']
 sheet22 = book['Usage']
 sheet23 = book['End-of-Life']
+sheet24 = book['Assembly']
 
 # Helper functions to read values from Excel columns
 def extract_selection_list(cells):
@@ -329,6 +330,9 @@ Usage_services_ef_cells    = sheet22["J2":"J5"]
 
 End_of_Life_Activities_cells  = sheet23["A2":"A5"]
 End_of_Life_ef_cells          = sheet23["B2":"B5"]
+
+Assembly_modes_cells  = sheet24["A2":"A999"]
+Assembly_ef_cells     = sheet24["B2":"B999"]
 # turn into lists
 country_list      = extract_selection_list(country_cells)
 distance_list     = extract_list(distance_cells)
@@ -446,6 +450,9 @@ Usage_services_ef = extract_selection_list(Usage_services_ef_cells)
 
 End_of_Life_Activities = extract_selection_list(End_of_Life_Activities_cells)
 End_of_Life_ef         = extract_selection_list(End_of_Life_ef_cells)
+
+Assembly_modes  = extract_selection_list(Assembly_modes_cells)
+Assembly_ef     = extract_selection_list(Assembly_ef_cells)
 
 # --- LOOKUP DICTIONARIES FOR FAST CALCULATION ---
 van_lookup = dict(zip(van_mode_list, van_emission_list))
@@ -902,6 +909,7 @@ def get_options():
       - Machine Types
       - Transport types
       - Usage Categories
+      - Assembly
     """
     return {
         "countries": country_list,
@@ -947,7 +955,9 @@ def get_options():
         "Usage_services_ef": Usage_services_ef,
         "End_of_Life_Activities": End_of_Life_Activities,
         "End_of_Life_ef": End_of_Life_ef,
-        "Machine_brands": Machine_brands
+        "Machine_brands": Machine_brands,
+        "Assembly_modes": Assembly_modes,
+        "Assembly_ef"   : Assembly_ef
     }
 
 @app.get("/meta/transport/config")

@@ -3,6 +3,7 @@ import 'package:test_app/design/apptheme/colors.dart';
 import 'package:test_app/design/apptheme/textlayout.dart';
 import 'dart:ui';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:test_app/dynamic_pages/main_productanlys.dart';
 import 'package:test_app/riverpod.dart';
 
 //----------------------------------SETTINGS POPUP PAGES----------------------------------------------
@@ -29,14 +30,15 @@ void showAdvancedMaterials(BuildContext context) {
                 right: 10,
                 bottom: 70,
                 child: Material(
-                  color: Colors.transparent,
+                  color: Apptheme.transparentcheat,
                   child: Container(
+                    width: 50,
                     padding: EdgeInsets.all(0),
                     decoration: BoxDecoration(
                       color: Apptheme.transparentcheat,
                       borderRadius: BorderRadius.circular(7.5),
                     ),
-                    child: UnitsPage(),
+                    child: AdvancedMaterials(),
                   ),
                 ),
               ),
@@ -56,58 +58,138 @@ class AdvancedMaterials extends ConsumerWidget {
       child: Row(
         children: [
           SizedBox(
-            width: 150,
+            width: 50,
             child: ListView(
               children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Labels(
-                      title: "Display unit",
-                      color: Apptheme.textclrlight,
-                      fontsize: 19,
-                      toppadding: 0,
-                      leftpadding: 10,
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Labels(
-                      title: "[]",
-                      color: Apptheme.textclrlight,
-                      fontsize: 19,
-                      toppadding: 0,
-                      leftpadding: 10,
-                    ),
-                  ),
-                ),
+                MaterialAttributesMenu(productID: '')
               ],
             ),
           ),
         
-          Expanded(
-            child: FrostedBackgroundGeneral(
-              child: ListView(
-                children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Textsinsidewidgets(
-                      words: 'Output display unit: ${ref.watch(unitNameProvider)}', 
-                      color: Apptheme.textclrlight,
-                      fontsize: 17,
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )
-
+         
         ],
       ),
+    );
+  }
+}
+
+class MaterialAttributesMenu extends ConsumerWidget {
+  final String productID;
+
+  const MaterialAttributesMenu({super.key, required this.productID});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tableState = ref.watch(materialTableProvider(productID));
+    final tableNotifier = ref.read(materialTableProvider(productID).notifier);
+
+    final materials = ref.watch(materialsProvider);
+    final countries = ref.watch(countriesProvider);
+
+    List<RowFormat> rows = List.generate(
+      tableState.materials.length,
+      (i) => RowFormat(
+        columnTitles: ['Material', 'Country', 'Mass (kg)'],
+        isTextFieldColumn: [false, false, true],
+        selections: [
+          tableState.materials[i],
+          tableState.countries[i],
+          tableState.masses[i]
+        ],
+      ),
+    );
+
+    return Column(
+      children: [
+        // ---------------- Table ----------------
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Container(
+            padding: const EdgeInsets.all(5),
+            decoration: BoxDecoration(
+              color: Apptheme.transparentcheat,
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    buildColumn(
+                      title: 'Material',
+                      values: tableState.materials,
+                      items: materials,
+                      onChanged: (row, value) =>
+                          tableNotifier.updateCell(row: row, column: 'Material', value: value),
+                    ),
+                    const SizedBox(width: 10),
+                    buildColumn(
+                      title: 'Country',
+                      values: tableState.countries,
+                      items: countries,
+                      onChanged: (row, value) =>
+                          tableNotifier.updateCell(row: row, column: 'Country', value: value),
+                    ),
+                    const SizedBox(width: 10),
+                    buildColumn(
+                      title: 'Mass (kg)',
+                      values: tableState.masses,
+                      isTextField: true,
+                      onChanged: (row, value) =>
+                          tableNotifier.updateCell(row: row, column: 'Mass', value: value),
+                    ),
+                    const SizedBox(width: 10),
+                    
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // ---------------- Calculate Button ----------------
+        Row(
+          children: [
+            SizedBox(width: 20),
+
+            SizedBox(
+              width: 200,
+              height: 35,
+              child: ElevatedButton(
+                onPressed: () async {
+                  await ref.read(emissionCalculatorProvider(productID).notifier).calculate('material', rows);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Apptheme.widgettertiaryclr,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                ),
+                child: const Labelsinbuttons(
+                  title: 'Calculate Emissions',
+                  color: Apptheme.textclrdark,
+                  fontsize: 15,
+                ),
+              ),
+            ),
+
+            SizedBox(width: 10),
+          
+            Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: tableNotifier.addRow,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.remove),
+                  onPressed: tableNotifier.removeRow,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 }

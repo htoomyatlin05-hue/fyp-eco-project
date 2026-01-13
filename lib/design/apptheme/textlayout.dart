@@ -334,6 +334,55 @@ TextStyle bodyTextlightmini(double fontsize) {
     color: Apptheme.textclrlight,
   );
 }
+class Textsinsidewidgetsdrysafe extends StatelessWidget {
+  final String words;
+  final Color color;
+  final double fontsize;
+  final double leftpadding;
+  final double toppadding;
+  final int maxLines;
+  final FontWeight fontweight;
+  final bool softWrap;
+
+  const Textsinsidewidgetsdrysafe({
+    super.key,
+    required this.words,
+    required this.color,
+    this.fontsize = 15,
+    this.leftpadding = 0,
+    this.toppadding = 10,
+    this.maxLines = 10,
+    this.fontweight = FontWeight.w500,
+    this.softWrap = true,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(
+        left: 5 + leftpadding,
+        top: toppadding,
+        right: 5,
+      ),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Text(
+          words,
+          style: TextStyle(
+            color: color,
+            fontWeight: fontweight,
+            fontSize: fontsize,
+          ),
+          textAlign: TextAlign.left,
+          overflow: TextOverflow.fade,
+          softWrap: softWrap,
+          maxLines: maxLines,
+        ),
+      ),
+    );
+  }
+}
+
 
 class RichTextsInsideWidget extends StatelessWidget {
   final String firstPart;

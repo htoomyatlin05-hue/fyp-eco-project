@@ -1,0 +1,299 @@
+import 'package:flutter/material.dart';
+import 'package:test_app/design/primary_elements(to_set_up_pages)/pages_layouts.dart';
+
+/// --------------------
+/// Models
+/// --------------------
+
+class Part {
+  final String name;
+  Part(this.name);
+}
+
+class PartSelectionRow {
+  Part? selectedPart;
+}
+
+/// --------------------
+/// Main Page
+/// --------------------
+
+class DynamicAllocation extends StatefulWidget {
+  const DynamicAllocation({super.key});
+
+  @override
+  State<DynamicAllocation> createState() => _DynamicAllocationState();
+}
+
+class _DynamicAllocationState extends State<DynamicAllocation> {
+  /// Dummy parts list
+  final List<Part> allParts = [
+    Part('Aluminium Block'),
+    Part('Steel Shaft'),
+    Part('CNC Housing'),
+    Part('Bearing'),
+    Part('Motor'),
+    Part('Fastener'),
+  ];
+
+  final List<PartSelectionRow> rows = [];
+
+  void addRow() {
+    setState(() {
+      rows.add(PartSelectionRow());
+    });
+  }
+
+  Future<void> openPartDialog(PartSelectionRow row) async {
+    final selected = await showDialog<Part>(
+      context: context,
+      builder: (_) => PartSelectionDialog(
+        parts: allParts,
+        initialSelection: row.selectedPart,
+      ),
+    );
+
+    if (selected != null) {
+      setState(() {
+        row.selectedPart = selected;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return PrimaryPages(
+      childofmainpage: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ElevatedButton(
+              onPressed: addRow,
+              child: const Text('Import Part'),
+            ),
+            const SizedBox(height: 16),
+
+            Expanded(
+              child: ListView.builder(
+                itemCount: rows.length,
+                itemBuilder: (context, index) {
+                  final row = rows[index];
+                  return GestureDetector(
+                    onTap: () => openPartDialog(row),
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 14,
+                      ),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade400),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            row.selectedPart?.name ?? 'Select part',
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const Icon(Icons.edit),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+/// --------------------
+/// Dialog Widget
+/// --------------------
+
+class PartSelectionDialog extends StatefulWidget {
+  final List<Part> parts;
+  final Part? initialSelection;
+
+  const PartSelectionDialog({
+    super.key,
+    required this.parts,
+    this.initialSelection,
+  });
+
+  @override
+  State<PartSelectionDialog> createState() => _PartSelectionDialogState();
+}
+
+class _PartSelectionDialogState extends State<PartSelectionDialog> {
+  final TextEditingController searchController = TextEditingController();
+  Part? tempSelected;
+
+  @override
+  void initState() {
+    super.initState();
+    tempSelected = widget.initialSelection;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = searchController.text.toLowerCase();
+
+    final filteredParts = widget.parts.where((part) {
+      return query.isEmpty || part.name.toLowerCase().contains(query);
+    }).toList();
+
+    return Dialog(
+      child: SizedBox(
+        width: 400,
+        height: 500,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            /// Header
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                'Select Part',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+
+            /// Search bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: TextField(
+                controller: searchController,
+                decoration: const InputDecoration(
+                  labelText: 'Search',
+                  prefixIcon: Icon(Icons.search),
+                ),
+                onChanged: (_) => setState(() {}),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            /// List
+            Flexible(
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: filteredParts.length,
+                itemBuilder: (context, index) {
+                  final part = filteredParts[index];
+                  return ListTile(
+                    title: Text(part.name),
+                    trailing: tempSelected == part
+                        ? const Icon(Icons.check)
+                        : null,
+                    onTap: () {
+                      setState(() {
+                        tempSelected = part;
+                      });
+                    },
+                  );
+                },
+              ),
+            ),
+
+            const Divider(),
+
+            /// OK Button
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  onPressed: tempSelected == null
+                      ? null
+                      : () => Navigator.pop(context, tempSelected),
+                  child: const Text('OK'),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+
+
+
+
+@app.post("/calculate/machine_power_emission")
+def calculate_machine_power_emission(req:MachineEmissionsReq):
+    if req.country not in country_list:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Country '{req.country}' not found in grid intensity list."
+        )
+    cidx = country_list.index(req.country)
+    grid_intensity = float(electricity_list[cidx])  # kg CO2e per kWh 
+
+    # 2) Get Mazak main spindle power from selected machine
+    if req.machine_model not in Mazak_machine_model:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Mazak machine '{req.machine_model}' not found."
+        )
+    midx = Mazak_machine_model.index(req.machine_model)
+    main_spindle_kw = float(Mazak_main_spindle[midx])  # kW
+
+    power_drawed = main_spindle_kw                 # only main spindle for now
+    time_operated = req.time_operated_hr          # hours
+    emissions = power_drawed * grid_intensity * time_operated
+
+    return {
+        "country": req.country,
+        "machine_model": req.machine_model,
+        "time_operated_hr": time_operated,
+        "power_drawed_kw": power_drawed,
+        "grid_intensity": grid_intensity,
+        "emissions": emissions,       # kg CO2e
+    }
+
+
+
+
+
+    @app.post("/calculate/machine_power_emission")
+def calculate_machine_power_emission(req:MachineEmissionsReq):
+    if req.country not in country_list:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Country '{req.country}' not found in grid intensity list."
+        )
+    cidx = country_list.index(req.country)
+    grid_intensity = float(electricity_list[cidx])  # kg CO2e per kWh 
+
+    # 2) Get Mazak main spindle power from selected machine
+    if req.machine_model not in Mazak_machine_model:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Mazak machine '{req.machine_model}' not found."
+        )
+    midx = Mazak_machine_model.index(req.machine_model)
+    main_spindle_kw = float(Mazak_main_spindle[midx])  # kW
+
+    power_drawed = main_spindle_kw                 # only main spindle for now
+    time_operated = req.time_operated_hr          # hours
+    emissions = power_drawed * grid_intensity * time_operated
+
+    return {
+        "country": req.country,
+        "machine_model": req.machine_model,
+        "time_operated_hr": time_operated,
+        "power_drawed_kw": power_drawed,
+        "grid_intensity": grid_intensity,
+        "emissions": emissions,       # kg CO2e
+    }

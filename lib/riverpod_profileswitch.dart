@@ -159,6 +159,21 @@ final pieChartProvider =
   (ref, key) => PieChartNotifier(),
 );
 
+final partsProvider = Provider<List<String>>((ref) {
+  final product = ref.watch(activeProductProvider);
+  final timeline = ref.watch(activeTimelineProvider);
+
+  if (product == null || timeline == null) {
+    return [];
+  }
+
+  final pieState = ref.watch(
+    pieChartProvider((product: product, timeline: timeline)),
+  );
+
+  return pieState.parts;
+});
+
 
 /// ===============================================================
 /// 6️⃣ DEBUG PROVIDER (OPTIONAL BUT RECOMMENDED)
@@ -170,3 +185,76 @@ final debugSelectionProvider = Provider<String>((ref) {
 
   return 'ACTIVE → product: $product | timeline: $timeline';
 });
+
+
+class CompoundPart {
+  final String name;
+  final List<String> components; // names of basic parts
+  CompoundPart({required this.name, required this.components});
+}
+
+class CompoundPartsState {
+  final List<CompoundPart> compounds;
+  CompoundPartsState({this.compounds = const []});
+
+  CompoundPartsState copyWith({List<CompoundPart>? compounds}) {
+    return CompoundPartsState(compounds: compounds ?? this.compounds);
+  }
+}
+
+class CompoundPartsNotifier extends StateNotifier<CompoundPartsState> {
+  CompoundPartsNotifier() : super(CompoundPartsState());
+
+  void addCompound(String name, List<String> components) {
+    state = state.copyWith(
+      compounds: [...state.compounds, CompoundPart(name: name, components: components)],
+    );
+  }
+
+  void clear() {
+    state = CompoundPartsState();
+  }
+}
+
+// Keyed by product + timeline
+typedef CompoundKey = ({String product, String timeline});
+
+final compoundPartsProvider = StateNotifierProvider.family<
+    CompoundPartsNotifier, CompoundPartsState, CompoundKey>(
+  (ref, key) => CompoundPartsNotifier(),
+);
+
+
+class HigherCompoundPart {
+  final String name;
+  final List<String> components; // names of compound parts
+  HigherCompoundPart({required this.name, required this.components});
+}
+
+class HigherCompoundPartsState {
+  final List<HigherCompoundPart> compounds;
+  HigherCompoundPartsState({this.compounds = const []});
+
+  HigherCompoundPartsState copyWith({List<HigherCompoundPart>? compounds}) {
+    return HigherCompoundPartsState(compounds: compounds ?? this.compounds);
+  }
+}
+
+class HigherCompoundPartsNotifier extends StateNotifier<HigherCompoundPartsState> {
+  HigherCompoundPartsNotifier() : super(HigherCompoundPartsState());
+
+  void addHigherCompound(String name, List<String> components) {
+    state = state.copyWith(
+      compounds: [...state.compounds, HigherCompoundPart(name: name, components: components)],
+    );
+  }
+
+  void clear() {
+    state = HigherCompoundPartsState();
+  }
+}
+
+final higherCompoundPartsProvider = StateNotifierProvider.family<
+    HigherCompoundPartsNotifier, HigherCompoundPartsState, CompoundKey>(
+  (ref, key) => HigherCompoundPartsNotifier(),
+);

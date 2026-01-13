@@ -43,6 +43,7 @@ class MetaOptions {
   final List<String> usageCycleConsumables;
   final List<String> usageCycleServices;
   final List<String> endOfLifeActivities;
+  final List<String> assemblyProcesses;
 
   MetaOptions({
     required this.countries,
@@ -75,6 +76,7 @@ class MetaOptions {
     required this.usageCycleConsumables,
     required this.usageCycleServices,
     required this.endOfLifeActivities,
+    required this.assemblyProcesses,
   });
 
   factory MetaOptions.fromJson(Map<String, dynamic> json) {
@@ -109,6 +111,7 @@ class MetaOptions {
       usageCycleConsumables: List<String>.from(json['Usage_consumables'] ?? []),
       usageCycleServices: List<String>.from(json['Usage_services'] ?? []),
       endOfLifeActivities: List<String>.from(json['End_of_Life_Activities'] ?? [],),
+      assemblyProcesses: List<String>.from(json['typ_here'] ?? [],)
     );
   }
 }
@@ -402,6 +405,15 @@ final endOfLifeActivitiesProvider = Provider<List<String>>((ref) {
   );
 });
 
+final assemblyprocesses = Provider<List<String>>((ref) {
+  final asyncMeta = ref.watch(metaOptionsProvider);
+  return asyncMeta.when(
+    data: (meta) => meta.assemblyProcesses,
+    loading: () => [],
+    error: (_, __) => [],
+  );
+});
+
 
 
 final classOptionsProvider = Provider.family<List<String>, String>((ref, vehicle) {
@@ -447,6 +459,7 @@ class EmissionResults {
   final double transport;
   final double machining;
   final double fugitive;
+  final double productionTransport;
   final double usageCycle;
   final double endofLife;
 
@@ -455,6 +468,7 @@ class EmissionResults {
     this.transport = 0,
     this.machining = 0,
     this.fugitive = 0,
+    this.productionTransport = 0,
     this.usageCycle = 0,
     this.endofLife = 0,
   });
@@ -465,6 +479,7 @@ class EmissionResults {
     double? transport,
     double? machining,
     double? fugitive,
+    double? production_transport,
     double? usageCycle,
     double? endofLife,
   }) {
@@ -473,13 +488,14 @@ class EmissionResults {
       transport: transport ?? this.transport,
       machining: machining ?? this.machining,
       fugitive: fugitive ?? this.fugitive,
+      productionTransport: production_transport ?? this.productionTransport,
       usageCycle: usageCycle ?? this.usageCycle,
       endofLife: endofLife ?? this.endofLife,
     );
   }
 
   // Total of all emissions
-  double get total => material + transport + machining + fugitive + usageCycle + endofLife;
+  double get total => material + transport + machining + fugitive + productionTransport + usageCycle + endofLife;
 }
 
 final emissionCalculatorProvider = StateNotifierProvider.family<
@@ -500,12 +516,15 @@ final convertedEmissionsProvider =
   final usageCycleAlloc = ref.watch(usageCycleAllocationSumProvider(productId));
   final endOfLifeAlloc = ref.watch(endOfLifeAllocationSumProvider(productId));
 
+  
+
 
   return EmissionResults(
     material: base.material * (materialAlloc / 100) * factor,
     transport: base.transport * (transportAlloc / 100) * factor,
     machining: base.machining * (machiningAlloc / 100) * factor,
     fugitive: base.fugitive * (fugitiveAlloc / 100) * factor,
+    productionTransport: base.productionTransport * (fugitiveAlloc/100) * factor,
     usageCycle: base.usageCycle * (usageCycleAlloc / 100) * factor,
     endofLife: base.endofLife * (endOfLifeAlloc / 100) * factor,
   );
@@ -549,6 +568,15 @@ class EmissionCalculator extends StateNotifier<EmissionResults> {
         "GHG": "ghg_name",
         "Total Charge (kg)": "total_charged_amount_kg",
         "Remaining Charge (kg)": "current_charge_amount_kg",
+      }
+    },
+    'production_transport' : {
+      'endpoint' : 'http://127.0.0.1:8000/calculate/type_here',
+      'apiKeys': {
+        "Vehicle": "vehicle_type",
+        "Class": "transport_type",
+        "Distance (km)": "distance_km",
+        "Mass (kg)": "mass_kg", 
       }
     },
     'usage_cycle': {
@@ -649,6 +677,9 @@ Future<void> calculate(String featureType, List<RowFormat> rows) async {
       break;
     case 'fugitive':
       state = state.copyWith(fugitive: subtotal);
+      break;
+    case 'production_transport':
+      state = state.copyWith(production_transport: subtotal);
       break;
     case 'usage_cycle':
       state = state.copyWith(usageCycle: subtotal);
@@ -991,7 +1022,7 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
             materials: [''],
             countries: [''],
             masses: [''],
-            materialAllocationValues: ['100'], // NEW
+            materialAllocationValues: [''], // NEW
           ),
         );
 
@@ -1000,7 +1031,7 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
       materials: [...state.materials, ''],
       countries: [...state.countries, ''],
       masses: [...state.masses, ''],
-      materialAllocationValues: [...state.materialAllocationValues, '100'],
+      materialAllocationValues: [...state.materialAllocationValues, ''],
     );
   }
 
@@ -1399,6 +1430,123 @@ final fugitiveAllocationSumProvider = Provider.family<double, String>((ref, prod
   final table = ref.watch(fugitiveLeaksTableProvider(productID));
 
   return table.fugitiveAllocationValues
+      .map(_toDouble)
+      .fold(0.0, (a, b) => a + b);
+});
+
+// -----------------PRODUCTION TRANSPORT--------
+class ProductionTransportTableState {
+  final List<String?> vehicles;
+  final List<String?> classes;
+  final List<String?> distances;
+  final List<String?> masses;
+  final List<String?> transportAllocationValues; // NEW COLUMN
+
+  ProductionTransportTableState({
+    required this.vehicles,
+    required this.classes,
+    required this.distances,
+    required this.masses,
+    required this.transportAllocationValues,
+  });
+
+  ProductionTransportTableState copyWith({
+    List<String?>? vehicles,
+    List<String?>? classes,
+    List<String?>? distances,
+    List<String?>? masses,
+    List<String?>? transportAllocationValues,
+  }) {
+    return ProductionTransportTableState(
+      vehicles: vehicles ?? this.vehicles,
+      classes: classes ?? this.classes,
+      distances: distances ?? this.distances,
+      masses: masses ?? this.masses,
+      transportAllocationValues: transportAllocationValues ?? this.transportAllocationValues,
+    );
+  }
+}
+
+class ProductionTransportTableNotifier extends StateNotifier<ProductionTransportTableState> {
+  ProductionTransportTableNotifier()
+      : super(
+          ProductionTransportTableState(
+            vehicles: [''],
+            classes: [''],
+            distances: [''],
+            masses: [''], 
+            transportAllocationValues: [''], // NEW
+          ),
+        );
+
+  void addRow() {
+    state = state.copyWith(
+      vehicles: [...state.vehicles, ''],
+      classes: [...state.classes, ''],
+      distances: [...state.distances, ''],
+      masses: [...state.masses, ''],
+      transportAllocationValues: [...state.transportAllocationValues, ''],
+    );
+  }
+
+  void removeRow() {
+    if (state.vehicles.length > 1) {
+      state = state.copyWith(
+        vehicles: state.vehicles.sublist(0, state.vehicles.length - 1),
+        classes: state.classes.sublist(0, state.classes.length - 1),
+        distances: state.distances.sublist(0, state.distances.length - 1),
+        masses: state.masses.sublist(0, state.masses.length - 1), 
+        transportAllocationValues: state.transportAllocationValues.sublist(0, state.transportAllocationValues.length - 1),
+      );
+    }
+  }
+
+  void updateCell({
+    required int row,
+    required String column,
+    required String? value,
+  }) {
+    final vehicles = [...state.vehicles];
+    final classes = [...state.classes];
+    final distances = [...state.distances];
+    final masses = [...state.masses];
+    final transportAllocationValues = [...state.transportAllocationValues];
+
+    switch (column) {
+      case 'Vehicle':
+        vehicles[row] = value;
+        break;
+      case 'Class':
+        classes[row] = value;
+        break;
+      case 'Distance (km)':
+        distances[row] = value;
+        break;
+      case 'Mass (kg)':
+        masses[row] = value;
+        break;
+      case 'Allocation Value':
+        transportAllocationValues[row] = value;
+        break;
+    }
+
+    state = state.copyWith(
+      vehicles: vehicles,
+      classes: classes,
+      distances: distances,
+      masses: masses,
+      transportAllocationValues: transportAllocationValues,
+    );
+  }
+}
+
+final productionTransportTableProvider =
+    StateNotifierProvider.family<ProductionTransportTableNotifier, ProductionTransportTableState, String>(
+        (ref, productID) => ProductionTransportTableNotifier());
+
+final productionTransportTableAllocationSumProvider = Provider.family<double, String>((ref, productID) {
+  final table = ref.watch(upstreamTransportTableProvider(productID));
+  return table.transportAllocationValues
       .map(_toDouble)
       .fold(0.0, (a, b) => a + b);
 });

@@ -24,6 +24,9 @@ class DebugPage extends ConsumerWidget {
     final leaksState = ref.watch(fugitiveLeaksTableProvider(productID));
     final leaksNotifier = ref.read(fugitiveLeaksTableProvider(productID).notifier);
 
+    final productionTransportState = ref.watch(productionTransportTableProvider(productID));
+    final ProductionTransportNotifier = ref.watch(productionTransportTableProvider(productID).notifier);
+
     final usageCycleState = ref.watch(usageCycleTableProvider(productID));
     final usageCycleNotifier = ref.read(usageCycleTableProvider(productID).notifier);
 
@@ -35,7 +38,7 @@ class DebugPage extends ConsumerWidget {
           // -------------------- MATERIAL ACQUISITION --------------------
           Labels(
             title:
-                "Material Acquisition (${materialState.materials.length} rows)",
+                "Material Acquisition",
             color: Apptheme.textclrdark,
           ),
           const SizedBox(height: 10),
@@ -44,7 +47,7 @@ class DebugPage extends ConsumerWidget {
 
           // -------------------- UPSTREAM TRANSPORT --------------------
           Labels(
-            title: "Upstream Transport (${upstreamTransportState.vehicles.length} rows)",
+            title: "Upstream Transport",
             color: Apptheme.textclrdark,
           ),
           const SizedBox(height: 10),
@@ -53,7 +56,7 @@ class DebugPage extends ConsumerWidget {
 
           // -------------------- MACHINING --------------------
           Labels(
-            title: "Machining (${machiningState.machines.length} rows)",
+            title: "Machining",
             color: Apptheme.textclrdark,
           ),
           const SizedBox(height: 10),
@@ -62,12 +65,23 @@ class DebugPage extends ConsumerWidget {
 
           // -------------------- FUGITIVE LEAKS --------------------
           Labels(
-            title: "Fugitive Leaks (${leaksState.ghg.length} rows)",
+            title: "Fugitive Leaks",
             color: Apptheme.textclrdark,
           ),
           const SizedBox(height: 10),
           _buildFugitiveLeaksTable(leaksState, leaksNotifier),
           const SizedBox(height: 30),
+
+          // -------------------- PRODUCTION TRANSPORT --------------------
+          Labels(
+            title: "Production Transport",
+            color: Apptheme.textclrdark,
+          ),
+          const SizedBox(height: 10),
+          _buildProductionTransportTable(productionTransportState, ProductionTransportNotifier),
+          const SizedBox(height: 30),
+
+          //
 
           // -------------------- USAGE CYCLE --------------------
           Labels(
@@ -264,6 +278,53 @@ Widget _buildFugitiveLeaksTable(FugitiveLeaksTableState s, FugitiveLeaksTableNot
   );
 }
 
+// ---------------------PRODUCTION TRANSPORT -----------------
+Widget _buildProductionTransportTable(ProductionTransportTableState s, ProductionTransportTableNotifier n) {
+  final rowCount = s.vehicles.length;
+
+  return Table(
+    defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
+    columnWidths: const {
+      0: FixedColumnWidth(200),
+      1: FixedColumnWidth(120),
+      2: FixedColumnWidth(120),
+      3: FixedColumnWidth(120),
+      4: FlexColumnWidth(),
+      5: FixedColumnWidth(70),
+    },
+    children: [
+      TableRow(
+        decoration: BoxDecoration(
+          color: Apptheme.widgettertiaryclr,
+        ),
+        children: const [
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Vehicle", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Class", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Distance", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Mass", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Allocation Value", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Action", color: Apptheme.textclrdark, fontsize: 16)),
+        ],
+      ),
+
+      for (int i = 0; i < rowCount; i++)
+        TableRow(
+          children: [
+            _staticCell(s.vehicles[i]),
+            _staticCell(s.classes[i]),
+            _staticCell(s.distances[i]),
+            _staticCell(s.masses[i]),
+            _editableCell(
+              text: s.transportAllocationValues[i],
+              onChanged: (v) => n.updateCell(row: i, column: 'Allocation Value', value: v),
+            ),
+            _checkCell(),
+          ],
+        ),
+    ],
+  );
+}
+
 // -------------------- USAGE CYCLE TABLE --------------------
 Widget _buildUsageCycleTable(UsageCycleState s, UsageCycleNotifier n) {
   final rowCount = s.usageFrequencies.length;
@@ -332,7 +393,7 @@ Widget _editableCell({
   return Padding(
     padding: const EdgeInsets.only(top: 2),
     child: TextFormField(
-      initialValue: text ?? '100', // default to 100 if null
+      initialValue: text ?? '100',
       keyboardType: TextInputType.number,
       style: const TextStyle(fontSize: 15, color: Apptheme.textclrdark),
       decoration: const InputDecoration(

@@ -3,14 +3,17 @@ from pydantic import BaseModel #input quality checker which makes sure no requir
 import openpyxl #bridge that lets Python understand and extract data from Excel spreadsheets.
 import json #used to store text files like dictionaries or lists
 import os #lets python interact with operation systems. e.g.windows,macOS,Linux
+import tempfile
 from typing import List, Dict, Optional, Any
 from geopy.distance import geodesic #used to calculate the shortest distance btw two point on the earth, using latitude and longitude
 from geopy.geocoders import Nominatim #converting a place name like "Germany" into latitude and longtiude coordinates
 import requests
-import re 
+import re
 import hashlib # for hashing passwords
 from fastapi import Request
 from fastapi.middleware.cors import CORSMiddleware
+import portalocker
+from openpyxl import load_workbook
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # folder of trial.py (SPHERE)
 USERS_FILE = os.path.join(BASE_DIR, "users.xlsx")
@@ -131,6 +134,23 @@ custom_emission_factors = load_custom_emission_factors()
 
 # Open the Excel workbook
 EXCEL_PATH = os.path.join(os.path.dirname(__file__), "Emission Data.xlsx")
+
+LOCK_PATH = EXCEL_PATH + ".lock"
+
+def _atomic_save_workbook(wb, excel_path: str):
+    folder = os.path.dirname(excel_path)
+    fd, tmp_path = tempfile.mkstemp(prefix="excel_", suffix=".xlsx", dir=folder)
+    os.close(fd)
+    try:
+        wb.save(tmp_path)
+        os.replace(tmp_path, excel_path)
+    finally:
+        if os.path.exists(tmp_path):
+            try:
+                os.remove(tmp_path)
+            except:
+                pass
+
 book = openpyxl.load_workbook(EXCEL_PATH, data_only=True)
 
 # Load each sheet that SPHERE uses
@@ -157,6 +177,7 @@ sheet20 = book['Rail']
 sheet21 = book['Ship']
 sheet22 = book['Usage']
 sheet23 = book['End-of-Life']
+sheet24 = book['Assembly']
 
 # Helper functions to read values from Excel columns
 def extract_selection_list(cells):
@@ -329,6 +350,9 @@ Usage_services_ef_cells    = sheet22["J2":"J5"]
 
 End_of_Life_Activities_cells  = sheet23["A2":"A5"]
 End_of_Life_ef_cells          = sheet23["B2":"B5"]
+
+Assembly_modes_cells  = sheet24["A2":"A999"]
+Assembly_ef_cells     = sheet24["B2":"B999"]
 # turn into lists
 country_list      = extract_selection_list(country_cells)
 distance_list     = extract_list(distance_cells)
@@ -446,6 +470,9 @@ Usage_services_ef = extract_selection_list(Usage_services_ef_cells)
 
 End_of_Life_Activities = extract_selection_list(End_of_Life_Activities_cells)
 End_of_Life_ef         = extract_selection_list(End_of_Life_ef_cells)
+
+Assembly_modes  = extract_selection_list(Assembly_modes_cells)
+Assembly_ef     = extract_selection_list(Assembly_ef_cells)
 
 # --- LOOKUP DICTIONARIES FOR FAST CALCULATION ---
 van_lookup = dict(zip(van_mode_list, van_emission_list))
@@ -722,6 +749,12 @@ class MaterialEmissionReq(BaseModel):
     material: str  #e.g.Steel,Aluminum,etc.
     country: str   #e.g.Singapore,Malaysia,China,etc.
     mass_kg: float #mass from flutter ui
+
+class MachineEmissionsReq(BaseModel):
+    machine_model: str
+    country: str
+    time_operated_hr: float
+
 class MachineEmissionsAdvancedReq(BaseModel):
     machine_model: str
     country: str
@@ -812,6 +845,16 @@ class MaterialEmissionAdvancedReq(BaseModel):
     custom_ef_of_material: Optional[float] = None          # EF for recycled material (kgCO2e/kg)
     custom_internal_ef: Optional[float] = None             # EF for in-house recycling (kgCO2e/kg)
 
+class ExcelUpdateCellRequest(BaseModel):
+    sheet: str
+    row: int
+    col: int
+    value: Any
+
+class ExcelUpdateCellsRequest(BaseModel):
+    sheet: str
+    updates: List[ExcelUpdateCellRequest]
+
 
 # --------- 6. FASTAPI APP + ENDPOINTS ---------------------------------------#
 
@@ -896,6 +939,7 @@ def get_options():
       - Machine Types
       - Transport types
       - Usage Categories
+      - Assembly
     """
     return {
         "countries": country_list,
@@ -941,7 +985,9 @@ def get_options():
         "Usage_services_ef": Usage_services_ef,
         "End_of_Life_Activities": End_of_Life_Activities,
         "End_of_Life_ef": End_of_Life_ef,
-        "Machine_brands": Machine_brands
+        "Machine_brands": Machine_brands,
+        "Assembly_modes": Assembly_modes,
+        "Assembly_ef"   : Assembly_ef
     }
 
 @app.get("/meta/transport/config")
@@ -1207,6 +1253,39 @@ def calculate_material_emissions_advanced(req: MaterialEmissionAdvancedReq):
         "allocated_emissions_per_material": allocated_emissions_per_material
     }
 
+@app.post("/excel/update_cell")
+def excel_update_cell(req: ExcelUpdateCellRequest):
+    if req.row < 1 or req.col < 1:
+        raise HTTPException(status_code=400, detail="row/col must be >= 1")
+
+    with portalocker.Lock(LOCK_PATH, timeout=10):
+        wb = load_workbook(EXCEL_PATH, data_only=False)  # IMPORTANT for writing
+        if req.sheet not in wb.sheetnames:
+            raise HTTPException(status_code=400, detail=f"Sheet '{req.sheet}' not found")
+        ws = wb[req.sheet]
+        ws.cell(row=req.row, column=req.col).value = req.value
+        _atomic_save_workbook(wb, EXCEL_PATH)
+
+    return {"status": "ok"}
+
+@app.post("/excel/update_cells")
+def excel_update_cells(req: ExcelUpdateCellsRequest):
+    with portalocker.Lock(LOCK_PATH, timeout=10):
+        wb = load_workbook(EXCEL_PATH, data_only=False)
+        if req.sheet not in wb.sheetnames:
+            raise HTTPException(status_code=400, detail=f"Sheet '{req.sheet}' not found")
+        ws = wb[req.sheet]
+
+        for u in req.updates:
+            if u.sheet != req.sheet:
+                raise HTTPException(status_code=400, detail="All updates must be in the same sheet")
+            if u.row < 1 or u.col < 1:
+                raise HTTPException(status_code=400, detail="row/col must be >= 1")
+            ws.cell(row=u.row, column=u.col).value = u.value
+
+        _atomic_save_workbook(wb, EXCEL_PATH)
+
+    return {"status": "ok", "count": len(req.updates)}
 
 @app.get("/meta/machining/mazak")
 def get_mazak_list():
@@ -1220,7 +1299,90 @@ def get_countries():
         "countries": country_list
     }
 
+@app.post("/calculate/machining_advanced")
+def calculate_machine(req:MachineEmissionsAdvancedReq):
+    if req.country not in country_list:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Country '{req.country}' not found in grid intensity list."
+        )
+    cidx = country_list.index(req.country)
+    grid_intensity = float(electricity_list[cidx])  # kg CO2e per kWh 
 
+    # 2) Get Mazak main spindle power from selected machine
+    if req.machine_model not in Mazak_machine_model:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Mazak machine '{req.machine_model}' not found."
+        )
+    midx = Mazak_machine_model.index(req.machine_model)
+    main_spindle_kw = float(Mazak_main_spindle[midx])  # kW
+    secondary_spindle_kw = float(Mazak_secondary_spindle[midx])
+    second_spindle_kw = float(Mazak_second_spindle[midx])
+
+    t_main = float(req.time_operated_main_hr)
+    t_second = float(req.time_operated_second_hr)
+    t_secondary = float(req.time_operated_secondary_hr)
+
+    if t_main < 0 or t_second < 0 or t_secondary < 0:
+        raise HTTPException(status_code=400, detail="Time operated cannot be negative.")
+
+    emissions_main = main_spindle_kw * grid_intensity * t_main
+    emissions_second = second_spindle_kw * grid_intensity * t_second
+    emissions_secondary = secondary_spindle_kw * grid_intensity * t_secondary
+
+    total_emissions = emissions_main + emissions_second + emissions_secondary
+
+    return {
+        "country": req.country,
+        "machine_model": req.machine_model,
+        "grid_intensity": grid_intensity,
+
+        "power_drawed_main_kw": main_spindle_kw,
+        "power_drawed_second_kw": second_spindle_kw,
+        "power_drawed_secondary_kw": secondary_spindle_kw,
+
+        "time_operated_main_hr": t_main,
+        "time_operated_second_hr": t_second,
+        "time_operated_secondary_hr": t_secondary,
+
+        "emissions_main": emissions_main,
+        "emissions_second": emissions_second,
+        "emissions_secondary": emissions_secondary,
+        "total_emissions": total_emissions
+    }
+
+@app.post("/calculate/machine_power_emission")
+def calculate_machine_power_emission(req:MachineEmissionsReq):
+    if req.country not in country_list:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Country '{req.country}' not found in grid intensity list."
+        )
+    cidx = country_list.index(req.country)
+    grid_intensity = float(electricity_list[cidx])  # kg CO2e per kWh 
+
+    # 2) Get Mazak main spindle power from selected machine
+    if req.machine_model not in Mazak_machine_model:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Mazak machine '{req.machine_model}' not found."
+        )
+    midx = Mazak_machine_model.index(req.machine_model)
+    main_spindle_kw = float(Mazak_main_spindle[midx])  # kW
+
+    power_drawed = main_spindle_kw                 # only main spindle for now
+    time_operated = req.time_operated_hr          # hours
+    emissions = power_drawed * grid_intensity * time_operated
+
+    return {
+        "country": req.country,
+        "machine_model": req.machine_model,
+        "time_operated_hr": time_operated,
+        "power_drawed_kw": power_drawed,
+        "grid_intensity": grid_intensity,
+        "emissions": emissions,       # kg CO2e
+    }
 
     
 @app.post("/calculate/transport_table") #for tables

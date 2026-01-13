@@ -1,72 +1,44 @@
 import React from "react";
 import "./SignIn.css";
 
-export default function SignIn() {
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    // TODO: connect to your backend later
-    // const email = e.target.email.value;
-    // const password = e.target.password.value;
-
-    alert("Sign in clicked (connect backend later)");
-  };
-
+function SignIn() {
   return (
-    <div className="signin">
-      <div className="signin__left">
-        <h1 className="signin__title">Sign in</h1>
+    <div className="signin-page">
+      {/* LEFT PANEL */}
+      <div className="signin-left">
+        <div className="signin-form-wrap">
+          <h1>Sign in</h1>
 
-        <form className="signin__form" onSubmit={handleSubmit}>
-          <label className="signin__label" htmlFor="email">
-            Username or email address
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="text"
-            className="signin__input"
-            placeholder="Username or email address"
-            required
-          />
+          <form className="signin-form">
+            <input type="text" placeholder="Username or email address" />
+            <input type="password" placeholder="Password" />
+            <button type="submit">Sign in</button>
+          </form>
 
-          <label className="signin__label" htmlFor="password">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            className="signin__input"
-            placeholder="Password"
-            required
-          />
-
-          <button type="submit" className="signin__button">
-            Sign in
-          </button>
-
-          <div className="signin__footer">
-            <button
-              type="button"
-              className="signin__link"
-              onClick={() => alert("Add your forgot password page later")}
-            >
-              Forgotten password?
-            </button>
-
-            <button
-              type="button"
-              className="signin__link"
-              onClick={() => alert("Add your create account page later")}
-            >
-              Create account
-            </button>
+          <div className="signin-footer">
+            <a href="/">Forgotten password?</a>
+            <a href="/">Create account</a>
           </div>
-        </form>
+        </div>
       </div>
 
-      <div className="signin__right" aria-hidden="true" />
+      {/* CURVED DIVIDER */}
+      <div className="signin-curve">
+        <svg viewBox="0 0 120 1000" preserveAspectRatio="none">
+          <path
+            d="M120,0 C20,250 20,750 120,1000 L0,1000 L0,0 Z"
+            fill="#ffffff"
+          />
+        </svg>
+      </div>
+
+      {/* RIGHT IMAGE */}
+      <div
+        className="signin-right"
+        style={{ backgroundImage: "url(/images/Leaves.png)" }}
+      />
     </div>
   );
 }
+
+export default SignIn;

@@ -54,13 +54,20 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
 
     // ------------------- Page 1 Widgets (Upstream) -------------------
     final List<Widget> widgetofpage1 = [
-      //--ROW 1: Material Acquisition--
+      
+      Labels(
+        title: 'Primary Inputs',
+        color: Apptheme.textclrdark,
+        toppadding: 0,
+        fontsize: 22,
+      ),
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Labels(
-            title: 'Material Acquisition | ${emissions.material.toStringAsFixed(2)} ${ref.watch(unitLabelProvider)} CO₂',
+            title: 'Material Input | ${emissions.material.toStringAsFixed(2)} ${ref.watch(unitLabelProvider)} CO₂',
             color: Apptheme.textclrdark,
+            fontsize: 17,
           ),
 
           Row(
@@ -72,7 +79,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
                   onTap: () => showAdvancedMaterials(context),
                   child: Icon(Icons.tune, 
                     color: Apptheme.iconsdark,
-                    size: 20,
+                    size: 17,
                     ),
                 ),
               ),
@@ -86,6 +93,13 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
       ),
       MaterialAttributesMenu(productID: widget.productID),
 
+
+      Labels(
+        title: 'Secondary Inputs',
+        color: Apptheme.textclrdark,
+        toppadding: 30,
+        fontsize: 22,
+      ),
       //--ROW 2: Upstream Transportation--
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -93,11 +107,13 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
           Labels(
             title: 'Upstream Transportation | ${emissions.transport.toStringAsFixed(2)} ${ref.watch(unitLabelProvider)} CO₂',
             color: Apptheme.textclrdark,
+            fontsize: 17,
           ),
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: InfoIconPopupDark(
               text: 'Transporting of materials purchased from it\'s origin to the production facility\'s gate.',
+              
             ),
           ),
         ],
@@ -107,6 +123,12 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
 
     // ------------------- Pages 2 & 3 remain unchanged -------------------
     final List<Widget> widgetofpage2 = [
+      Labels(
+        title: 'Primary Processes',
+        color: Apptheme.textclrdark,
+        toppadding: 0,
+        fontsize: 22,
+      ),
       //--ROW 1: Machining--
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -114,6 +136,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
           Labels(
             title: 'Machining | ${emissions.machining.toStringAsFixed(2)} ${ref.watch(unitLabelProvider)} CO₂',
             color: Apptheme.textclrdark,
+            fontsize: 17,
           ),
           Padding(
             padding: const EdgeInsets.only(right: 10),
@@ -125,6 +148,14 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
       ),
       MachiningAttributesMenu(productID: widget.productID),
 
+
+      Labels(
+        title: 'Secondary Processes',
+        color: Apptheme.textclrdark,
+        toppadding: 30,
+        fontsize: 22,
+      ),
+
       //--ROW 2: Fugitive leaks--
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -132,6 +163,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
           Labels(
             title: 'Fugitive leaks | ${emissions.fugitive.toStringAsFixed(2)} ${ref.watch(unitLabelProvider)} CO₂',
             color: Apptheme.textclrdark,
+            fontsize: 17,
           ),
           Padding(
             padding: const EdgeInsets.only(right: 10),
@@ -141,7 +173,26 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
           ),
         ],
       ),
-      FugitiveLeaksAttributesMenu(productID: widget.productID)
+      FugitiveLeaksAttributesMenu(productID: widget.productID),
+
+      //-Row 3: Production Transport --
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Labels(
+            title: 'Production Transportation | ${emissions.fugitive.toStringAsFixed(2)} ${ref.watch(unitLabelProvider)} CO₂',
+            color: Apptheme.textclrdark,
+            fontsize: 17,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: InfoIconPopupDark(
+              text: 'Greenhouse Gases used by equipments as part of their functioning needs released into the atmosphere due to leak, damage or wear',
+            ),
+          ),
+        ],
+      ),
+      ProductionTransportAttributesMenu(productID: widget.productID)
     ];
 
     final List<Widget> widgetofpage3 = [
@@ -336,7 +387,7 @@ class MaterialAttributesMenu extends ConsumerWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildColumn(
+                    buildColumn(
                       title: 'Material',
                       values: tableState.materials,
                       items: materials,
@@ -344,7 +395,7 @@ class MaterialAttributesMenu extends ConsumerWidget {
                           tableNotifier.updateCell(row: row, column: 'Material', value: value),
                     ),
                     const SizedBox(width: 10),
-                    _buildColumn(
+                    buildColumn(
                       title: 'Country',
                       values: tableState.countries,
                       items: countries,
@@ -352,7 +403,7 @@ class MaterialAttributesMenu extends ConsumerWidget {
                           tableNotifier.updateCell(row: row, column: 'Country', value: value),
                     ),
                     const SizedBox(width: 10),
-                    _buildColumn(
+                    buildColumn(
                       title: 'Mass (kg)',
                       values: tableState.masses,
                       isTextField: true,
@@ -447,7 +498,7 @@ class UpstreamTransportAttributesMenu extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildColumn(
+                buildColumn(
                   title: 'Vehicle',
                   values: tableState.vehicles,
                   items: vehicles,
@@ -455,7 +506,7 @@ class UpstreamTransportAttributesMenu extends ConsumerWidget {
                       tableNotifier.updateCell(row: row, column: 'Vehicle', value: value),
                 ),
                 const SizedBox(width: 10),
-                _buildDynamicColumn(
+                buildDynamicColumn(
                   title: 'Class',
                   values: tableState.classes,
                   itemsPerRow: List.generate(tableState.vehicles.length, (i) {
@@ -466,7 +517,7 @@ class UpstreamTransportAttributesMenu extends ConsumerWidget {
                       tableNotifier.updateCell(row: row, column: 'Class', value: value),
                 ),
                 const SizedBox(width: 10),
-                _buildColumn(
+                buildColumn(
                   title: 'Distance (km)',
                   values: tableState.distances,
                   isTextField: true,
@@ -474,7 +525,7 @@ class UpstreamTransportAttributesMenu extends ConsumerWidget {
                       tableNotifier.updateCell(row: row, column: 'Distance (km)', value: value),
                 ),
                 const SizedBox(width: 10),
-                _buildColumn(
+                buildColumn(
                   title: 'Mass (kg)',
                   values: tableState.masses,
                   isTextField: true,
@@ -558,7 +609,7 @@ class MachiningAttributesMenu extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildColumn(
+                buildColumn(
                   title: 'Machine',
                   values: tableState.machines,
                   items: machines,
@@ -566,7 +617,7 @@ class MachiningAttributesMenu extends ConsumerWidget {
                       tableNotifier.updateCell(row: row, column: 'Machine', value: value),
                 ),
                 const SizedBox(width: 10),
-                _buildColumn(
+                buildColumn(
                   title: 'Country',
                   values: tableState.countries,
                   items: countries,
@@ -574,7 +625,7 @@ class MachiningAttributesMenu extends ConsumerWidget {
                       tableNotifier.updateCell(row: row, column: 'Country', value: value),
                 ),
                 const SizedBox(width: 10),
-                _buildColumn(
+                buildColumn(
                   title: 'Time of operation (hr)',
                   values: tableState.times,
                   isTextField: true,
@@ -654,7 +705,7 @@ class FugitiveLeaksAttributesMenu extends ConsumerWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildColumn(
+                buildColumn(
                   title: 'GHG',
                   values: tableState.ghg,
                 items: ghgList,
@@ -662,7 +713,7 @@ class FugitiveLeaksAttributesMenu extends ConsumerWidget {
                     tableNotifier.updateCell(row: row, column: 'GHG', value: value),
               ),
               const SizedBox(width: 10),
-              _buildColumn(
+              buildColumn(
                 title: 'Total Charge (kg)',
                 values: tableState.totalCharge,
                 isTextField: true,
@@ -670,7 +721,7 @@ class FugitiveLeaksAttributesMenu extends ConsumerWidget {
                     tableNotifier.updateCell(row: row, column: 'Total', value: value),
               ),
               const SizedBox(width: 10),
-              _buildColumn(
+              buildColumn(
                 title: 'Remaining Charge (kg)',
                 values: tableState.remainingCharge,
                 isTextField: true,
@@ -717,6 +768,118 @@ class FugitiveLeaksAttributesMenu extends ConsumerWidget {
   }
 }
 
+class ProductionTransportAttributesMenu extends ConsumerWidget {
+  final String productID;
+  const ProductionTransportAttributesMenu({super.key,required this.productID});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tableState = ref.watch(productionTransportTableProvider(productID));
+    final tableNotifier = ref.read(productionTransportTableProvider(productID).notifier);
+
+    final vehicles = ref.watch(transportTypesProvider);
+
+    List<RowFormat> rows = List.generate(
+      tableState.vehicles.length,
+      (i) => RowFormat(
+        columnTitles: ['Vehicle', 'Class', 'Distance (km)', 'Mass (kg)'],
+        isTextFieldColumn: [false, false, true, true],
+        selections: [
+          tableState.vehicles[i],
+          tableState.classes[i],
+          tableState.distances[i],
+          tableState.masses[i],
+        ],
+      ),
+    );
+
+    return Column(
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                buildColumn(
+                  title: 'Vehicle',
+                  values: tableState.vehicles,
+                  items: vehicles,
+                  onChanged: (row, value) =>
+                      tableNotifier.updateCell(row: row, column: 'Vehicle', value: value),
+                ),
+                const SizedBox(width: 10),
+                buildDynamicColumn(
+                  title: 'Class',
+                  values: tableState.classes,
+                  itemsPerRow: List.generate(tableState.vehicles.length, (i) {
+                    final selectedVehicle = tableState.vehicles[i] ?? '';
+                    return ref.watch(classOptionsProvider(selectedVehicle));
+                  }),
+                  onChanged: (row, value) =>
+                      tableNotifier.updateCell(row: row, column: 'Class', value: value),
+                ),
+                const SizedBox(width: 10),
+                buildColumn(
+                  title: 'Distance (km)',
+                  values: tableState.distances,
+                  isTextField: true,
+                  onChanged: (row, value) =>
+                      tableNotifier.updateCell(row: row, column: 'Distance (km)', value: value),
+                ),
+                const SizedBox(width: 10),
+                buildColumn(
+                  title: 'Mass (kg)',
+                  values: tableState.masses,
+                  isTextField: true,
+                  onChanged: (row, value) =>
+                      tableNotifier.updateCell(row: row, column: 'Mass (kg)', value: value),
+                ),
+              ],
+            ),
+          ),
+        ),
+        Row(
+          children: [
+            SizedBox(width: 20),
+            SizedBox(
+              width: 200,
+              height: 35,
+              child: ElevatedButton(
+                onPressed: () async {
+                  await ref.read(emissionCalculatorProvider(productID).notifier)
+                      .calculate('upstream_transport', rows);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Apptheme.widgettertiaryclr,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+                child: const Labelsinbuttons(
+                  title: 'Calculate Emissions',
+                  color: Apptheme.textclrdark,
+                  fontsize: 15,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: tableNotifier.addRow,
+            ),
+            IconButton(
+              icon: const Icon(Icons.remove),
+              onPressed: tableNotifier.removeRow,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+
 class UsageCycleAttributesMenu extends ConsumerWidget {
   final String productID;
   const UsageCycleAttributesMenu({super.key, required this.productID});
@@ -762,7 +925,7 @@ class UsageCycleAttributesMenu extends ConsumerWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildColumn(
+                    buildColumn(
                       title: 'Category',
                       values: tableState.categories,
                       items: usageCycleCategories,
@@ -770,7 +933,7 @@ class UsageCycleAttributesMenu extends ConsumerWidget {
                           tableNotifier.updateCell(row: row, column: 'Category', value: value),
                     ),
                     const SizedBox(width: 10),
-                    _buildColumn(
+                    buildColumn(
                       title: 'Product',
                       values: tableState.productTypes,
                       items: usageCycleElectronics,
@@ -778,7 +941,7 @@ class UsageCycleAttributesMenu extends ConsumerWidget {
                           tableNotifier.updateCell(row: row, column: 'Product', value: value),
                     ),
                     const SizedBox(width: 10),
-                    _buildColumn(
+                    buildColumn(
                       title: 'Usage Frequency',
                       values: tableState.usageFrequencies,
                       isTextField: true,
@@ -876,7 +1039,7 @@ class EndofLifeAttributesMenu extends ConsumerWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildColumn(
+                    buildColumn(
                       title: 'End of Life Method',
                       values: tableState.endOfLifeOptions,
                       items: endOfLifeMethods,
@@ -884,7 +1047,7 @@ class EndofLifeAttributesMenu extends ConsumerWidget {
                           tableNotifier.updateCell(row: row, column: 'End of Life Method', value: value),
                     ),
                     const SizedBox(width: 10),
-                    _buildColumn(
+                    buildColumn(
                       title: 'Product Mass (kg)',
                       values: tableState.endOfLifeTotalMass,
                       isTextField: true,
@@ -892,7 +1055,7 @@ class EndofLifeAttributesMenu extends ConsumerWidget {
                           tableNotifier.updateCell(row: row, column: 'Product Mass (kg)', value: value),
                     ),
                     const SizedBox(width: 10),
-                    _buildColumn(
+                    buildColumn(
                       title: 'Percentage of Mass (%)',
                       values: tableState.endOfLifePercentage,
                       isTextField: true,
@@ -954,7 +1117,7 @@ class EndofLifeAttributesMenu extends ConsumerWidget {
 }
 
 
-Widget _buildColumn({
+Widget buildColumn({
   required String title,
   required List<String?> values,
   List<String>? items,
@@ -1032,7 +1195,7 @@ Widget _buildColumn({
   );
 }
 
-Widget _buildDynamicColumn({
+Widget buildDynamicColumn({
   required String title,
   required List<String?> values,
   required List<List<String>> itemsPerRow,

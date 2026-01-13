@@ -16,24 +16,24 @@ class Dynamichome extends ConsumerStatefulWidget {
 }
 
 class _DynamichomeState extends ConsumerState<Dynamichome> {
-  // ------------------------------------------------------------
-  // INIT: set active product ONCE (safe)
-  // ------------------------------------------------------------
   @override
   void initState() {
     super.initState();
+    // Set active product safely after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(activeProductProvider.notifier).state = widget.productName;
+      if (widget.productName != null) {
+        ref.read(activeProductProvider.notifier).state = widget.productName;
+      }
     });
   }
 
-  /// ---------- Reusable input dialog ----------
+  /// ---------- Generic input dialog ----------
   Future<Map<String, String>?> _showInputDialog({
     required BuildContext context,
     required String title,
     required Map<String, TextInputType> fields,
   }) async {
-    final controllers = {for (var key in fields.keys) key: TextEditingController()};
+    final controllers = {for (var k in fields.keys) k: TextEditingController()};
     Map<String, String> result = {};
 
     await showDialog(
@@ -62,9 +62,7 @@ class _DynamichomeState extends ConsumerState<Dynamichome> {
           ),
           ElevatedButton(
             onPressed: () {
-              result = {
-                for (var entry in controllers.entries) entry.key: entry.value.text.trim()
-              };
+              result = {for (var entry in controllers.entries) entry.key: entry.value.text.trim()};
               Navigator.of(dialogContext).pop();
             },
             child: const Text("OK"),
@@ -76,7 +74,7 @@ class _DynamichomeState extends ConsumerState<Dynamichome> {
     return result.values.any((v) => v.isNotEmpty) ? result : null;
   }
 
-  /// ---------- Add Part (Pie Chart) ----------
+  /// ---------- Add a part (Pie Chart) ----------
   Future<void> _addPart(BuildContext context) async {
     final product = ref.read(activeProductProvider);
     final timeline = ref.read(activeTimelineProvider);
@@ -86,10 +84,7 @@ class _DynamichomeState extends ConsumerState<Dynamichome> {
     final res = await _showInputDialog(
       context: context,
       title: "Add Part",
-      fields: {
-        "Part Name": TextInputType.text,
-        "Value": TextInputType.number,
-      },
+      fields: {"Part Name": TextInputType.text, "Value": TextInputType.number},
     );
 
     if (res == null) return;
@@ -102,7 +97,7 @@ class _DynamichomeState extends ConsumerState<Dynamichome> {
     ref.read(pieChartProvider((product: product, timeline: timeline)).notifier).addPart(partName, value);
   }
 
-  /// ---------- Add Date (Line Chart + Timeline) ----------
+  /// ---------- Add date + value (Line Chart + Timeline) ----------
   Future<void> _addDate(BuildContext context) async {
     final product = ref.read(activeProductProvider);
     if (product == null) return;
@@ -132,55 +127,43 @@ class _DynamichomeState extends ConsumerState<Dynamichome> {
     ref.read(activeTimelineProvider.notifier).state = timeline;
   }
 
-  // ------------------------------------------------------------
-  // BUILD (READ ONLY)
-  // ------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
+    // Reset timeline if product changes
     ref.watch(productTimelineResetProvider);
 
     final product = ref.watch(activeProductProvider);
     final activeTimeline = ref.watch(activeTimelineProvider);
 
-    final lineChart = product == null ? null : ref.watch(lineChartProvider(product));
-
+    final lineChart = product != null ? ref.watch(lineChartProvider(product)) : null;
     final pieChart = (product != null && activeTimeline != null)
         ? ref.watch(pieChartProvider((product: product, timeline: activeTimeline)))
         : null;
 
     // Pie chart sections
-    final pieSections = pieChart == null
-        ? <PieChartSectionData>[]
-        : List.generate(
+    final pieSections = pieChart != null
+        ? List.generate(
             pieChart.parts.length,
-            (i) => PieChartSectionData(
-              value: pieChart.values[i],
-              title: pieChart.parts[i],
-            ),
-          );
+            (i) => PieChartSectionData(value: pieChart.values[i], title: pieChart.parts[i]),
+          )
+        : <PieChartSectionData>[];
 
     // Line chart spots
-    final lineSpots = lineChart == null
-        ? <FlSpot>[]
-        : List.generate(
-            lineChart.values.length,
-            (i) => FlSpot(i.toDouble(), lineChart.values[i]),
-          );
+    final lineSpots = lineChart != null
+        ? List.generate(lineChart.values.length, (i) => FlSpot(i.toDouble(), lineChart.values[i]))
+        : <FlSpot>[];
 
-    // ------------------------------------------------------------
-    // UI
-    // ------------------------------------------------------------
     return PrimaryPages(
       backgroundcolor: Apptheme.widgetclrlight,
       childofmainpage: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            // -------- LINE CHART ----------
+            // ---------------- LINE CHART ----------------
             Row(
               children: [
                 const Labels(
-                  title: 'Timeline of Product (WORK IN PROGRESS)',
+                  title: 'Timeline of Product',
                   color: Apptheme.textclrdark,
                 ),
                 const Spacer(),
@@ -196,9 +179,8 @@ class _DynamichomeState extends ConsumerState<Dynamichome> {
                 itemBuilder: (_, index) => ChoiceChip(
                   label: Text(lineChart!.dates[index]),
                   selected: lineChart.dates[index] == activeTimeline,
-                  onSelected: (_) {
-                    ref.read(activeTimelineProvider.notifier).state = lineChart.dates[index];
-                  },
+                  onSelected: (_) =>
+                      ref.read(activeTimelineProvider.notifier).state = lineChart.dates[index],
                 ),
               ),
             ),
@@ -224,11 +206,13 @@ class _DynamichomeState extends ConsumerState<Dynamichome> {
               ),
             ),
 
-            // -------- PIE CHART ----------
+            const SizedBox(height: 16),
+
+            // ---------------- PIE CHART ----------------
             Row(
               children: [
                 const Labels(
-                  title: "Parts Assembly (UNFINISHED)",
+                  title: "Parts Assembly",
                   color: Apptheme.textclrdark,
                 ),
                 const Spacer(),
@@ -251,7 +235,6 @@ class _DynamichomeState extends ConsumerState<Dynamichome> {
               height: 180,
               child: PieChart(PieChartData(sections: pieSections)),
             ),
-
             const SizedBox(height: 16),
           ],
         ),

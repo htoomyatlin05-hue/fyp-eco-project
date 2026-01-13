@@ -89,8 +89,9 @@ class _InfoIconPopupState extends State<InfoIconPopup> {
 
 class InfoIconPopupDark extends StatefulWidget {
   final String text;
+  final double iconSize;
 
-  const InfoIconPopupDark({super.key, required this.text});
+  const InfoIconPopupDark({super.key, required this.text, this.iconSize = 18});
 
   @override
   State<InfoIconPopupDark> createState() => _InfoIconPopupDarkState();
@@ -161,9 +162,10 @@ class _InfoIconPopupDarkState extends State<InfoIconPopupDark> {
     return MouseRegion(
       onEnter: (_) => _showOverlay(),
       onExit: (_) => _removeOverlay(),
-      child: const Icon(
+      child: Icon(
         Icons.info_outline,
         color: Apptheme.iconsdark,
+        size: widget.iconSize,
       ),
     );
   }

@@ -38,5 +38,13 @@
         "sample": "test"
       }
     }
+  },
+  "FYP": {
+    "NEW": {
+      "description": "Mock description",
+      "data": {
+        "sample": "test"
+      }
+    }
   }
 }

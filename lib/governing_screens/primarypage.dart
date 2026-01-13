@@ -5,7 +5,7 @@ import 'package:test_app/design/apptheme/textlayout.dart';
 import 'package:test_app/governing_screens/background_drawer.dart';
 import 'package:test_app/dynamic_pages/main_aboutus.dart';
 import 'package:test_app/dynamic_pages/main_allocation.dart';
-import 'package:test_app/dynamic_pages/main_dynamichome.dart';
+import 'package:test_app/dynamic_pages/main_home.dart';
 import 'package:test_app/dynamic_pages/main_productanlys.dart';
 import 'package:test_app/dynamic_pages/main_sustainabilitynews.dart';
 import 'package:test_app/dynamic_pages/zdebug.dart';

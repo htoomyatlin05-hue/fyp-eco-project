@@ -1172,7 +1172,7 @@ def calculate_material_emissions(req:MaterialEmissionReq): #req: is the name of 
         "materialacq_emission":calculated_emission
     }
 
-@app.post("/calculate/material_emission_advanced")
+@app.post("/calculate/material_emission_recycled")
 def calculate_material_emissions_advanced(req: MaterialEmissionAdvancedReq):
 
     # --- validate country ---
@@ -1196,15 +1196,6 @@ def calculate_material_emissions_advanced(req: MaterialEmissionAdvancedReq):
     except Exception:
         raise HTTPException(status_code=500, detail="Emission factor missing in Data Sheet.")
 
-    # --- normalize RCS: accept 0-1 OR 0-100 ---
-    rcs = float(req.RCS_of_material)
-    if rcs > 1.0:
-        rcs = rcs / 100.0
-    if rcs < 0:
-        rcs = 0.0
-    if rcs > 1:
-        rcs = 1.0
-
     # --- validate masses ---
     total_purchased = float(req.total_material_purchased_kg)
     used = float(req.material_used_kg)
@@ -1223,26 +1214,14 @@ def calculate_material_emissions_advanced(req: MaterialEmissionAdvancedReq):
     recycled_ef = float(req.custom_ef_of_material) if req.custom_ef_of_material is not None else 0.0
     internal_ef = float(req.custom_internal_ef) if req.custom_internal_ef is not None else 0.0
 
-    # =========================
-    # FORMULAS (from your doc)
-    # =========================
-    # regular materials emissions = ef_material × total_mass × RCS
-    regular_materials_emissions = regular_ef * total_purchased * rcs
-
-    # recycled materials emissions = custom_ef_material × total_mass × RCS
-    recycled_materials_emissions = recycled_ef * total_purchased * rcs
+    # recycled materials emissions = custom_ef_material × total_mass
+    recycled_materials_emissions = recycled_ef * total_purchased
 
     # in-house recycling emissions = custom_internal_ef × mass_recycled
     in_house_recycling_emissions = internal_ef * recycled_inhouse_mass
 
     # total emissions = recycled materials emissions + normal material emissions
-    total_material_emissions = regular_materials_emissions + recycled_materials_emissions + in_house_recycling_emissions
-
-    # recycled content share per material type (RCS) = total_material_emissions / total_material_purchased × 100%
-    rcs_per_material_type_percent = (total_material_emissions / total_purchased) * 100.0
-
-    # allocated emissions per material = (total_material_emissions / total_material_purchased) × material_used
-    allocated_emissions_per_material = (total_material_emissions / total_purchased) * used
+    total_material_emissions = recycled_materials_emissions + in_house_recycling_emissions
 
     return {
         "country": req.country,
@@ -1257,15 +1236,11 @@ def calculate_material_emissions_advanced(req: MaterialEmissionAdvancedReq):
         "custom_internal_ef_kgco2e_per_kg": internal_ef,
 
         "RCS_of_material_input": req.RCS_of_material,
-        "RCS_of_material_normalized_0_to_1": rcs,
 
-        "regular_materials_emissions": regular_materials_emissions,
         "recycled_materials_emissions": recycled_materials_emissions,
         "in_house_recycling_emissions": in_house_recycling_emissions,
 
         "total_material_emissions": total_material_emissions,
-        "recycled_content_share_per_material_type_percent": rcs_per_material_type_percent,
-        "allocated_emissions_per_material": allocated_emissions_per_material
     }
 
 @app.get("/meta/machining/mazak")

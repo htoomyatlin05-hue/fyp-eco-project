@@ -86,3 +86,19 @@
     flex: 1;
   }
 }
+
+.signin-right {
+  flex: 1;
+  background-image: url("/images/Leaves.png");
+  background-size: cover;
+  background-position: center;
+
+  /* THIS is the magic */
+  clip-path: path(
+    "M 0 0 
+     L 100% 0 
+     L 100% 100% 
+     L 0 100% 
+     C 12% 80%, 12% 20%, 0 0"
+  );
+}

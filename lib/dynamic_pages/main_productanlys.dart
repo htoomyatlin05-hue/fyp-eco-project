@@ -79,8 +79,6 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
     }
 
 
-
-    // ------------------- Page 1 Widgets (Upstream) -------------------
     final List<Widget> widgetofpage1 = [
       
       Labels(
@@ -149,7 +147,6 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
       UpstreamTransportAttributesMenu(productID: widget.productID)
     ];
 
-    // ------------------- Pages 2 & 3 remain unchanged -------------------
     final List<Widget> widgetofpage2 = [
       Labels(
         title: 'Primary Processes',
@@ -398,6 +395,9 @@ class MaterialAttributesMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
+    final horizontalController = ScrollController();
+
+
     final materials = ref.watch(materialsProvider);
     final countries = ref.watch(countriesProvider);
 
@@ -434,61 +434,62 @@ class MaterialAttributesMenu extends ConsumerWidget {
         // ---------------- Table ----------------
         Align(
           alignment: Alignment.centerLeft,
-          child: Container(
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: Apptheme.transparentcheat,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildColumn(
-                      title: 'Material',
-                      values: tableState.materials,
-                      items: materials,
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'Material', value: value),
-                    ),
-                    const SizedBox(width: 10),
-                    buildColumn(
-                      title: 'Country',
-                      values: tableState.countries,
-                      items: countries,
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'Country', value: value),
-                    ),
-                    const SizedBox(width: 10),
-                    buildColumn(
-                      title: 'Mass (kg)',
-                      values: tableState.masses,
-                      isTextField: true,
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'Mass', value: value),
-                    ),
-                    const SizedBox(width: 10),
-                    buildColumn(
-                      title: 'Custom EF',
-                      values: tableState.customEF,
-                      isTextField: true,
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'Custom Emission Factor', value: value),
-                    ),
-                    const SizedBox(width: 10),
-                    buildColumn(
-                      title: 'Internal EF',
-                      values: tableState.internalEF,
-                      isTextField: true,
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'Internal Emission Factor', value: value),
-                    ),
-                    const SizedBox(width: 10),
-                    
-                  ],
+          child: Scrollbar(
+            controller: horizontalController,
+            thumbVisibility: true,
+            interactive: true,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: SingleChildScrollView(
+                controller: horizontalController,
+                scrollDirection: Axis.horizontal,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildColumn(
+                        title: 'Material',
+                        values: tableState.materials,
+                        items: materials,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Material', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Country',
+                        values: tableState.countries,
+                        items: countries,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Country', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Mass (kg)',
+                        values: tableState.masses,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Mass', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Custom EF',
+                        values: tableState.customEF,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Custom Emission Factor', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Internal EF',
+                        values: tableState.internalEF,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Internal Emission Factor', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -542,24 +543,20 @@ class MaterialAttributesMenu extends ConsumerWidget {
 
 class UpstreamTransportAttributesMenu extends ConsumerWidget {
   final String productID;
-  const UpstreamTransportAttributesMenu({super.key,required this.productID});
+  const UpstreamTransportAttributesMenu({super.key, required this.productID});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final horizontalController = ScrollController();
     final vehicles = ref.watch(transportTypesProvider);
 
     final product = ref.watch(activeProductProvider);
     final part = ref.watch(activePartProvider);
-
-    if (product == null || part == null) {
-      return const SizedBox(); // handle empty state
-    }
+    if (product == null || part == null) return const SizedBox();
 
     final key = (product: product, part: part);
-
     final tableState = ref.watch(upstreamTransportTableProvider(key));
     final tableNotifier = ref.read(upstreamTransportTableProvider(key).notifier);
-
 
     List<RowFormat> rows = List.generate(
       tableState.vehicles.length,
@@ -577,54 +574,66 @@ class UpstreamTransportAttributesMenu extends ConsumerWidget {
 
     return Column(
       children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildColumn(
-                  title: 'Vehicle',
-                  values: tableState.vehicles,
-                  items: vehicles,
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Vehicle', value: value),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Scrollbar(
+            controller: horizontalController,
+            thumbVisibility: true,
+            interactive: true,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: SingleChildScrollView(
+                controller: horizontalController,
+                scrollDirection: Axis.horizontal,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildColumn(
+                        title: 'Vehicle',
+                        values: tableState.vehicles,
+                        items: vehicles,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Vehicle', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildDynamicColumn(
+                        title: 'Class',
+                        values: tableState.classes,
+                        itemsPerRow: List.generate(tableState.vehicles.length, (i) {
+                          final selectedVehicle = tableState.vehicles[i] ?? '';
+                          return ref.watch(classOptionsProvider(selectedVehicle));
+                        }),
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Class', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Distance (km)',
+                        values: tableState.distances,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Distance (km)', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Mass (kg)',
+                        values: tableState.masses,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Mass (kg)', value: value),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 10),
-                buildDynamicColumn(
-                  title: 'Class',
-                  values: tableState.classes,
-                  itemsPerRow: List.generate(tableState.vehicles.length, (i) {
-                    final selectedVehicle = tableState.vehicles[i] ?? '';
-                    return ref.watch(classOptionsProvider(selectedVehicle));
-                  }),
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Class', value: value),
-                ),
-                const SizedBox(width: 10),
-                buildColumn(
-                  title: 'Distance (km)',
-                  values: tableState.distances,
-                  isTextField: true,
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Distance (km)', value: value),
-                ),
-                const SizedBox(width: 10),
-                buildColumn(
-                  title: 'Mass (kg)',
-                  values: tableState.masses,
-                  isTextField: true,
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Mass (kg)', value: value),
-                ),
-              ],
+              ),
             ),
           ),
         ),
         Row(
           children: [
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             SizedBox(
               width: 200,
               height: 35,
@@ -635,9 +644,7 @@ class UpstreamTransportAttributesMenu extends ConsumerWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Apptheme.widgettertiaryclr,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                 ),
                 child: const Labelsinbuttons(
                   title: 'Calculate Emissions',
@@ -646,14 +653,8 @@ class UpstreamTransportAttributesMenu extends ConsumerWidget {
                 ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: tableNotifier.addRow,
-            ),
-            IconButton(
-              icon: const Icon(Icons.remove),
-              onPressed: tableNotifier.removeRow,
-            ),
+            IconButton(icon: const Icon(Icons.add), onPressed: tableNotifier.addRow),
+            IconButton(icon: const Icon(Icons.remove), onPressed: tableNotifier.removeRow),
           ],
         ),
       ],
@@ -661,23 +662,18 @@ class UpstreamTransportAttributesMenu extends ConsumerWidget {
   }
 }
 
-
-
 class MachiningAttributesMenu extends ConsumerWidget {
   final String productID;
   const MachiningAttributesMenu({super.key, required this.productID});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final horizontalController = ScrollController();
     final product = ref.watch(activeProductProvider);
     final part = ref.watch(activePartProvider);
-
-    if (product == null || part == null) {
-      return const SizedBox(); // handle empty state
-    }
+    if (product == null || part == null) return const SizedBox();
 
     final key = (product: product, part: part);
-
     final tableState = ref.watch(machiningTableProvider(key));
     final tableNotifier = ref.read(machiningTableProvider(key).notifier);
 
@@ -699,49 +695,62 @@ class MachiningAttributesMenu extends ConsumerWidget {
 
     return Column(
       children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildColumn(
-                  title: 'Machine',
-                  values: tableState.machines,
-                  items: machines,
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Machine', value: value),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Scrollbar(
+            controller: horizontalController,
+            thumbVisibility: true,
+            interactive: true,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: SingleChildScrollView(
+                controller: horizontalController,
+                scrollDirection: Axis.horizontal,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildColumn(
+                        title: 'Machine',
+                        values: tableState.machines,
+                        items: machines,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Machine', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Country',
+                        values: tableState.countries,
+                        items: countries,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Country', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Time of operation (hr)',
+                        values: tableState.times,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Time', value: value),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 10),
-                buildColumn(
-                  title: 'Country',
-                  values: tableState.countries,
-                  items: countries,
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Country', value: value),
-                ),
-                const SizedBox(width: 10),
-                buildColumn(
-                  title: 'Time of operation (hr)',
-                  values: tableState.times,
-                  isTextField: true,
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Time', value: value),
-                ),
-              ],
+              ),
             ),
           ),
         ),
         Row(
           children: [
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             SizedBox(
               width: 200,
               height: 35,
               child: ElevatedButton(
                 onPressed: () async {
-                  await ref.read(emissionCalculatorProvider(productID).notifier).calculate('machining', rows);
+                  await ref.read(emissionCalculatorProvider(productID).notifier)
+                      .calculate('machining', rows);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Apptheme.widgettertiaryclr,
@@ -754,14 +763,8 @@ class MachiningAttributesMenu extends ConsumerWidget {
                 ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: tableNotifier.addRow,
-            ),
-            IconButton(
-              icon: const Icon(Icons.remove),
-              onPressed: tableNotifier.removeRow,
-            ),
+            IconButton(icon: const Icon(Icons.add), onPressed: tableNotifier.addRow),
+            IconButton(icon: const Icon(Icons.remove), onPressed: tableNotifier.removeRow),
           ],
         ),
       ],
@@ -775,15 +778,12 @@ class FugitiveLeaksAttributesMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final horizontalController = ScrollController();
     final product = ref.watch(activeProductProvider);
     final part = ref.watch(activePartProvider);
-
-    if (product == null || part == null) {
-      return const SizedBox(); // handle empty state
-    }
+    if (product == null || part == null) return const SizedBox();
 
     final key = (product: product, part: part);
-
     final tableState = ref.watch(fugitiveLeaksTableProvider(key));
     final tableNotifier = ref.read(fugitiveLeaksTableProvider(key).notifier);
 
@@ -804,49 +804,62 @@ class FugitiveLeaksAttributesMenu extends ConsumerWidget {
 
     return Column(
       children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildColumn(
-                  title: 'GHG',
-                  values: tableState.ghg,
-                items: ghgList,
-                onChanged: (row, value) =>
-                    tableNotifier.updateCell(row: row, column: 'GHG', value: value),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Scrollbar(
+            controller: horizontalController,
+            thumbVisibility: true,
+            interactive: true,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: SingleChildScrollView(
+                controller: horizontalController,
+                scrollDirection: Axis.horizontal,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildColumn(
+                        title: 'GHG',
+                        values: tableState.ghg,
+                        items: ghgList,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'GHG', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Total Charge (kg)',
+                        values: tableState.totalCharge,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Total', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Remaining Charge (kg)',
+                        values: tableState.remainingCharge,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Remaining', value: value),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(width: 10),
-              buildColumn(
-                title: 'Total Charge (kg)',
-                values: tableState.totalCharge,
-                isTextField: true,
-                onChanged: (row, value) =>
-                    tableNotifier.updateCell(row: row, column: 'Total', value: value),
-              ),
-              const SizedBox(width: 10),
-              buildColumn(
-                title: 'Remaining Charge (kg)',
-                values: tableState.remainingCharge,
-                isTextField: true,
-                onChanged: (row, value) =>
-                    tableNotifier.updateCell(row: row, column: 'Remaining', value: value),
-              ),
-            ],
-          ),
+            ),
           ),
         ),
         Row(
           children: [
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             SizedBox(
               width: 200,
               height: 35,
               child: ElevatedButton(
                 onPressed: () async {
-                  await ref.read(emissionCalculatorProvider(productID).notifier).calculate('fugitive', rows);
+                  await ref.read(emissionCalculatorProvider(productID).notifier)
+                      .calculate('fugitive', rows);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Apptheme.widgettertiaryclr,
@@ -859,14 +872,8 @@ class FugitiveLeaksAttributesMenu extends ConsumerWidget {
                 ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: tableNotifier.addRow,
-            ),
-            IconButton(
-              icon: const Icon(Icons.remove),
-              onPressed: tableNotifier.removeRow,
-            ),
+            IconButton(icon: const Icon(Icons.add), onPressed: tableNotifier.addRow),
+            IconButton(icon: const Icon(Icons.remove), onPressed: tableNotifier.removeRow),
           ],
         ),
       ],
@@ -876,19 +883,16 @@ class FugitiveLeaksAttributesMenu extends ConsumerWidget {
 
 class ProductionTransportAttributesMenu extends ConsumerWidget {
   final String productID;
-  const ProductionTransportAttributesMenu({super.key,required this.productID});
+  const ProductionTransportAttributesMenu({super.key, required this.productID});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final horizontalController = ScrollController();
     final product = ref.watch(activeProductProvider);
     final part = ref.watch(activePartProvider);
-
-    if (product == null || part == null) {
-      return const SizedBox(); // handle empty state
-    }
+    if (product == null || part == null) return const SizedBox();
 
     final key = (product: product, part: part);
-
     final tableState = ref.watch(productionTransportTableProvider(key));
     final tableNotifier = ref.read(productionTransportTableProvider(key).notifier);
 
@@ -910,54 +914,66 @@ class ProductionTransportAttributesMenu extends ConsumerWidget {
 
     return Column(
       children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildColumn(
-                  title: 'Vehicle',
-                  values: tableState.vehicles,
-                  items: vehicles,
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Vehicle', value: value),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Scrollbar(
+            controller: horizontalController,
+            thumbVisibility: true,
+            interactive: true,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: SingleChildScrollView(
+                controller: horizontalController,
+                scrollDirection: Axis.horizontal,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildColumn(
+                        title: 'Vehicle',
+                        values: tableState.vehicles,
+                        items: vehicles,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Vehicle', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildDynamicColumn(
+                        title: 'Class',
+                        values: tableState.classes,
+                        itemsPerRow: List.generate(tableState.vehicles.length, (i) {
+                          final selectedVehicle = tableState.vehicles[i] ?? '';
+                          return ref.watch(classOptionsProvider(selectedVehicle));
+                        }),
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Class', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Distance (km)',
+                        values: tableState.distances,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Distance (km)', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Mass (kg)',
+                        values: tableState.masses,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Mass (kg)', value: value),
+                      ),
+                    ],
+                  ),
                 ),
-                const SizedBox(width: 10),
-                buildDynamicColumn(
-                  title: 'Class',
-                  values: tableState.classes,
-                  itemsPerRow: List.generate(tableState.vehicles.length, (i) {
-                    final selectedVehicle = tableState.vehicles[i] ?? '';
-                    return ref.watch(classOptionsProvider(selectedVehicle));
-                  }),
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Class', value: value),
-                ),
-                const SizedBox(width: 10),
-                buildColumn(
-                  title: 'Distance (km)',
-                  values: tableState.distances,
-                  isTextField: true,
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Distance (km)', value: value),
-                ),
-                const SizedBox(width: 10),
-                buildColumn(
-                  title: 'Mass (kg)',
-                  values: tableState.masses,
-                  isTextField: true,
-                  onChanged: (row, value) =>
-                      tableNotifier.updateCell(row: row, column: 'Mass (kg)', value: value),
-                ),
-              ],
+              ),
             ),
           ),
         ),
         Row(
           children: [
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             SizedBox(
               width: 200,
               height: 35,
@@ -968,9 +984,7 @@ class ProductionTransportAttributesMenu extends ConsumerWidget {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Apptheme.widgettertiaryclr,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(6),
-                  ),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                 ),
                 child: const Labelsinbuttons(
                   title: 'Calculate Emissions',
@@ -979,14 +993,8 @@ class ProductionTransportAttributesMenu extends ConsumerWidget {
                 ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: tableNotifier.addRow,
-            ),
-            IconButton(
-              icon: const Icon(Icons.remove),
-              onPressed: tableNotifier.removeRow,
-            ),
+            IconButton(icon: const Icon(Icons.add), onPressed: tableNotifier.addRow),
+            IconButton(icon: const Icon(Icons.remove), onPressed: tableNotifier.removeRow),
           ],
         ),
       ],
@@ -1000,15 +1008,12 @@ class WasteMaterialAttributesMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final horizontalController = ScrollController();
     final product = ref.watch(activeProductProvider);
     final part = ref.watch(activePartProvider);
-
-    if (product == null || part == null) {
-      return const SizedBox(); // handle empty state
-    }
+    if (product == null || part == null) return const SizedBox();
 
     final key = (product: product, part: part);
-
     final tableState = ref.watch(wastesProvider(key));
     final tableNotifier = ref.read(wastesProvider(key).notifier);
 
@@ -1028,35 +1033,47 @@ class WasteMaterialAttributesMenu extends ConsumerWidget {
 
     return Column(
       children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                buildColumn(
-                  title: 'Waste Material',
-                  values: tableState.wasteType,
-                items: wasteMaterials,
-                onChanged: (row, value) =>
-                    tableNotifier.updateCell(row: row, column: 'Waste Material', value: value),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Scrollbar(
+            controller: horizontalController,
+            thumbVisibility: true,
+            interactive: true,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: SingleChildScrollView(
+                controller: horizontalController,
+                scrollDirection: Axis.horizontal,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildColumn(
+                        title: 'Waste Material',
+                        values: tableState.wasteType,
+                        items: wasteMaterials,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Waste Material', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Mass (kg)',
+                        values: tableState.mass,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Mass (kg)', value: value),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(width: 10),
-              buildColumn(
-                title: 'Mass (kg)',
-                values: tableState.mass,
-                isTextField: true,
-                onChanged: (row, value) =>
-                    tableNotifier.updateCell(row: row, column: 'Mass (kg)', value: value),
-              ),
-            ],
-          ),
+            ),
           ),
         ),
         Row(
           children: [
-            SizedBox(width: 20),
+            const SizedBox(width: 20),
             SizedBox(
               width: 200,
               height: 35,
@@ -1075,14 +1092,8 @@ class WasteMaterialAttributesMenu extends ConsumerWidget {
                 ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: tableNotifier.addRow,
-            ),
-            IconButton(
-              icon: const Icon(Icons.remove),
-              onPressed: tableNotifier.removeRow,
-            ),
+            IconButton(icon: const Icon(Icons.add), onPressed: tableNotifier.addRow),
+            IconButton(icon: const Icon(Icons.remove), onPressed: tableNotifier.removeRow),
           ],
         ),
       ],
@@ -1096,21 +1107,17 @@ class UsageCycleAttributesMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final horizontalController = ScrollController();
     final product = ref.watch(activeProductProvider);
     final part = ref.watch(activePartProvider);
-
-    if (product == null || part == null) {
-      return const SizedBox(); // handle empty state
-    }
+    if (product == null || part == null) return const SizedBox();
 
     final key = (product: product, part: part);
-
     final tableState = ref.watch(usageCycleTableProvider(key));
     final tableNotifier = ref.read(usageCycleTableProvider(key).notifier);
 
     final usageCycleCategories = ref.watch(usageCycleCategoriesProvider);
 
-    // Build rows for calculation
     List<RowFormat> rows = List.generate(
       tableState.usageCycleAllocationValues.length,
       (i) => RowFormat(
@@ -1128,71 +1135,59 @@ class UsageCycleAttributesMenu extends ConsumerWidget {
       children: [
         Align(
           alignment: Alignment.centerLeft,
-          child: Container(
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: Apptheme.transparentcheat,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // ---------------- Category Column ----------------
-                    buildColumn(
-                      title: 'Category',
-                      values: tableState.categories,
-                      items: usageCycleCategories,
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'Category', value: value),
-                    ),
-                    const SizedBox(width: 10),
-
-                    // ---------------- Product Column ----------------
-                    buildDynamicColumn(
-                      title: 'Product',
-                      values: tableState.productTypes,
-                      itemsPerRow: List.generate(tableState.categories.length, (i) {
-                        final selectedCategory = tableState.categories[i] ?? '';
-
-                        // Watch the correct provider depending on the category
-                        switch (selectedCategory) {
-                          case 'Electronics':
-                            return ref.watch(usageCycleElectronicsProvider);
-                          case 'Energy':
-                            return ref.watch(usageCycleEnergyProvider);
-                          case 'Consumables':
-                            return ref.watch(usageCycleConsumablesProvider);
-                          case 'Services':
-                            return ref.watch(usageCycleServicesProvider);
-                          default:
-                            return <String>[];
-                        }
-                      }),
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'Product Type', value: value),
-                    ),
-                    const SizedBox(width: 10),
-
-                    // ---------------- Usage Frequency Column ----------------
-                    buildColumn(
-                      title: 'Usage Frequency',
-                      values: tableState.usageFrequencies,
-                      isTextField: true,
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'Usage Frequency', value: value),
-                    ),
-                  ],
+          child: Scrollbar(
+            controller: horizontalController,
+            thumbVisibility: true,
+            interactive: true,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: SingleChildScrollView(
+                controller: horizontalController,
+                scrollDirection: Axis.horizontal,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildColumn(
+                        title: 'Category',
+                        values: tableState.categories,
+                        items: usageCycleCategories,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Category', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildDynamicColumn(
+                        title: 'Product',
+                        values: tableState.productTypes,
+                        itemsPerRow: List.generate(tableState.categories.length, (i) {
+                          final selectedCategory = tableState.categories[i] ?? '';
+                          switch (selectedCategory) {
+                            case 'Electronics': return ref.watch(usageCycleElectronicsProvider);
+                            case 'Energy': return ref.watch(usageCycleEnergyProvider);
+                            case 'Consumables': return ref.watch(usageCycleConsumablesProvider);
+                            case 'Services': return ref.watch(usageCycleServicesProvider);
+                            default: return <String>[];
+                          }
+                        }),
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Product Type', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Usage Frequency',
+                        values: tableState.usageFrequencies,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Usage Frequency', value: value),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
-
-        // ---------------- Calculate Button & Row Controls ----------------
         Row(
           children: [
             const SizedBox(width: 20),
@@ -1201,14 +1196,12 @@ class UsageCycleAttributesMenu extends ConsumerWidget {
               height: 35,
               child: ElevatedButton(
                 onPressed: () async {
-                  await ref
-                      .read(emissionCalculatorProvider(productID).notifier)
+                  await ref.read(emissionCalculatorProvider(productID).notifier)
                       .calculate('usage_cycle', rows);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Apptheme.widgettertiaryclr,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(6)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
                 ),
                 child: const Labelsinbuttons(
                   title: 'Calculate Emissions',
@@ -1217,19 +1210,8 @@ class UsageCycleAttributesMenu extends ConsumerWidget {
                 ),
               ),
             ),
-            const SizedBox(width: 10),
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: tableNotifier.addRow,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.remove),
-                  onPressed: tableNotifier.removeRow,
-                ),
-              ],
-            ),
+            IconButton(icon: const Icon(Icons.add), onPressed: tableNotifier.addRow),
+            IconButton(icon: const Icon(Icons.remove), onPressed: tableNotifier.removeRow),
           ],
         ),
       ],
@@ -1243,15 +1225,12 @@ class EndofLifeAttributesMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final horizontalController = ScrollController();
     final product = ref.watch(activeProductProvider);
     final part = ref.watch(activePartProvider);
-
-    if (product == null || part == null) {
-      return const SizedBox(); // handle empty state
-    }
+    if (product == null || part == null) return const SizedBox();
 
     final key = (product: product, part: part);
-
     final tableState = ref.watch(endOfLifeTableProvider(key));
     final tableNotifier = ref.read(endOfLifeTableProvider(key).notifier);
 
@@ -1272,65 +1251,62 @@ class EndofLifeAttributesMenu extends ConsumerWidget {
 
     return Column(
       children: [
-        // ---------------- Table ----------------
         Align(
           alignment: Alignment.centerLeft,
-          child: Container(
-            padding: const EdgeInsets.all(5),
-            decoration: BoxDecoration(
-              color: Apptheme.transparentcheat,
-              borderRadius: BorderRadius.circular(6),
-            ),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    buildColumn(
-                      title: 'End of Life Method',
-                      values: tableState.endOfLifeOptions,
-                      items: endOfLifeMethods,
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'End of Life Method', value: value),
-                    ),
-                    const SizedBox(width: 10),
-                    buildColumn(
-                      title: 'Product Mass (kg)',
-                      values: tableState.endOfLifeTotalMass,
-                      isTextField: true,
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'Product Mass (kg)', value: value),
-                    ),
-                    const SizedBox(width: 10),
-                    buildColumn(
-                      title: 'Percentage of Mass (%)',
-                      values: tableState.endOfLifePercentage,
-                      isTextField: true,
-                      onChanged: (row, value) =>
-                          tableNotifier.updateCell(row: row, column: 'Percentage of Mass (%)', value: value),
-                    ),
-                    const SizedBox(width: 10),
-                  ],
+          child: Scrollbar(
+            controller: horizontalController,
+            thumbVisibility: true,
+            interactive: true,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: SingleChildScrollView(
+                controller: horizontalController,
+                scrollDirection: Axis.horizontal,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildColumn(
+                        title: 'End of Life Method',
+                        values: tableState.endOfLifeOptions,
+                        items: endOfLifeMethods,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'End of Life Method', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Product Mass (kg)',
+                        values: tableState.endOfLifeTotalMass,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Product Mass (kg)', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Percentage of Mass (%)',
+                        values: tableState.endOfLifePercentage,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Percentage of Mass (%)', value: value),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
         ),
-
-        // ---------------- Calculate Button ----------------
-        
         Row(
           children: [
-            SizedBox(width: 20),
-
+            const SizedBox(width: 20),
             SizedBox(
               width: 200,
               height: 35,
               child: ElevatedButton(
                 onPressed: () async {
-                  await ref.read(emissionCalculatorProvider(productID).notifier).calculate('end_of_life', rows);
+                  await ref.read(emissionCalculatorProvider(productID).notifier)
+                      .calculate('end_of_life', rows);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Apptheme.widgettertiaryclr,
@@ -1343,21 +1319,8 @@ class EndofLifeAttributesMenu extends ConsumerWidget {
                 ),
               ),
             ),
-
-            SizedBox(width: 10),
-          
-            Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: tableNotifier.addRow,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.remove),
-                  onPressed: tableNotifier.removeRow,
-                ),
-              ],
-            ),
+            IconButton(icon: const Icon(Icons.add), onPressed: tableNotifier.addRow),
+            IconButton(icon: const Icon(Icons.remove), onPressed: tableNotifier.removeRow),
           ],
         ),
       ],

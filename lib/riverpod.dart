@@ -580,11 +580,13 @@ class EmissionCalculator extends StateNotifier<EmissionResults> {
 
     final Map<String, Map<String, dynamic>> _config = {
     'material': {
-      'endpoint': 'http://127.0.0.1:8000/calculate/material_emission_advanced',
+      'endpoint': 'http://127.0.0.1:8000/calculate/material_emission_recycled',
       'apiKeys': {
         "Country": "country",
         "Material": "material",
-        "Mass (kg)": "mass_kg",
+        "Mass (kg)": "total_material_purchased_kg",
+        "Custom Emission Factor" : "custom_ef_of_material_kgco2e_per_kg",
+        "Internal Emission Factor" : "in_house_recycling_emissions",
       }
     },
     'upstream_transport': {
@@ -1043,12 +1045,16 @@ class MaterialTableState {
   final List<String?> materials;
   final List<String?> countries;
   final List<String?> masses;
-  final List<String?> materialAllocationValues; // NEW COLUMN
+  final List<String?> customEF;
+  final List<String?> internalEF;
+  final List<String?> materialAllocationValues; 
 
   MaterialTableState({
     required this.materials,
     required this.countries,
     required this.masses,
+    required this.customEF,
+    required this.internalEF,
     required this.materialAllocationValues,
   });
 
@@ -1056,12 +1062,16 @@ class MaterialTableState {
     List<String?>? materials,
     List<String?>? countries,
     List<String?>? masses,
+    List<String?>? customEF,
+    List<String?>? internalEF,
     List<String?>? materialAllocationValues,
   }) {
     return MaterialTableState(
       materials: materials ?? this.materials,
       countries: countries ?? this.countries,
       masses: masses ?? this.masses,
+      customEF: customEF ?? this.customEF,
+      internalEF : internalEF ?? this.internalEF,
       materialAllocationValues: materialAllocationValues ?? this.materialAllocationValues,
     );
   }
@@ -1074,7 +1084,9 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
             materials: [''],
             countries: [''],
             masses: [''],
-            materialAllocationValues: [''], // NEW
+            customEF: [''],
+            internalEF: [''],
+            materialAllocationValues: [''],
           ),
         );
 
@@ -1083,6 +1095,8 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
       materials: [...state.materials, ''],
       countries: [...state.countries, ''],
       masses: [...state.masses, ''],
+      customEF : [...state.customEF, ''],
+      internalEF: [...state.internalEF, ''],
       materialAllocationValues: [...state.materialAllocationValues, ''],
     );
   }
@@ -1093,6 +1107,8 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
         materials: state.materials.sublist(0, state.materials.length - 1),
         countries: state.countries.sublist(0, state.countries.length - 1),
         masses: state.masses.sublist(0, state.masses.length - 1),
+        customEF: state.customEF.sublist(0, state.customEF.length - 1),
+        internalEF: state.internalEF.sublist(0, state.internalEF.length - 1),
         materialAllocationValues: state.materialAllocationValues.sublist(0, state.materialAllocationValues.length - 1),
       );
     }
@@ -1106,6 +1122,8 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
     final materials = [...state.materials];
     final countries = [...state.countries];
     final masses = [...state.masses];
+    final customEF = [...state.customEF];
+    final internalEF = [...state.internalEF];
     final materialAllocationValues = [...state.materialAllocationValues];
 
     switch (column) {
@@ -1118,6 +1136,12 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
       case 'Mass':
         masses[row] = value;
         break;
+      case 'Custom Emission Factor':
+        customEF[row] = value;
+        break;
+      case 'Internal Emission Factor':
+        internalEF[row] = value;
+        break;
       case 'Allocation Value':
         materialAllocationValues[row] = value;
         break;
@@ -1127,6 +1151,7 @@ class MaterialTableNotifier extends StateNotifier<MaterialTableState> {
       materials: materials,
       countries: countries,
       masses: masses,
+      customEF: customEF,
       materialAllocationValues: materialAllocationValues,
     );
   }

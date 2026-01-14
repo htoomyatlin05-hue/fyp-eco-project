@@ -842,16 +842,12 @@ class MaterialEmissionAdvancedReq(BaseModel):
 
     # masses (kg)
     total_material_purchased_kg: float   # total purchased for that material type
-    material_used_kg: float              # how much of that purchased amount is used/allocated to product
     mass_of_material_recycled_kg: float = 0.0  # in-house recycled mass (optional)
-
-    # recycled content share (RCS): you can send 0-1 or 0-100 (we normalize)
-    RCS_of_material: float = 0.0
 
     # optional overrides (if you don’t send them, backend uses Excel EF for regular,
     # and 0 for custom/recycled/internal unless you provide)
-    custom_ef_of_material: Optional[float] = None          # EF for recycled material (kgCO2e/kg)
-    custom_internal_ef: Optional[float] = None             # EF for in-house recycling (kgCO2e/kg)
+    custom_ef_of_material: float         # EF for recycled material (kgCO2e/kg)
+    custom_internal_ef: float          # EF for in-house recycling (kgCO2e/kg)
 
 class ExcelUpdateCellRequest(BaseModel):
     sheet: str
@@ -1191,28 +1187,19 @@ def calculate_material_emissions_advanced(req: MaterialEmissionAdvancedReq):
     if req.material not in materials:
         raise HTTPException(status_code=400, detail="Material not supported for calculation")
 
-    try:
-        regular_ef = float(materials[req.material][cidx])  # kgCO2e per kg
-    except Exception:
-        raise HTTPException(status_code=500, detail="Emission factor missing in Data Sheet.")
-
     # --- validate masses ---
     total_purchased = float(req.total_material_purchased_kg)
-    used = float(req.material_used_kg)
     recycled_inhouse_mass = float(req.mass_of_material_recycled_kg or 0.0)
 
     if total_purchased <= 0:
         raise HTTPException(status_code=400, detail="total_material_purchased_kg must be > 0")
-    if used < 0:
-        raise HTTPException(status_code=400, detail="material_used_kg cannot be negative")
-    if used > total_purchased:
-        raise HTTPException(status_code=400, detail="material_used_kg cannot exceed total_material_purchased_kg")
+
     if recycled_inhouse_mass < 0:
         raise HTTPException(status_code=400, detail="mass_of_material_recycled_kg cannot be negative")
 
     # --- custom factors (optional) ---
-    recycled_ef = float(req.custom_ef_of_material) if req.custom_ef_of_material is not None else 0.0
-    internal_ef = float(req.custom_internal_ef) if req.custom_internal_ef is not None else 0.0
+    recycled_ef = float(req.custom_ef_of_material) 
+    internal_ef = float(req.custom_internal_ef)
 
     # recycled materials emissions = custom_ef_material × total_mass
     recycled_materials_emissions = recycled_ef * total_purchased
@@ -1228,14 +1215,10 @@ def calculate_material_emissions_advanced(req: MaterialEmissionAdvancedReq):
         "material": req.material,
 
         "total_material_purchased_kg": total_purchased,
-        "material_used_kg": used,
         "mass_of_material_recycled_kg": recycled_inhouse_mass,
 
-        "regular_ef_kgco2e_per_kg": regular_ef,
         "custom_ef_of_material_kgco2e_per_kg": recycled_ef,
         "custom_internal_ef_kgco2e_per_kg": internal_ef,
-
-        "RCS_of_material_input": req.RCS_of_material,
 
         "recycled_materials_emissions": recycled_materials_emissions,
         "in_house_recycling_emissions": in_house_recycling_emissions,

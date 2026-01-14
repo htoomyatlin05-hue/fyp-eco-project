@@ -141,8 +141,10 @@ Widget _buildMaterialTable(MaterialTableState s, MaterialTableNotifier n) {
       0: FixedColumnWidth(200),
       1: FixedColumnWidth(120),
       2: FixedColumnWidth(120),
-      3: FlexColumnWidth(),
-      4: FixedColumnWidth(70),
+      3: FixedColumnWidth(120),
+      4: FixedColumnWidth(120),
+      5: FlexColumnWidth(),
+      6: FixedColumnWidth(70),
     },
     children: [
       TableRow(
@@ -153,6 +155,8 @@ Widget _buildMaterialTable(MaterialTableState s, MaterialTableNotifier n) {
           Padding(padding: EdgeInsets.all(8), child: Labels(title: "Material", color: Apptheme.textclrdark, fontsize: 16)),
           Padding(padding: EdgeInsets.all(8), child: Labels(title: "Country", color: Apptheme.textclrdark, fontsize: 16)),
           Padding(padding: EdgeInsets.all(8), child: Labels(title: "Mass (kg)", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Custom EF", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Internal EF", color: Apptheme.textclrdark, fontsize: 16)),
           Padding(padding: EdgeInsets.all(8), child: Labels(title: "Allocation Value", color: Apptheme.textclrdark, fontsize: 16)),
           Padding(padding: EdgeInsets.all(8), child: Labels(title: "Action", color: Apptheme.textclrdark, fontsize: 16)),
         ],
@@ -164,6 +168,8 @@ Widget _buildMaterialTable(MaterialTableState s, MaterialTableNotifier n) {
             _staticCell(s.materials[i]),
             _staticCell(s.countries[i]),
             _staticCell(s.masses[i]),
+            _staticCell(s.customEF[i]),
+            _staticCell(s.internalEF[i]),
             _editableCell(
               text: s.materialAllocationValues[i],
               onChanged: (v) => n.updateCell(row: i, column: 'Allocation Value', value: v),

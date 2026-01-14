@@ -367,12 +367,14 @@ class MaterialAttributesMenu extends ConsumerWidget {
     List<RowFormat> rows = List.generate(
       tableState.materials.length,
       (i) => RowFormat(
-        columnTitles: ['Material', 'Country', 'Mass (kg)'],
-        isTextFieldColumn: [false, false, true],
+        columnTitles: ['Material', 'Country', 'Mass (kg)', 'Custom Emission Factor', 'Internal Emission Factor'],
+        isTextFieldColumn: [false, false, true, true, true],
         selections: [
           tableState.materials[i],
           tableState.countries[i],
-          tableState.masses[i]
+          tableState.masses[i],
+          tableState.customEF[i],
+          tableState.internalEF[i],
         ],
       ),
     );
@@ -417,6 +419,22 @@ class MaterialAttributesMenu extends ConsumerWidget {
                       isTextField: true,
                       onChanged: (row, value) =>
                           tableNotifier.updateCell(row: row, column: 'Mass', value: value),
+                    ),
+                    const SizedBox(width: 10),
+                    buildColumn(
+                      title: 'Custom EF',
+                      values: tableState.customEF,
+                      isTextField: true,
+                      onChanged: (row, value) =>
+                          tableNotifier.updateCell(row: row, column: 'Custom Emission Factor', value: value),
+                    ),
+                    const SizedBox(width: 10),
+                    buildColumn(
+                      title: 'Internal EF',
+                      values: tableState.internalEF,
+                      isTextField: true,
+                      onChanged: (row, value) =>
+                          tableNotifier.updateCell(row: row, column: 'Internal Emission Factor', value: value),
                     ),
                     const SizedBox(width: 10),
                     

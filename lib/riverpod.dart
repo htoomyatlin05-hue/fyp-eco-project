@@ -711,11 +711,11 @@ class EmissionCalculator
   final Map<String, Map<String, dynamic>> _config = {
     'material': {
       'endpoint':
-          'http://127.0.0.1:8000/calculate/material',
+          'http://127.0.0.1:8000/calculate/material_emission',
       'apiKeys': {
         "Country": "country",
         "Material": "material",
-        "Mass (kg)": "total_material_purchased_kg",
+        "Mass (kg)": "mass_kg",
       }
     },
     'material_custom': {
@@ -858,6 +858,7 @@ Future<void> calculate(
         value = (json["total_material_emissions"] ??
                 json["total_transport_type_emission"] ??
                 json["emissions_kgco2e"] ??
+                json["materialacq_emission"] ??
                 json["emissions"] ??
                 0)
             .toDouble();

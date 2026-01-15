@@ -59,6 +59,7 @@ String getPercentageTitle(double value, double total) {
       final key = (product: product, part: part);
 
       // Get each table individually
+      final normalMaterialTable = ref.watch(normalMaterialTableProvider(key));
       final materialTable = ref.watch(materialTableProvider(key));
       final transportTable = ref.watch(upstreamTransportTableProvider(key));
       final machiningTable = ref.watch(machiningTableProvider(key));
@@ -71,6 +72,7 @@ String getPercentageTitle(double value, double total) {
 
       // Determine the number of rows (use the longest table as row count)
       final rowCount = [
+        normalMaterialTable.normalMaterials.length,
         materialTable.materials.length,
         transportTable.vehicles.length,
         machiningTable.machines.length,
@@ -86,6 +88,7 @@ String getPercentageTitle(double value, double total) {
       for (int i = 0; i < rowCount; i++) {
         final rowEmissions = ref.watch(convertedEmissionsPerPartProvider((widget.profileName,part)));
 
+        totalNormalMaterial += rowEmissions.materialNormal;
         totalMaterial += rowEmissions.material;
         totalTransport += rowEmissions.transport;
         totalMachining += rowEmissions.machining;
@@ -131,14 +134,14 @@ String getPercentageTitle(double value, double total) {
       [
         PieChartSectionData(
           color: Apptheme.piechart1,
-          value: totalMaterial,
+          value: totalMaterial + totalNormalMaterial,
           title: 'Material Acqusition',
           radius: pieChartSize/2,
         ),
         PieChartSectionData(
           color: Apptheme.piechart2,
-          value: totalTransport,
-          title: 'Upstream Transport',
+          value: totalTransport + totalProductionTransport +totalDownstreamTransport,
+          title: 'Transport',
           radius: pieChartSize/2,
         ),
         PieChartSectionData(
@@ -154,12 +157,6 @@ String getPercentageTitle(double value, double total) {
           title: 'Fugitive',
           radius: pieChartSize/2,
         ),
-      PieChartSectionData(
-        color: Apptheme.piechart5,
-        value: totalProductionTransport,
-        title: 'Production Transport',
-        radius: pieChartSize/2,
-      ),
       PieChartSectionData(
           color: Apptheme.piechart4,
           value: totalUsageCycle,

@@ -41,6 +41,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
       final key = (product: product, part: part);
 
       // Get each table individually
+      final normalMaterialTable = ref.watch(normalMaterialTableProvider(key));
       final materialTable = ref.watch(materialTableProvider(key));
       final transportTable = ref.watch(upstreamTransportTableProvider(key));
       final machiningTable = ref.watch(machiningTableProvider(key));
@@ -53,6 +54,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
 
       // Determine the number of rows (use the longest table as row count)
       final rowCount = [
+        normalMaterialTable.normalMaterials.length,
         materialTable.materials.length,
         transportTable.vehicles.length,
         machiningTable.machines.length,
@@ -67,7 +69,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
       // Loop through each row and sum the converted emissions
       for (int i = 0; i < rowCount; i++) {
         final rowEmissions = ref.watch(convertedEmissionsPerPartProvider((widget.productID,part)));
-
+        totalNormalMaterial += rowEmissions.materialNormal;
         totalMaterial += rowEmissions.material;
         totalTransport += rowEmissions.transport;
         totalMachining += rowEmissions.machining;
@@ -576,14 +578,12 @@ class MaterialAttributesMenu extends ConsumerWidget {
     List<RowFormat> rows = List.generate(
       tableState.materials.length,
       (i) => RowFormat(
-        columnTitles: ['Material', 'Country', 'Mass (kg)', 'Custom Emission Factor', 'Internal Emission Factor'],
-        isTextFieldColumn: [false, false, true, true, true],
+        columnTitles: ['Material','Mass (kg)', 'Custom Emission Factor'],
+        isTextFieldColumn: [false, true, true],
         selections: [
           tableState.materials[i],
-          tableState.countries[i],
           tableState.masses[i],
           tableState.customEF[i],
-          tableState.internalEF[i],
         ],
       ),
     );
@@ -616,14 +616,6 @@ class MaterialAttributesMenu extends ConsumerWidget {
                       ),
                       const SizedBox(width: 10),
                       buildColumn(
-                        title: 'Country',
-                        values: tableState.countries,
-                        items: countries,
-                        onChanged: (row, value) =>
-                            tableNotifier.updateCell(row: row, column: 'Country', value: value),
-                      ),
-                      const SizedBox(width: 10),
-                      buildColumn(
                         title: 'Mass (kg)',
                         values: tableState.masses,
                         isTextField: true,
@@ -638,15 +630,6 @@ class MaterialAttributesMenu extends ConsumerWidget {
                         onChanged: (row, value) =>
                             tableNotifier.updateCell(row: row, column: 'Custom Emission Factor', value: value),
                       ),
-                      const SizedBox(width: 10),
-                      buildColumn(
-                        title: 'Internal EF',
-                        values: tableState.internalEF,
-                        isTextField: true,
-                        onChanged: (row, value) =>
-                            tableNotifier.updateCell(row: row, column: 'Internal Emission Factor', value: value),
-                      ),
-                      const SizedBox(width: 10),
                     ],
                   ),
                 ),

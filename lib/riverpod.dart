@@ -619,8 +619,7 @@ final convertedEmissionsPerPartProvider =
   (ref, args) {
     final (productId, partId) = args;
 
-    final rows =
-        ref.watch(emissionRowsProvider((productId, partId)));
+    final rows = ref.watch(emissionRowsProvider((productId, partId)));
     final factor = ref.watch(unitConversionProvider);
     final key = (product: productId, part: partId);
 
@@ -812,6 +811,16 @@ class EmissionCalculator
         'http://127.0.0.1:8000/calculate/cargo_ship',
   };
 
+    final Map<String, String> _usageEndpoints = {
+    'Van': 'http://127.0.0.1:8000/calculate/waste/msw',
+    'HGV (Diesel)': 'http://127.0.0.1:8000/calculate/waste/industrial',
+    'HGV Refrigerated (Diesel)':
+        'http://127.0.0.1:8000/calculate/waste/construction',
+    'Freight Flights':
+        'http://127.0.0.1:8000/calculate/waste/hazardous',
+    'Rail': 'http://127.0.0.1:8000/calculate/waste/organic',
+  };
+
 Future<void> calculate(
   String partId,
   String featureType,
@@ -926,7 +935,7 @@ void updateRow(String partId, int index, EmissionResults row) {
 }
 
 
-    }
+}
 
 
 

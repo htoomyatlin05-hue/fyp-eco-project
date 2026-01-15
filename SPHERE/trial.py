@@ -903,7 +903,6 @@ class MaterialEmissionAdvancedReq(BaseModel):
     # optional overrides (if you don’t send them, backend uses Excel EF for regular,
     # and 0 for custom/recycled/internal unless you provide)
     custom_ef_of_material: float         # EF for recycled material (kgCO2e/kg)
-    custom_internal_ef: float          # EF for in-house recycling (kgCO2e/kg)
 
 class ExcelUpdateCellRequest(BaseModel):
     sheet: str
@@ -1311,19 +1310,13 @@ def calculate_material_emissions_advanced(req: MaterialEmissionAdvancedReq):
     if total_purchased <= 0:
         raise HTTPException(status_code=400, detail="total_material_purchased_kg must be > 0")
 
-    # --- custom factors (required or optional?) ---
     if req.custom_ef_of_material is None:
         raise HTTPException(status_code=400, detail="custom_ef_of_material is required")
-    if req.custom_internal_ef is None:
-        raise HTTPException(status_code=400, detail="custom_internal_ef is required")
 
     recycled_ef = float(req.custom_ef_of_material)
-    internal_ef = float(req.custom_internal_ef)
-
+    
     if recycled_ef < 0:
         raise HTTPException(status_code=400, detail="custom_ef_of_material cannot be negative")
-    if internal_ef < 0:
-        raise HTTPException(status_code=400, detail="custom_internal_ef cannot be negative")
 
     # recycled materials emissions = custom_ef_material × total_mass
     recycled_materials_emissions = recycled_ef * total_purchased
@@ -1333,14 +1326,9 @@ def calculate_material_emissions_advanced(req: MaterialEmissionAdvancedReq):
 
     return {
         "material": req.material,
-
         "total_material_purchased_kg": total_purchased,
-
         "custom_ef_of_material_kgco2e_per_kg": recycled_ef,
-        "custom_internal_ef_kgco2e_per_kg": internal_ef,
-
         "recycled_materials_emissions": recycled_materials_emissions,
-        
         "total_material_emissions": total_material_emissions,
     }
 

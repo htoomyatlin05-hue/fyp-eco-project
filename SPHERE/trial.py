@@ -1771,8 +1771,6 @@ def excel_update_cells(req: ExcelUpdateCellsRequest):
 
 @app.post("/calculate/waste/msw")
 def calculate_msw(req: WasteTypeMassRequest):
-
-
     if req.waste_type not in MSW:
         raise HTTPException(status_code=400, detail="Invalid MSW type")
 
@@ -1791,7 +1789,6 @@ def calculate_msw(req: WasteTypeMassRequest):
 
 @app.post("/calculate/waste/industrial")
 def calculate_industrial_waste(req: WasteTypeMassRequest):
-
     if req.waste_type not in Industrial_and_Process_Waste:
         raise HTTPException(status_code=400, detail="Invalid industrial waste type")
 

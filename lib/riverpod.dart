@@ -486,6 +486,7 @@ class EmissionResults {
   final double machining;
   final double fugitive;
   final double productionTransport;
+  final double downstreamTransport;
   final double waste;
   final double usageCycle;
   final double endofLife;
@@ -497,6 +498,7 @@ class EmissionResults {
     this.machining = 0,
     this.fugitive = 0,
     this.productionTransport = 0,
+    this.downstreamTransport = 0,
     this.waste = 0,
     this.usageCycle = 0,
     this.endofLife = 0,
@@ -511,6 +513,7 @@ class EmissionResults {
     double? machining,
     double? fugitive,
     double? productionTransport,
+    double? downstreamTransport,
     double? waste,
     double? usageCycle,
     double? endofLife,
@@ -522,6 +525,7 @@ class EmissionResults {
         machining: machining ?? this.machining,
         fugitive: fugitive ?? this.fugitive,
         productionTransport: productionTransport ?? this.productionTransport,
+        downstreamTransport: downstreamTransport ?? this.downstreamTransport,
         waste: waste ?? this.waste,
         usageCycle: usageCycle ?? this.usageCycle,
         endofLife: endofLife ?? this.endofLife,
@@ -535,6 +539,7 @@ class EmissionResults {
       machining: (machining) + (other.machining),
       fugitive: (fugitive) + (other.fugitive),
       productionTransport: (productionTransport) + (other.productionTransport),
+      downstreamTransport: (downstreamTransport) + (other.downstreamTransport),
       waste: (waste) + (other.waste),
       usageCycle: (usageCycle) + (other.usageCycle),
       endofLife: (endofLife) + (other.endofLife),
@@ -631,7 +636,7 @@ final convertedEmissionsPerPartProvider =
       'material': safe(ref
           .watch(materialTableProvider(key))
           .materialAllocationValues),
-      'transport': safe(ref
+      'upstream_transport': safe(ref
           .watch(upstreamTransportTableProvider(key))
           .transportAllocationValues),
       'machining': safe(ref
@@ -642,6 +647,9 @@ final convertedEmissionsPerPartProvider =
           .fugitiveAllocationValues),
       'productionTransport': safe(ref
           .watch(productionTransportTableProvider(key))
+          .transportAllocationValues),
+      'downstreamTransport': safe(ref
+          .watch(downstreamTransportTableProvider(key))
           .transportAllocationValues),
       'waste': safe(
           ref.watch(wastesProvider(key)).wasteAllocationValues),
@@ -664,13 +672,18 @@ final convertedEmissionsPerPartProvider =
     for (int i = 0; i < rows.length; i++) {
       final r = rows[i];
       total += EmissionResults(
+        materialNormal: r.materialNormal * alloc('material_normal', i) * factor,
         material: r.material * alloc('material', i) * factor,
-        transport: r.transport * alloc('transport', i) * factor,
+        transport: r.transport * alloc('upstream_transport', i) * factor,
         machining: r.machining * alloc('machining', i) * factor,
         fugitive: r.fugitive * alloc('fugitive', i) * factor,
         productionTransport:
             r.productionTransport *
                 alloc('productionTransport', i) *
+                factor,
+        downstreamTransport:
+            r.downstreamTransport *
+                alloc('downstreamTransport', i) *
                 factor,
         waste: r.waste * alloc('waste', i) * factor,
         usageCycle:
@@ -756,6 +769,15 @@ class EmissionCalculator
       'endpoint': 'http://127.0.0.1:8000/calculate/waste',
       'apiKeys': {
         "Waste Material": "waste_mode",
+        "Mass (kg)": "mass_kg",
+      }
+    },
+    'downstream_transport': {
+      'endpoint': 'http://127.0.0.1:8000/calculate/type_here',
+      'apiKeys': {
+        "Vehicle": "vehicle_type",
+        "Class": "transport_type",
+        "Distance (km)": "distance_km",
         "Mass (kg)": "mass_kg",
       }
     },
@@ -858,6 +880,7 @@ Future<void> calculate(
       machining: featureType == 'machining' ? value : existing.machining,
       fugitive: featureType == 'fugitive' ? value : existing.fugitive,
       productionTransport: featureType == 'production_transport' ? value : existing.productionTransport,
+      downstreamTransport: featureType == 'downstream_transport' ? value : existing.downstreamTransport,
       waste: featureType == 'waste' ? value : existing.waste,
       usageCycle: featureType == 'usage_cycle' ? value :existing.usageCycle,
       endofLife:featureType == 'end_of_life' ? value :existing.endofLife,
@@ -1651,6 +1674,113 @@ class ProductionTransportTableNotifier extends StateNotifier<ProductionTransport
   }
 }
 
+
+// -----------------DOWNSTREAM TRANSPORT--------
+class DownstreamTransportTableState {
+  final List<String?> vehicles;
+  final List<String?> classes;
+  final List<String?> distances;
+  final List<String?> masses;
+  final List<String?> transportAllocationValues; // NEW COLUMN
+
+  DownstreamTransportTableState({
+    required this.vehicles,
+    required this.classes,
+    required this.distances,
+    required this.masses,
+    required this.transportAllocationValues,
+  });
+
+  DownstreamTransportTableState copyWith({
+    List<String?>? vehicles,
+    List<String?>? classes,
+    List<String?>? distances,
+    List<String?>? masses,
+    List<String?>? transportAllocationValues,
+  }) {
+    return DownstreamTransportTableState(
+      vehicles: vehicles ?? this.vehicles,
+      classes: classes ?? this.classes,
+      distances: distances ?? this.distances,
+      masses: masses ?? this.masses,
+      transportAllocationValues: transportAllocationValues ?? this.transportAllocationValues,
+    );
+  }
+}
+
+class DownstreamTransportTableNotifier extends StateNotifier<DownstreamTransportTableState> {
+  DownstreamTransportTableNotifier()
+      : super(
+          DownstreamTransportTableState(
+            vehicles: [''],
+            classes: [''],
+            distances: [''],
+            masses: [''], 
+            transportAllocationValues: [''], // NEW
+          ),
+        );
+
+  void addRow() {
+    state = state.copyWith(
+      vehicles: [...state.vehicles, ''],
+      classes: [...state.classes, ''],
+      distances: [...state.distances, ''],
+      masses: [...state.masses, ''],
+      transportAllocationValues: [...state.transportAllocationValues, ''],
+    );
+  }
+
+  void removeRow() {
+    if (state.vehicles.length > 1) {
+      state = state.copyWith(
+        vehicles: state.vehicles.sublist(0, state.vehicles.length - 1),
+        classes: state.classes.sublist(0, state.classes.length - 1),
+        distances: state.distances.sublist(0, state.distances.length - 1),
+        masses: state.masses.sublist(0, state.masses.length - 1), 
+        transportAllocationValues: state.transportAllocationValues.sublist(0, state.transportAllocationValues.length - 1),
+      );
+    }
+  }
+
+  void updateCell({
+    required int row,
+    required String column,
+    required String? value,
+  }) {
+    final vehicles = [...state.vehicles];
+    final classes = [...state.classes];
+    final distances = [...state.distances];
+    final masses = [...state.masses];
+    final transportAllocationValues = [...state.transportAllocationValues];
+
+    switch (column) {
+      case 'Vehicle':
+        vehicles[row] = value;
+        break;
+      case 'Class':
+        classes[row] = value;
+        break;
+      case 'Distance (km)':
+        distances[row] = value;
+        break;
+      case 'Mass (kg)':
+        masses[row] = value;
+        break;
+      case 'Allocation Value':
+        transportAllocationValues[row] = value;
+        break;
+    }
+
+    state = state.copyWith(
+      vehicles: vehicles,
+      classes: classes,
+      distances: distances,
+      masses: masses,
+      transportAllocationValues: transportAllocationValues,
+    );
+  }
+}
+
 // ---------------- USAGE CYCLE ----------------
 
 class UsageCycleState {
@@ -1934,6 +2064,18 @@ final productionTransportTableAllocationSumProvider =
       .fold(0.0, (a, b) => a + b);
 });
 
+/// ---------------- DOWNSTREAM TRANSPORT ----------------
+final downstreamTransportTableProvider =
+    StateNotifierProvider.family<DownstreamTransportTableNotifier, DownstreamTransportTableState, TableKey>(
+        (ref, key) => DownstreamTransportTableNotifier());
+
+final downstreamTransportTableAllocationSumProvider =
+    Provider.family<double, TableKey>((ref, key) {
+  final table = ref.watch(downstreamTransportTableProvider(key));
+  return table.transportAllocationValues
+      .map(_toDouble)
+      .fold(0.0, (a, b) => a + b);
+});
 
 /// ---------------- USAGE CYCLE ----------------
 final usageCycleTableProvider =

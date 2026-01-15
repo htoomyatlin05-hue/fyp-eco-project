@@ -45,6 +45,10 @@ class DebugPage extends ConsumerWidget {
     final productionTransportState = ref.watch(productionTransportTableProvider(key));
     final productionTransportNotifier = ref.read(productionTransportTableProvider(key).notifier);
 
+    /// ---------------- PRODUCTION TRANSPORT ----------------
+    final downstreamTransportState = ref.watch(downstreamTransportTableProvider(key));
+    final downstreamTransportNotifier = ref.read(downstreamTransportTableProvider(key).notifier);
+
     /// ---------------- WASTE ----------------
     final wasteTransportState = ref.watch(wastesProvider(key));
     final wasteTransportNotifier = ref.read(wastesProvider(key).notifier);
@@ -128,6 +132,14 @@ class DebugPage extends ConsumerWidget {
           const SizedBox(height: 10),
           _buildWasteTable(wasteTransportState, wasteTransportNotifier),
           const SizedBox(height: 30),
+
+          // -------------------- USAGE CYCLE --------------------
+          Labels(
+            title: "Downstream Transportation",
+            color: Apptheme.textclrdark,
+          ),
+          const SizedBox(height: 10),
+          _buildDownstreamTransportTable(downstreamTransportState, downstreamTransportNotifier),
 
           // -------------------- USAGE CYCLE --------------------
           Labels(
@@ -467,6 +479,53 @@ Widget _buildWasteTable(WastesTableState s, WastesTableNotifier n) {
             _staticCell(s.mass[i]),
             _editableCell(
               text: s.wasteAllocationValues[i],
+              onChanged: (v) => n.updateCell(row: i, column: 'Allocation Value', value: v),
+            ),
+            _checkCell(),
+          ],
+        ),
+    ],
+  );
+}
+
+// ---------------------PRODUCTION TRANSPORT -----------------
+Widget _buildDownstreamTransportTable(DownstreamTransportTableState s, DownstreamTransportTableNotifier n) {
+  final rowCount = s.vehicles.length;
+
+  return Table(
+    defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
+    columnWidths: const {
+      0: FixedColumnWidth(200),
+      1: FixedColumnWidth(120),
+      2: FixedColumnWidth(120),
+      3: FixedColumnWidth(120),
+      4: FlexColumnWidth(),
+      5: FixedColumnWidth(70),
+    },
+    children: [
+      TableRow(
+        decoration: BoxDecoration(
+          color: Apptheme.widgettertiaryclr,
+        ),
+        children: const [
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Vehicle", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Class", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Distance", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Mass", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Allocation Value", color: Apptheme.textclrdark, fontsize: 16)),
+          Padding(padding: EdgeInsets.all(8), child: Labels(title: "Action", color: Apptheme.textclrdark, fontsize: 16)),
+        ],
+      ),
+
+      for (int i = 0; i < rowCount; i++)
+        TableRow(
+          children: [
+            _staticCell(s.vehicles[i]),
+            _staticCell(s.classes[i]),
+            _staticCell(s.distances[i]),
+            _staticCell(s.masses[i]),
+            _editableCell(
+              text: s.transportAllocationValues[i],
               onChanged: (v) => n.updateCell(row: i, column: 'Allocation Value', value: v),
             ),
             _checkCell(),

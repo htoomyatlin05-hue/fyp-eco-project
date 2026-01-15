@@ -18,10 +18,7 @@ class Dynamicprdanalysis extends ConsumerStatefulWidget {
 }
 
 class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
-  double materialupstreamEmission = 0;
-  double materialtransportEmission = 0;
-  double fugitiveemissions = 0;
-  double machiningemissions = 0;
+
   bool showThreePageTabs = true;
 
   @override
@@ -36,6 +33,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
     double totalFugitive = 0;
     double totalProductionTransport = 0;
     double totalWaste = 0;
+    double totalDownstreamTransport = 0;
     double totalUsageCycle = 0;
     double totalEndOfLife = 0;
 
@@ -48,6 +46,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
       final machiningTable = ref.watch(machiningTableProvider(key));
       final fugitiveTable = ref.watch(fugitiveLeaksTableProvider(key));
       final productionTransportTable = ref.watch(productionTransportTableProvider(key));
+      final downsteamTransportTable = ref.watch(downstreamTransportTableProvider(key));
       final wasteTable = ref.watch(wastesProvider(key));
       final usageCycleTable = ref.watch(usageCycleTableProvider(key));
       final endOfLifeTable = ref.watch(endOfLifeTableProvider(key));
@@ -59,6 +58,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
         machiningTable.machines.length,
         fugitiveTable.ghg.length,
         productionTransportTable.vehicles.length,
+        downsteamTransportTable.vehicles.length,
         wasteTable.wasteType.length,
         usageCycleTable.categories.length,
         endOfLifeTable.endOfLifeOptions.length,
@@ -73,6 +73,7 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
         totalMachining += rowEmissions.machining;
         totalFugitive += rowEmissions.fugitive;
         totalProductionTransport += rowEmissions.productionTransport;
+        totalDownstreamTransport += rowEmissions.downstreamTransport;
         totalWaste += rowEmissions.waste;
         totalUsageCycle += rowEmissions.usageCycle;
         totalEndOfLife += rowEmissions.endofLife;
@@ -240,6 +241,25 @@ class _DynamicprdanalysisState extends ConsumerState<Dynamicprdanalysis> {
     ];
 
     final List<Widget> widgetofpage3 = [
+      //--ROW 2: Upstream Transportation--
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Labels(
+            title: 'Downstream Transportation | ${totalDownstreamTransport.toStringAsFixed(2)} ${ref.watch(unitLabelProvider)} CO₂',
+            color: Apptheme.textclrdark,
+            fontsize: 17,
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: InfoIconPopupDark(
+              text: 'Transporting of materials purchased from it\'s origin to the production facility\'s gate.',
+              
+            ),
+          ),
+        ],
+      ),
+      DownstreamTransportAttributesMenu(productID: widget.productID),
       //--ROW 1: Downstream Distribution--
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -523,7 +543,6 @@ class NormalMaterialAttributesMenu extends ConsumerWidget {
     );
   }
 }
-
 
 class MaterialAttributesMenu extends ConsumerWidget {
   final String productID;
@@ -1220,6 +1239,127 @@ class WasteMaterialAttributesMenu extends ConsumerWidget {
               child: ElevatedButton(
                 onPressed: () async {
                   await ref.read(emissionCalculatorProvider(productID).notifier).calculate(part, 'waste', rows);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Apptheme.widgettertiaryclr,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(6)),
+                ),
+                child: const Labelsinbuttons(
+                  title: 'Calculate Emissions',
+                  color: Apptheme.textclrdark,
+                  fontsize: 15,
+                ),
+              ),
+            ),
+            IconButton(icon: const Icon(Icons.add), onPressed: tableNotifier.addRow),
+            IconButton(icon: const Icon(Icons.remove), onPressed: tableNotifier.removeRow),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class DownstreamTransportAttributesMenu extends ConsumerWidget {
+  final String productID;
+  const DownstreamTransportAttributesMenu({super.key, required this.productID});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final horizontalController = ScrollController();
+    final product = ref.watch(activeProductProvider);
+    final part = ref.watch(activePartProvider);
+    if (product == null || part == null) return const SizedBox();
+
+    final key = (product: product, part: part);
+    final tableState = ref.watch(downstreamTransportTableProvider(key));
+    final tableNotifier = ref.read(downstreamTransportTableProvider(key).notifier);
+
+    final vehicles = ref.watch(transportTypesProvider);
+
+    List<RowFormat> rows = List.generate(
+      tableState.vehicles.length,
+      (i) => RowFormat(
+        columnTitles: ['Vehicle', 'Class', 'Distance (km)', 'Mass (kg)'],
+        isTextFieldColumn: [false, false, true, true],
+        selections: [
+          tableState.vehicles[i],
+          tableState.classes[i],
+          tableState.distances[i],
+          tableState.masses[i],
+        ],
+      ),
+    );
+
+    return Column(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Scrollbar(
+            controller: horizontalController,
+            thumbVisibility: true,
+            interactive: true,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 15),
+              child: SingleChildScrollView(
+                controller: horizontalController,
+                scrollDirection: Axis.horizontal,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildColumn(
+                        title: 'Vehicle',
+                        values: tableState.vehicles,
+                        items: vehicles,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Vehicle', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildDynamicColumn(
+                        title: 'Class',
+                        values: tableState.classes,
+                        itemsPerRow: List.generate(tableState.vehicles.length, (i) {
+                          final selectedVehicle = tableState.vehicles[i] ?? '';
+                          return ref.watch(classOptionsProvider(selectedVehicle));
+                        }),
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Class', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Distance (km)',
+                        values: tableState.distances,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Distance (km)', value: value),
+                      ),
+                      const SizedBox(width: 10),
+                      buildColumn(
+                        title: 'Mass (kg)',
+                        values: tableState.masses,
+                        isTextField: true,
+                        onChanged: (row, value) =>
+                            tableNotifier.updateCell(row: row, column: 'Mass (kg)', value: value),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+        Row(
+          children: [
+            const SizedBox(width: 20),
+            SizedBox(
+              width: 200,
+              height: 35,
+              child: ElevatedButton(
+                onPressed: () async {
+                  await ref.read(emissionCalculatorProvider(productID).notifier)
+                      .calculate(part, 'downstream_transport', rows);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Apptheme.widgettertiaryclr,

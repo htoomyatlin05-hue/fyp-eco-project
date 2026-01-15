@@ -518,36 +518,38 @@ cargo_ship_lookup     =dict(zip(Cargo_ship_mode_list,Cargo_ship_emission_list))
 
 Assembly_lookup = dict(zip(Assembly_modes,Assembly_ef))
 #Waste configuration
+
 waste_lookup = {
     "MSW": {
-        "types": extract_selection_list(MSW_cells),
-        "ef": extract_selection_list(MSW_ef_cells),
+        "types": MSW,
+        "ef": MSW_ef,
     },
-    "Industrial and Process Waste": {
-        "types": extract_selection_list(Industrial_and_Process_Waste_cells),
-        "ef": extract_selection_list(Industrial_and_Process_Waste_ef_cells),
+    "Industrial_and_Process_Waste": {
+        "types": Industrial_and_Process_Waste,
+        "ef": Industrial_and_Process_Waste_ef,
     },
-    "Construction and Demolition Waste": {
-        "types": extract_selection_list(Construction_and_Demolition_Waste_cells),
-        "ef": extract_selection_list(Construction_and_Demolition_Waste_ef_cells),
+    "Construction_and_Demolition_Waste": {
+        "types": Construction_and_Demolition_Waste,
+        "ef": Construction_and_Demolition_Waste_ef,
     },
-    "Hazardous Waste": {
-        "types": extract_selection_list(Hazardous_Waste_cells),
-        "ef": extract_selection_list(Hazardous_Waste_ef_cells),
+    "Hazardous_Waste": {
+        "types": Hazardous_Waste,
+        "ef": Hazardous_Waste_ef,
     },
-    "Organic Waste": {
-        "types": extract_selection_list(Organic_Waste_cells),
-        "ef": extract_selection_list(Organic_Waste_ef_cells),
+    "Organic_Waste": {
+        "types": Organic_Waste,
+        "ef": Organic_Waste_ef,
     },
-    "Material-specific Waste": {
-        "types": extract_selection_list(Material_specific_waste_cells),
-        "ef": extract_selection_list(Material_specific_waste_ef_cells),
+    "Material_specific_waste": {
+        "types": Material_specific_waste,
+        "ef": Material_specific_waste_ef,
     },
-    "Energy-related Waste": {
-        "types": extract_selection_list(Energy_Related_Waste_cells),
-        "ef": extract_selection_list(Energy_Related_Waste_ef_cells),
+    "Energy_Related_Waste": {
+        "types": Energy_Related_Waste,
+        "ef": Energy_Related_Waste_ef,
     },
 }
+
 
 # ---- Transport configuration for all modes ----
 
@@ -913,30 +915,19 @@ class ExcelUpdateCellRequest(BaseModel):
 class ExcelUpdateCellsRequest(BaseModel):
     sheet: str
     updates: List[ExcelUpdateCellRequest]
-    
-class WasteRequest(BaseModel):
-    waste_mode: str
-    mass_kg: float
 
 class AssemblyRequest(BaseModel):
     Assembly_mode: str
     Power: float
-
-from pydantic import BaseModel
 
 class RecyclingEmissionRequest(BaseModel):
     country: str
     metal_type: str                  # selected recycling type
     recycled_weight_kg: float        # recycled mass in kg
 
-class WasteTotalsRequest(BaseModel):
-    MSW_mass_kg: float = 0.0
-    Industrial_and_Process_Waste_mass_kg: float = 0.0
-    Construction_and_Demolition_Waste_mass_kg: float = 0.0
-    Hazardous_Waste_mass_kg: float = 0.0
-    Organic_Waste_mass_kg: float = 0.0
-    Material_specific_waste_mass_kg: float = 0.0
-    Energy_Related_Waste_mass_kg: float = 0.0
+class WasteTypeMassRequest(BaseModel):
+    waste_type: str   # selected waste process/type from Excel
+    mass_kg: float    # waste mass in kg
 
 # --------- 6. FASTAPI APP + ENDPOINTS ---------------------------------------#
 
@@ -1074,6 +1065,7 @@ def get_options():
         "MSW"           : MSW,
         "MSW_ef"        : MSW_ef,
         "Industrial_and_Process_Waste": Industrial_and_Process_Waste,
+        "Industrial_and_Process_Waste_ef": Industrial_and_Process_Waste_ef,
         "Construction_and_Demolition_Waste": Construction_and_Demolition_Waste,
         "Construction_and_Demolition_Waste_ef": Construction_and_Demolition_Waste_ef,
         "Hazardous_Waste": Hazardous_Waste,
@@ -1331,7 +1323,6 @@ def calculate_material_emissions_advanced(req: MaterialEmissionAdvancedReq):
         "recycled_materials_emissions": recycled_materials_emissions,
         "total_material_emissions": total_material_emissions,
     }
-
 @app.get("/meta/machining/mazak")
 def get_mazak_list():
     return {
@@ -1427,23 +1418,6 @@ def calculate_machine_power_emission(req:MachineEmissionsReq):
         "power_drawed_kw": power_drawed,
         "grid_intensity": grid_intensity,
         "emissions": emissions,       # kg CO2e
-    }
-
-@app.post("/calculate/waste")
-def calculate_waste(req: WasteRequest):
-
-    if req.waste_mode not in waste_lookup:
-        raise HTTPException(status_code=400, detail="Invalid waste mode")
-
-    ef = waste_lookup[req.waste_mode]
-    emissions = req.mass_kg * ef
-
-    return {
-        "category": "Waste",
-        "waste_mode": req.waste_mode,
-        "mass_kg": req.mass_kg,
-        "ef_kgco2e_per_kg": float(ef),
-        "emissions_kgco2e": round(emissions, 4)
     }
 
 @app.post("/calculate/assembly")
@@ -1712,7 +1686,6 @@ def delete_profile(username: str, profile_name: str):
 
     return {"status": "deleted", "username": username, "profile_name": profile_name}
 
-
 @app.post("/profiles/rename")
 def rename_profile(req: ProfileRenameRequest):
     all_profiles = load_profiles()
@@ -1796,48 +1769,137 @@ def excel_update_cells(req: ExcelUpdateCellsRequest):
 
     return {"status": "ok", "count": len(req.updates)}
 
-@app.post("/calculate/waste/category_totals")
-def calculate_waste_category_totals(req: WasteTotalsRequest):
+@app.post("/calculate/waste/msw")
+def calculate_msw(req: WasteTypeMassRequest):
 
-    def avg(lst):
-        vals = [float(x) for x in lst if x is not None and str(x).strip() != ""]
-        if not vals:
-            raise HTTPException(status_code=500, detail="EF list is empty for a category")
-        return sum(vals) / len(vals)
 
-    msw_ef_avg = avg(MSW_ef)
-    ind_ef_avg = avg(Industrial_and_Process_Waste_ef)
-    cd_ef_avg  = avg(Construction_and_Demolition_Waste_ef)
-    haz_ef_avg = avg(Hazardous_Waste_ef)
-    org_ef_avg = avg(Organic_Waste_ef)
-    mat_ef_avg = avg(Material_specific_waste_ef)
-    en_ef_avg  = avg(Energy_Related_Waste_ef)
+    if req.waste_type not in MSW:
+        raise HTTPException(status_code=400, detail="Invalid MSW type")
 
-    MSW_emission = float(req.MSW_mass_kg) * msw_ef_avg
-    Industrial_and_Process_Waste_emission = float(req.Industrial_and_Process_Waste_mass_kg) * ind_ef_avg
-    Construction_and_Demolition_Waste_emission = float(req.Construction_and_Demolition_Waste_mass_kg) * cd_ef_avg
-    Hazardous_Waste_emission = float(req.Hazardous_Waste_mass_kg) * haz_ef_avg
-    Organic_Waste_emission = float(req.Organic_Waste_mass_kg) * org_ef_avg
-    Material_specific_waste_emission = float(req.Material_specific_waste_mass_kg) * mat_ef_avg
-    Energy_Related_Waste_emission = float(req.Energy_Related_Waste_mass_kg) * en_ef_avg
+    idx = MSW.index(req.waste_type)
+    ef = float(MSW_ef[idx])
 
-    total = (
-        MSW_emission
-        + Industrial_and_Process_Waste_emission
-        + Construction_and_Demolition_Waste_emission
-        + Hazardous_Waste_emission
-        + Organic_Waste_emission
-        + Material_specific_waste_emission
-        + Energy_Related_Waste_emission
-    )
+    emission = req.mass_kg * ef
 
     return {
-        "MSW_emission_kgco2e": round(MSW_emission, 4),
-        "Industrial_and_Process_Waste_emission_kgco2e": round(Industrial_and_Process_Waste_emission, 4),
-        "Construction_and_Demolition_Waste_emission_kgco2e": round(Construction_and_Demolition_Waste_emission, 4),
-        "Hazardous_Waste_emission_kgco2e": round(Hazardous_Waste_emission, 4),
-        "Organic_Waste_emission_kgco2e": round(Organic_Waste_emission, 4),
-        "Material_specific_waste_emission_kgco2e": round(Material_specific_waste_emission, 4),
-        "Energy_Related_Waste_emission_kgco2e": round(Energy_Related_Waste_emission, 4),
-        "total_waste_emission_kgco2e": round(total, 4),
-        }
+        "category": "MSW",
+        "waste_type": req.waste_type,
+        "mass_kg": req.mass_kg,
+        "ef_kgco2e_per_kg": ef,
+        "emission_kgco2e": round(emission, 4)
+    }
+
+@app.post("/calculate/waste/industrial")
+def calculate_industrial_waste(req: WasteTypeMassRequest):
+
+    if req.waste_type not in Industrial_and_Process_Waste:
+        raise HTTPException(status_code=400, detail="Invalid industrial waste type")
+
+    idx = Industrial_and_Process_Waste.index(req.waste_type)
+    ef = float(Industrial_and_Process_Waste_ef[idx])
+
+    emission = req.mass_kg * ef
+
+    return {
+        "category": "Industrial and Process Waste",
+        "waste_type": req.waste_type,
+        "mass_kg": req.mass_kg,
+        "ef_kgco2e_per_kg": ef,
+        "emission_kgco2e": round(emission, 4)
+    }
+
+@app.post("/calculate/waste/construction")
+def calculate_construction_waste(req: WasteTypeMassRequest):
+
+    if req.waste_type not in Construction_and_Demolition_Waste:
+        raise HTTPException(status_code=400, detail="Invalid construction waste type")
+
+    idx = Construction_and_Demolition_Waste.index(req.waste_type)
+    ef = float(Construction_and_Demolition_Waste_ef[idx])
+
+    emission = req.mass_kg * ef
+
+    return {
+        "category": "Construction and Demolition Waste",
+        "waste_type": req.waste_type,
+        "mass_kg": req.mass_kg,
+        "ef_kgco2e_per_kg": ef,
+        "emission_kgco2e": round(emission, 4)
+    }
+
+@app.post("/calculate/waste/hazardous")
+def calculate_hazardous_waste(req: WasteTypeMassRequest):
+
+    if req.waste_type not in Hazardous_Waste:
+        raise HTTPException(status_code=400, detail="Invalid hazardous waste type")
+
+    idx = Hazardous_Waste.index(req.waste_type)
+    ef = float(Hazardous_Waste_ef[idx])
+
+    emission = req.mass_kg * ef
+
+    return {
+        "category": "Hazardous Waste",
+        "waste_type": req.waste_type,
+        "mass_kg": req.mass_kg,
+        "ef_kgco2e_per_kg": ef,
+        "emission_kgco2e": round(emission, 4)
+    }
+
+@app.post("/calculate/waste/organic")
+def calculate_organic_waste(req: WasteTypeMassRequest):
+
+    if req.waste_type not in Organic_Waste:
+        raise HTTPException(status_code=400, detail="Invalid organic waste type")
+
+    idx = Organic_Waste.index(req.waste_type)
+    ef = float(Organic_Waste_ef[idx])
+
+    emission = req.mass_kg * ef
+
+    return {
+        "category": "Organic Waste",
+        "waste_type": req.waste_type,
+        "mass_kg": req.mass_kg,
+        "ef_kgco2e_per_kg": ef,
+        "emission_kgco2e": round(emission, 4)
+    }
+
+@app.post("/calculate/waste/material")
+def calculate_material_specific_waste(req: WasteTypeMassRequest):
+
+    if req.waste_type not in Material_specific_waste:
+        raise HTTPException(status_code=400, detail="Invalid material-specific waste type")
+
+    idx = Material_specific_waste.index(req.waste_type)
+    ef = float(Material_specific_waste_ef[idx])
+
+    emission = req.mass_kg * ef
+
+    return {
+        "category": "Material-specific Waste",
+        "waste_type": req.waste_type,
+        "mass_kg": req.mass_kg,
+        "ef_kgco2e_per_kg": ef,
+        "emission_kgco2e": round(emission, 4)
+    }
+
+@app.post("/calculate/waste/energy")
+def calculate_energy_related_waste(req: WasteTypeMassRequest):
+
+    if req.waste_type not in Energy_Related_Waste:
+        raise HTTPException(status_code=400, detail="Invalid energy-related waste type")
+
+    idx = Energy_Related_Waste.index(req.waste_type)
+    ef = float(Energy_Related_Waste_ef[idx])
+
+    emission = req.mass_kg * ef
+
+    return {
+        "category": "Energy-related Waste",
+        "waste_type": req.waste_type,
+        "mass_kg": req.mass_kg,
+        "ef_kgco2e_per_kg": ef,
+        "emission_kgco2e": round(emission, 4)
+    }
+

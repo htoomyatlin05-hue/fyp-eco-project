@@ -80,3 +80,27 @@
   .about__grid { grid-template-columns: 1fr; }
   .about__split { grid-template-columns: 1fr; }
 }
+
+.about__steps {
+  margin: 0;
+  padding-left: 18px;
+  line-height: 1.6;
+}
+
+.about__steps li {
+  margin: 10px 0;
+}
+
+.about__videoWrap {
+  margin-top: 18px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.about__video {
+  width: 100%;
+  height: auto;
+  display: block;
+}

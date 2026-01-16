@@ -160,7 +160,7 @@ function Navbar() {
               </button>
               <ul className={openAbout ? 'dropdown-menu show' : 'dropdown-menu'} onClick={(e) => e.stopPropagation()}>
                 <li><Link to="/about" className="dropdown-link" onClick={closeMobileMenu}>About Us</Link></li>
-                <li><Link to="/services" className="dropdown-link" onClick={closeMobileMenu}>Services</Link></li>
+                <li><Link to='/how-it-works' className='dropdown-link' onClick={closeMobileMenu}>How it works</Link></li>
                 <li><Link to="/contact" className="dropdown-link" onClick={closeMobileMenu}>Contact</Link></li>
               </ul>
             </li>

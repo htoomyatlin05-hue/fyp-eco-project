@@ -4,7 +4,6 @@ import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import './App.css';
 
 import Home from './components/pages/Home';
-import Services from './components/pages/Services';
 import About_us from './components/pages/About_us';
 import SignUp from './components/pages/SignUp';
 import Methodology from './components/pages/Methodology';
@@ -13,6 +12,8 @@ import SignIn from './components/pages/SignIn';
 import Dashboard from "./components/pages/Dashboard";
 import Profiles from "./components/pages/Profiles";
 import ProfileView from "./components/pages/ProfileView";
+import HowItWorks from './components/pages/HowItWorks';
+
 
 function App() {
   return (
@@ -21,7 +22,6 @@ function App() {
         <Navbar />
         <Switch>
           <Route path='/' exact component={Home} />
-          <Route path='/services' component={Services} />
           <Route path='/methodology' component={Methodology} />
           <Route path='/contact' component={Contact} />
           <Route path='/about' component={About_us} />
@@ -30,6 +30,7 @@ function App() {
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/profiles" exact component={Profiles} />
           <Route path="/profiles/:name" component={ProfileView} />
+          <Route path='/how-it-works' component={HowItWorks} />
         </Switch>
       </Router>
     </>

@@ -929,6 +929,10 @@ class WasteTypeMassRequest(BaseModel):
     waste_type: str   # selected waste process/type from Excel
     mass_kg: float    # waste mass in kg
 
+class EndOfLifeReq(BaseModel):
+    activity: str
+    mass_kg: float
+
 # --------- 6. FASTAPI APP + ENDPOINTS ---------------------------------------#
 
 app = FastAPI(title="SPHERE Backend API (Flutter)")
@@ -1900,3 +1904,30 @@ def calculate_energy_related_waste(req: WasteTypeMassRequest):
         "emission_kgco2e": round(emission, 4)
     }
 
+@app.post("/calculate/end_of_life")
+def calculate_end_of_life(req: EndOfLifeReq):
+
+    if req.mass_kg <= 0:
+        raise HTTPException(status_code=400, detail="mass_kg must be > 0")
+
+    if req.activity not in End_of_Life_Activities:
+        raise HTTPException(status_code=400, detail="Activity not found")
+
+    idx = End_of_Life_Activities.index(req.activity)
+
+    try:
+        ef = float(End_of_Life_ef[idx])
+    except Exception:
+        raise HTTPException(status_code=500, detail="Invalid End_of_Life_ef value")
+
+    emissions = ef * float(req.mass_kg)
+
+    return {
+        "activity": req.activity,
+        "mass_kg": float(req.mass_kg),
+        "End_of_Life_ef": ef,
+        "end_of_life_emissions": emissions,
+        # optional: include these so Flutter can show the dropdown + values
+        "End_of_Life_Activities": End_of_Life_Activities,
+        "End_of_Life_ef_list": End_of_Life_ef,
+    }

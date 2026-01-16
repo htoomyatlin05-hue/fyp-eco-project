@@ -44,14 +44,23 @@ export default function About_us() {
           </section>
 
           <section className="about__split">
+            {/* HOW IT WORKS (added) */}
             <div className="about__panel">
               <h2>How it works</h2>
-              <ul>
-                <li>Select materials and processes</li>
-                <li>Add transport + distance</li>
-                <li>Include energy + grid intensity</li>
-                <li>Get a total CO₂e breakdown</li>
-              </ul>
+              <ol className="about__steps">
+                <li>
+                  <strong>Enter inputs</strong> — choose country, material, transport, machining,
+                  packaging, and recycling options.
+                </li>
+                <li>
+                  <strong>Calculate CO₂e</strong> — we apply emission factors to estimate emissions
+                  for each stage.
+                </li>
+                <li>
+                  <strong>Review & improve</strong> — compare alternatives and pick lower-impact
+                  choices.
+                </li>
+              </ol>
             </div>
 
             <div className="about__panel">

@@ -1546,7 +1546,7 @@ class EndofLifeAttributesMenu extends ConsumerWidget {
     List<RowFormat> rows = List.generate(
       tableState.endOfLifeOptions.length,
       (i) => RowFormat(
-        columnTitles: ['End of Life Method', 'Product Mass'],
+        columnTitles: ['End of Life Option', 'Total Mass'],
         isTextFieldColumn: [false, true],
         selections: [
           tableState.endOfLifeOptions[i],

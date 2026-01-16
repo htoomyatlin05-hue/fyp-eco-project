@@ -471,15 +471,14 @@ class EmissionCalculator
     'usage_cycle': {
       'endpoint': 'http://127.0.0.1:8000/calculate/usage_cycle',
       'apiKeys': {
-        "Category": "category",
-        "Product" : "product",
-        "Usage Frequency": "mass_kg",
+        "Product" : "usage_type",
+        "Usage Frequency": "amount",
       }
     },
     'end_of_life': {
       'endpoint': 'http://127.0.0.1:8000/calculate/end_of_life',
       'apiKeys': {
-        "End of Life Option": "waste_mode",
+        "End of Life Option": "activity",
         "Total Mass": "mass_kg",
       }
     },
@@ -500,10 +499,10 @@ class EmissionCalculator
   };
 
     final Map<String, String> _usageEndpoints = {
-    'Electronics': 'http://127.0.0.1:8000/calculate/type_here',
-    'Energy': 'http://127.0.0.1:8000/calculate/waste/type_here',
-    'Consumables': 'http://127.0.0.1:8000/calculate/waste/type_here',
-    'Services': 'http://127.0.0.1:8000/calculate/waste/type_here',
+    'Electronics': 'http://127.0.0.1:8000/calculate/usage/electronics',
+    'Energy': 'http://127.0.0.1:8000/calculate/usage/energy',
+    'Consumables': 'http://127.0.0.1:8000/calculate/usage/consumables',
+    'Services': 'http://127.0.0.1:8000/calculate/usage/services',
   };
 
   final Map<String, String> _wasteEndpoints = {
@@ -578,7 +577,7 @@ Future<void> calculate(
                 json["emissions_kgco2e"] ??
                 json["materialacq_emission"] ??
                 json["emissions"] ??
-                json["emission_kgco2e"] ??
+                json["end_of_life_emissions"] ??
                 0)
             .toDouble();
       }

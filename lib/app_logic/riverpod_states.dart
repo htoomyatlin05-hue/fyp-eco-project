@@ -929,7 +929,6 @@ class EndOfLifeTableState {
   EndOfLifeTableState copyWith({
     List<String?>? endOfLifeOptions,
     List<String?>? endOfLifeTotalMass,
-    List<String?>? endOfLifePercentage,
     List<String?>? endOfLifeAllocationValues,
   }) {
     return EndOfLifeTableState(

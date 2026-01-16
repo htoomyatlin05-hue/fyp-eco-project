@@ -933,6 +933,10 @@ class EndOfLifeReq(BaseModel):
     activity: str
     mass_kg: float
 
+class UsageCalcReq(BaseModel):
+    usage_type: str
+    amount: float
+
 # --------- 6. FASTAPI APP + ENDPOINTS ---------------------------------------#
 
 app = FastAPI(title="SPHERE Backend API (Flutter)")
@@ -1930,4 +1934,84 @@ def calculate_end_of_life(req: EndOfLifeReq):
         # optional: include these so Flutter can show the dropdown + values
         "End_of_Life_Activities": End_of_Life_Activities,
         "End_of_Life_ef_list": End_of_Life_ef,
+    }
+
+@app.post("/calculate/usage/electronics")
+def calculate_usage_electronics(req: UsageCalcReq):
+    if req.amount <= 0:
+        raise HTTPException(status_code=400, detail="amount must be > 0")
+
+    if req.usage_type not in Usage_electronic:
+        raise HTTPException(status_code=400, detail="Usage type not found in Usage_electronics")
+
+    idx = Usage_electronic.index(req.usage_type)
+    ef = float(Usage_electronic_ef[idx])
+    emissions = ef * float(req.amount)
+
+    return {
+        "usage_category": "Electronics",
+        "usage_type": req.usage_type,
+        "amount": float(req.amount),
+        "usage_ef": ef,
+        "usage_emissions": emissions
+    }
+
+@app.post("/calculate/usage/energy")
+def calculate_usage_energy(req: UsageCalcReq):
+    if req.amount <= 0:
+        raise HTTPException(status_code=400, detail="amount must be > 0")
+
+    if req.usage_type not in Usage_energy:
+        raise HTTPException(status_code=400, detail="Usage type not found in Usage_energy")
+
+    idx = Usage_energy.index(req.usage_type)
+    ef = float(Usage_energy_ef[idx])
+    emissions = ef * float(req.amount)
+
+    return {
+        "usage_category": "Energy",
+        "usage_type": req.usage_type,
+        "amount": float(req.amount),
+        "usage_ef": ef,
+        "usage_emissions": emissions
+    }
+
+@app.post("/calculate/usage/consumables")
+def calculate_usage_consumables(req: UsageCalcReq):
+    if req.amount <= 0:
+        raise HTTPException(status_code=400, detail="amount must be > 0")
+
+    if req.usage_type not in Usage_Consumables:
+        raise HTTPException(status_code=400, detail="Usage type not found in Usage_consumables")
+
+    idx = Usage_Consumables.index(req.usage_type)
+    ef = float(Usage_Consumables_ef[idx])
+    emissions = ef * float(req.amount)
+
+    return {
+        "usage_category": "Consumables",
+        "usage_type": req.usage_type,
+        "amount": float(req.amount),
+        "usage_ef": ef,
+        "usage_emissions": emissions
+    }
+
+@app.post("/calculate/usage/services")
+def calculate_usage_services(req: UsageCalcReq):
+    if req.amount <= 0:
+        raise HTTPException(status_code=400, detail="amount must be > 0")
+
+    if req.usage_type not in Usage_services:
+        raise HTTPException(status_code=400, detail="Usage type not found in Usage_services")
+
+    idx = Usage_services.index(req.usage_type)
+    ef = float(Usage_services_ef[idx])
+    emissions = ef * float(req.amount)
+
+    return {
+        "usage_category": "Services",
+        "usage_type": req.usage_type,
+        "amount": float(req.amount),
+        "usage_ef": ef,
+        "usage_emissions": emissions
     }
